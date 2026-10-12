@@ -2071,16 +2071,10 @@
                     if (parsed.world) worldStatusMap = new Map(parsed.world);
                 } catch (e) { console.log("Hash parse error", e); }
             } else {
-                const defaultVisited = [
-                    "panchagarh", "thakurgaon", "dinajpur", "nilphamari", "lalmonirhat", "rangpur", "kurigram", "gaibandha",
-                    "joypurhat", "bogura", "naogaon", "chapai", "rajshahi", "natore", "sirajganj", "pabna",
-                    "sherpur", "jamalpur", "mymensingh", "tangail", "gazipur", "dhaka", "narayanganj",
-                    "sylhet", "moulvibazar", "barishal", "patuakhali", "chattogram", "coxsbazar"
-                ];
-                defaultVisited.forEach(id => bdStatusMap.set(id, 'visited'));
-
-                const defaultWorld = ["w_bd", "w_in", "w_sa", "w_ae", "w_my", "w_th", "w_sg", "w_gb", "w_us", "w_fr", "w_jp"];
-                defaultWorld.forEach(id => worldStatusMap.set(id, 'visited'));
+                // Fresh, 100% clean state for new users (0 districts, 0 countries selected)
+                bdStatusMap = new Map();
+                worldStatusMap = new Map();
+                regionYearTags = new Map();
             }
 
             document.getElementById('name-input').value = currentUserName;
