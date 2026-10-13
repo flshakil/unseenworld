@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unseen World - ভ্রমণ মানচিত্র ও পোস্টার জেনারেটর (বাংলাদেশ ও সমগ্র বিশ্ব)</title>
+    <title>Unseen World - ভ্রমণ মানচিত্র ও পোস্টার জেনারেটর</title>
 
-    <!-- Google Fonts for Bengali, Latin, and Vintage Cartography -->
+    <!-- Google Fonts for Bengali, English, and Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
             --poster-bg: #0c1322;
         }
 
-        /* Vintage Paper Mode */
+        /* Vintage Cartography Paper Theme */
         body.theme-vintage {
             background-color: #1a1612;
             color: #f7eedd;
@@ -70,20 +70,20 @@
             --poster-bg: #221c16;
         }
 
-        /* Map District & Country Vector Path Styles */
+        /* Interactive District & Country SVG Vectors */
         .district-path {
             fill: var(--unvisited-fill);
             stroke: var(--unvisited-border);
             stroke-width: 0.9;
             cursor: pointer;
-            transition: fill 0.15s ease, stroke 0.15s ease, filter 0.15s ease;
+            transition: fill 0.16s ease, stroke 0.16s ease, filter 0.16s ease;
             vector-effect: non-scaling-stroke;
         }
         .district-path:hover {
             fill: #1a2947 !important;
             stroke: #93c5fd !important;
             stroke-width: 1.6 !important;
-            filter: drop-shadow(0 0 6px rgba(147, 197, 253, 0.5));
+            filter: drop-shadow(0 0 7px rgba(147, 197, 253, 0.6));
         }
         body.theme-vintage .district-path:hover {
             fill: #443728 !important;
@@ -93,23 +93,23 @@
         .district-path.status-visited {
             fill: var(--neon-visited) !important;
             stroke: var(--neon-visited-border) !important;
-            stroke-width: 1.4 !important;
-            filter: drop-shadow(0 0 8px var(--neon-visited-glow));
+            stroke-width: 1.5 !important;
+            filter: drop-shadow(0 0 9px var(--neon-visited-glow));
         }
         .district-path.status-wishlist {
             fill: var(--neon-wishlist) !important;
             stroke: var(--neon-wishlist-border) !important;
-            stroke-width: 1.4 !important;
-            filter: drop-shadow(0 0 8px var(--neon-wishlist-glow));
+            stroke-width: 1.5 !important;
+            filter: drop-shadow(0 0 9px var(--neon-wishlist-glow));
         }
         .district-path.status-favorite {
             fill: var(--neon-favorite) !important;
             stroke: var(--neon-favorite-border) !important;
-            stroke-width: 1.4 !important;
-            filter: drop-shadow(0 0 8px var(--neon-favorite-glow));
+            stroke-width: 1.5 !important;
+            filter: drop-shadow(0 0 9px var(--neon-favorite-glow));
         }
 
-        /* Labels Typography */
+        /* Pin Center Labels */
         .district-label-text {
             font-size: 7.5px;
             font-weight: 700;
@@ -129,12 +129,13 @@
         .district-pin-group.status-active .district-label-text {
             fill: #ffffff !important;
             font-weight: 800;
-            font-size: 8.5px;
+            font-size: 8.8px;
             stroke: #030712;
-            stroke-width: 2.8px;
+            stroke-width: 3px;
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
         }
 
+        /* Animated Road Trip Dash Path */
         @keyframes dash-travel {
             to { stroke-dashoffset: -120; }
         }
@@ -182,38 +183,56 @@
                 </div>
             </div>
 
-            <!-- Top Header Action Controls -->
+            <!-- Top Header Controls -->
             <div class="flex items-center flex-wrap gap-2">
+                <!-- Travel Diary Trigger -->
+                <button onclick="openDiaryModal()" class="px-3 py-1.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 text-xs font-extrabold text-emerald-300 border border-emerald-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                    <i class="ph-bold ph-book-open-text text-sm"></i>
+                    <span>স্মৃতি ডায়েরি</span>
+                </button>
+
+                <!-- Travel Packing Checklist Trigger -->
+                <button onclick="openChecklistModal()" class="px-3 py-1.5 rounded-xl bg-amber-950/60 hover:bg-amber-900/60 text-xs font-extrabold text-amber-300 border border-amber-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                    <i class="ph-bold ph-check-square-offset text-sm"></i>
+                    <span>প্যাকিং লিস্ট</span>
+                </button>
+
+                <!-- Sound FX Toggle -->
+                <button onclick="toggleSoundFX()" id="sound-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-xs font-extrabold text-slate-200 border border-slate-700/80 flex items-center gap-1 transition active:scale-95 shadow-sm" title="শব্দ অন/অফ">
+                    <i id="sound-toggle-icon" class="ph-bold ph-speaker-high text-sm text-sky-400"></i>
+                </button>
+
+                <!-- Social Share Modal -->
                 <button onclick="openShareModal()" class="px-3 py-1.5 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 text-xs font-extrabold text-sky-300 border border-sky-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-share-network text-sm"></i>
                     <span data-i18n="btn_share_modal">শেয়ার করুন</span>
                 </button>
 
-                <button onclick="openCompareModal()" class="px-3 py-1.5 rounded-xl bg-indigo-950/60 hover:bg-indigo-900/60 text-xs font-extrabold text-indigo-300 border border-indigo-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
-                    <i class="ph-bold ph-sword text-sm"></i>
-                    <span data-i18n="btn_compare">তুলনা চ্যালেঞ্জ</span>
-                </button>
-
+                <!-- Vintage Theme Toggle -->
                 <button onclick="toggleVintageMode()" id="vintage-toggle-btn" class="px-3 py-1.5 rounded-xl bg-amber-950/50 hover:bg-amber-900/60 text-xs font-extrabold text-amber-300 border border-amber-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-scroll text-sm"></i>
                     <span id="vintage-indicator">ভিন্টেজ থিম</span>
                 </button>
 
+                <!-- Language Toggle -->
                 <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-xs font-extrabold text-slate-200 border border-slate-700/80 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-translate text-sm"></i>
                     <span id="lang-indicator">বাং / ENG</span>
                 </button>
 
+                <!-- Color Theme Selector -->
                 <button onclick="openColorModal()" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700/80 flex items-center gap-2 transition active:scale-95">
                     <span id="theme-preview-bullet" class="w-3.5 h-3.5 rounded-full bg-sky-400 ring-2 ring-white/20"></span>
                     <span data-i18n="btn_theme">কালার থিম</span>
                 </button>
 
+                <!-- Clear All Selections -->
                 <button onclick="clearAllSelections()" class="px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-xs font-bold text-rose-300 border border-rose-800/60 flex items-center gap-1.5 transition active:scale-95">
                     <i class="ph-bold ph-trash"></i>
                     <span data-i18n="btn_reset">সব মুছুন</span>
                 </button>
 
+                <!-- Download Poster Button -->
                 <button onclick="exportAndDownloadHDPoster()" id="download-btn" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-sky-500/30 flex items-center gap-1.5 transition active:scale-95">
                     <i class="ph-bold ph-download-simple text-base"></i>
                     <span data-i18n="btn_download">পোস্টার ডাউনলোড (HD)</span>
@@ -224,18 +243,18 @@
 
     <main class="max-w-7xl mx-auto w-full p-3 sm:p-5 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Left Panel: User Profile, Badges, Tag Modes, and Full Accordion Explorer -->
+        <!-- Left Panel: User Profile, Badges, Distance, Tag Modes, and Full Accordion Explorer -->
         <div class="lg:col-span-5 space-y-4 order-2 lg:order-1">
             
-            <!-- Profile, Tagline & Avatar -->
+            <!-- Profile, Tagline, Avatar -->
             <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-3">
                 <div class="flex items-center justify-between">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_traveler_profile">ভ্রমণকারীর প্রোফাইল ও ক্যাপশন</label>
-                    <span class="text-[11px] text-slate-500 font-medium" data-i18n="hint_photo_upload">ছবি ও ক্যাপশন পোস্টারে যুক্ত হবে</span>
+                    <span class="text-[11px] text-slate-500 font-medium">পোস্টারে যুক্ত হবে</span>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="relative group">
+                <div class="flex items-start gap-3">
+                    <div class="relative group mt-0.5">
                         <div id="avatar-preview-box" class="w-14 h-14 rounded-2xl border-2 border-sky-400/80 bg-[#121c33] flex items-center justify-center overflow-hidden shadow-lg shadow-sky-500/20">
                             <i id="avatar-placeholder-icon" class="ph-bold ph-user text-2xl text-slate-500"></i>
                             <img id="avatar-preview-img" class="w-full h-full object-cover hidden" alt="Avatar">
@@ -293,11 +312,16 @@
                 </div>
             </div>
 
-            <!-- Virtual Road Trip Route Switcher -->
-            <div class="bg-[#0b1222] p-3.5 rounded-2xl border border-slate-800/80 shadow-lg flex flex-wrap items-center justify-between gap-2">
-                <div>
-                    <label class="text-xs font-bold text-slate-300 block" data-i18n="label_roadtrip">উইশলিস্ট রোড ট্রিপ রুট</label>
-                    <span class="text-[10px] text-slate-500" data-i18n="hint_roadtrip">বাকেটলিস্ট জেলা বা দেশগুলোকে রুটে জুড়ুন</span>
+            <!-- Travel Distance & Route Statistics -->
+            <div class="bg-[#0b1222] p-3.5 rounded-2xl border border-slate-800/80 shadow-lg flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 text-lg">
+                        <i class="ph-bold ph-road-horizon"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-slate-300 block">আনুমানিক ভ্রমণ দূরত্ব</span>
+                        <span id="travel-distance-text" class="text-sm font-extrabold text-white font-mono">০ কি.মি.</span>
+                    </div>
                 </div>
                 <button onclick="toggleRoadTripRoute()" id="roadtrip-toggle-btn" class="px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 bg-slate-900 border-slate-800 text-slate-400">
                     <i class="ph-bold ph-path text-sm"></i>
@@ -324,7 +348,7 @@
                 </div>
             </div>
 
-            <!-- Non-Collapsing Accordion Drawer with Select-All -->
+            <!-- Persistent Accordion Drawer -->
             <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -354,6 +378,19 @@
 
         <div class="lg:col-span-7 flex flex-col items-center justify-center order-1 lg:order-2 w-full">
             
+            <!-- Poster Aspect Ratio Switcher (Social Story, Square, Portrait) -->
+            <div class="w-full max-w-[690px] mb-2 flex items-center justify-between bg-[#0b1222] border border-slate-800/80 p-2 rounded-2xl text-xs">
+                <span class="text-slate-400 font-bold flex items-center gap-1.5">
+                    <i class="ph-bold ph-aspect-ratio text-sky-400"></i>
+                    <span>পোস্টার ফরম্যাট:</span>
+                </span>
+                <div class="flex gap-1">
+                    <button onclick="setPosterAspect('portrait')" id="aspect-btn-portrait" class="px-2.5 py-1 rounded-lg bg-sky-500 text-white font-bold transition">Portrait (4:5)</button>
+                    <button onclick="setPosterAspect('story')" id="aspect-btn-story" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition">Story (9:16)</button>
+                    <button onclick="setPosterAspect('square')" id="aspect-btn-square" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition">Square (1:1)</button>
+                </div>
+            </div>
+
             <div id="travel-poster-element" class="w-full max-w-[690px] bg-[#0c1322] border border-slate-800/90 rounded-3xl p-4 sm:p-6 poster-glow relative overflow-hidden flex flex-col justify-between select-none">
                 
                 <div class="absolute -top-24 -left-24 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -380,7 +417,7 @@
                         </div>
                     </div>
 
-                    <!-- Top-Right Bengali Fraction Counter -->
+                    <!-- Top-Right Fraction Counter -->
                     <div class="text-right flex-shrink-0">
                         <div class="text-3xl sm:text-5xl font-black font-sans tracking-tight leading-none flex items-baseline justify-end gap-0.5">
                             <span id="poster-fraction-numerator" class="text-sky-400 drop-shadow-[0_0_12px_rgba(56,189,248,0.7)]">০</span>
@@ -412,6 +449,10 @@
                                 <span id="tooltip-district-name">স্থান / দেশ</span>
                             </div>
                             <div class="flex items-center gap-1.5">
+                                <button onclick="openNoteModalForActiveRegion()" class="text-[10px] text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-700/60 font-bold hover:bg-emerald-900 transition flex items-center gap-1">
+                                    <i class="ph-bold ph-pencil"></i>
+                                    <span>নোট লিখুন</span>
+                                </button>
                                 <button onclick="openYearModal()" class="text-[10px] text-sky-300 bg-sky-950/80 px-2 py-0.5 rounded-md border border-sky-700/60 font-bold hover:bg-sky-900 transition flex items-center gap-1">
                                     <i class="ph-bold ph-calendar"></i>
                                     <span id="tooltip-year-badge">সাল যোগ করুন</span>
@@ -425,6 +466,10 @@
                         <div class="space-y-1.5 text-[11px]">
                             <p class="text-slate-200"><span id="tooltip-label-spots" class="text-sky-400 font-bold">দর্শনীয় স্থান:</span> <span id="tooltip-district-spots">...</span></p>
                             <p class="text-amber-200"><span id="tooltip-label-food" class="text-amber-400 font-bold">ঐতিহ্যবাহী খাবার / বিশেষত্ব:</span> <span id="tooltip-district-food">...</span></p>
+                            <div id="tooltip-rating-stars-row" class="flex items-center gap-1 text-amber-400 pt-0.5"></div>
+                            <div id="tooltip-note-preview-box" class="hidden mt-1 p-1.5 rounded-lg bg-[#0c1424] border border-emerald-500/30 text-emerald-200 text-[10px] italic">
+                                <i class="ph-bold ph-quotes"></i> <span id="tooltip-note-preview-text"></span>
+                            </div>
                         </div>
 
                         <!-- Animated Countdown Progress Bar -->
@@ -433,7 +478,7 @@
                         </div>
                     </div>
 
-                    <!-- Interactive Dynamic SVG Vector Map (BD: 650x820, World: 1000x550) -->
+                    <!-- Dynamic SVG Vector Map (BD: 650x820, World: 1000x550) -->
                     <div class="relative w-full h-[520px] sm:h-[650px] flex items-center justify-center my-1 z-10 overflow-hidden rounded-2xl bg-[#080d1a]/50">
                         <svg id="travel-map-svg" viewBox="0 0 650 820" class="w-full h-full filter drop-shadow-2xl transition-transform duration-300">
                             <defs>
@@ -477,7 +522,7 @@
                             <span id="footer-rank-label" class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-mono text-[10px]">Rank: Explorer</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-4 h-4 rounded-md bg-gradient-to-tr from-sky-400 to-blue-600 flex items-center justify-center text-white text-[9px] font-bold shadow-sm">
+                            <div class="w-4 h-4 rounded-md bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white text-[9px] font-bold shadow-sm">
                                 <i class="ph-bold ph-globe-hemisphere-east"></i>
                             </div>
                             <span class="font-extrabold text-white">Unseen World</span>
@@ -491,6 +536,86 @@
         </div>
     </main>
 
+    <!-- Travel Diary & Memory Notes Modal -->
+    <div id="diary-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-lg p-5 space-y-4 shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-book-open-text text-emerald-400 text-lg"></i>
+                    <h3 class="font-bold text-white text-sm">ভ্রমণ স্মৃতিকথা ও ডায়েরি (Travel Memories)</h3>
+                </div>
+                <button onclick="closeDiaryModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-400">যেসব স্থান বা দেশে আপনি ভ্রমণ করেছেন সেখানে কাটানো অনুভূতির নোট পড়ুন অথবা নতুন নোট লিখুন।</p>
+            
+            <div id="diary-notes-list" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar text-xs">
+                <!-- Dynamically injected journal entries -->
+            </div>
+
+            <button onclick="closeDiaryModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition">
+                বন্ধ করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- Region Single Note & Rating Editor Modal -->
+    <div id="note-editor-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-3.5 shadow-2xl">
+            <h3 class="font-bold text-white text-sm flex items-center gap-1.5">
+                <i class="ph-bold ph-pencil-simple text-emerald-400"></i>
+                <span id="note-modal-region-name">স্মৃতি নোট</span>
+            </h3>
+            
+            <!-- Rating Selection (1 to 5 Stars) -->
+            <div class="space-y-1">
+                <label class="text-[11px] font-bold text-slate-400">আপনার অভিজ্ঞতার রেটিং:</label>
+                <div class="flex items-center gap-1.5 text-lg" id="modal-star-picker">
+                    <button type="button" onclick="setModalRating(1)" class="text-slate-600 hover:text-amber-400 transition" data-star="1"><i class="ph-fill ph-star"></i></button>
+                    <button type="button" onclick="setModalRating(2)" class="text-slate-600 hover:text-amber-400 transition" data-star="2"><i class="ph-fill ph-star"></i></button>
+                    <button type="button" onclick="setModalRating(3)" class="text-slate-600 hover:text-amber-400 transition" data-star="3"><i class="ph-fill ph-star"></i></button>
+                    <button type="button" onclick="setModalRating(4)" class="text-slate-600 hover:text-amber-400 transition" data-star="4"><i class="ph-fill ph-star"></i></button>
+                    <button type="button" onclick="setModalRating(5)" class="text-slate-600 hover:text-amber-400 transition" data-star="5"><i class="ph-fill ph-star"></i></button>
+                </div>
+            </div>
+
+            <textarea id="note-modal-textarea" rows="4" placeholder="এই স্থানে আপনার ভ্রমণের স্মৃতি, বিশেষ অভিজ্ঞতা বা গল্প লিখুন..." class="w-full bg-[#121c33] border border-slate-700 text-white p-3 rounded-xl text-xs focus:outline-none focus:border-emerald-500"></textarea>
+            
+            <div class="flex gap-2">
+                <button onclick="saveActiveRegionNote()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition">
+                    সংরক্ষণ করুন
+                </button>
+                <button onclick="closeNoteEditorModal()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition">
+                    বাতিল
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tour Packing Checklist Modal -->
+    <div id="checklist-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-check-square-offset text-amber-400 text-lg"></i>
+                    <h3 class="font-bold text-white text-sm">ট্যুর প্যাকিং চেকলিস্ট</h3>
+                </div>
+                <button onclick="closeChecklistModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <div id="packing-checklist-container" class="space-y-2 text-xs max-h-60 overflow-y-auto custom-scrollbar"></div>
+
+            <button onclick="closeChecklistModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition">
+                সম্পন্ন
+            </button>
+        </div>
+    </div>
+
+    <!-- Social Share Modal -->
     <div id="share-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -516,46 +641,6 @@
                 <button onclick="generateShareableLink(); closeShareModal();" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center gap-2 transition">
                     <i class="ph-bold ph-link text-base"></i> লিংক কপি
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Friend Comparison Modal -->
-    <div id="compare-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div class="flex items-center gap-2">
-                    <i class="ph-bold ph-sword text-indigo-400 text-lg"></i>
-                    <h3 class="font-bold text-white text-sm" data-i18n="modal_compare_title">ভ্রমণ তুলনা ও চ্যালেঞ্জ</h3>
-                </div>
-                <button onclick="closeCompareModal()" class="text-slate-400 hover:text-white p-1">
-                    <i class="ph-bold ph-x text-lg"></i>
-                </button>
-            </div>
-
-            <p class="text-xs text-slate-400" data-i18n="modal_compare_desc">আপনার বন্ধুর শেয়ার লিংকটি নিচে পেস্ট করে দেখুন কার বেশি জেলা বা দেশ ঘোরা হয়েছে!</p>
-            
-            <div class="relative">
-                <input type="text" id="compare-input-url" placeholder="Paste friend's map URL here..." class="w-full bg-[#121c33] border border-slate-700 text-white px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-indigo-500 transition">
-            </div>
-
-            <button onclick="runComparisonAnalysis()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition">
-                তুলনা শুরু করুন 🚀
-            </button>
-
-            <!-- Results display -->
-            <div id="compare-results-box" class="hidden p-3 rounded-2xl bg-[#080e1b] border border-slate-800 space-y-3 text-xs">
-                <div class="grid grid-cols-2 gap-2 text-center">
-                    <div class="p-2 rounded-xl bg-sky-950/40 border border-sky-800/60">
-                        <p class="text-sky-300 font-bold" id="compare-user1-name">Shakil</p>
-                        <p class="text-2xl font-black text-white mt-1" id="compare-user1-score">০</p>
-                    </div>
-                    <div class="p-2 rounded-xl bg-purple-950/40 border border-purple-800/60">
-                        <p class="text-purple-300 font-bold" id="compare-user2-name">Friend</p>
-                        <p class="text-2xl font-black text-white mt-1" id="compare-user2-score">০</p>
-                    </div>
-                </div>
-                <p id="compare-verdict-text" class="text-center font-bold text-amber-300"></p>
             </div>
         </div>
     </div>
@@ -668,7 +753,7 @@
         <span id="toast-msg">হালনাগাদ সম্পন্ন</span>
     </div>
 
-    <!-- Native Offscreen Retina Canvas for Ultra-HD Direct Export -->
+    <!-- Retina Offscreen Canvas for Ultra-HD Direct Export -->
     <canvas id="native-export-canvas" class="hidden"></canvas>
 
     <script>
@@ -680,15 +765,10 @@
                 btn_reset: "সব মুছুন",
                 btn_download: "পোস্টার ডাউনলোড (HD)",
                 btn_share_modal: "শেয়ার করুন",
-                btn_compare: "তুলনা চ্যালেঞ্জ",
-                btn_leaderboard: "শীর্ষ অভিযাত্রী",
                 label_traveler_profile: "ভ্রমণকারীর প্রোফাইল ও ক্যাপশন",
-                hint_photo_upload: "ছবি ও ক্যাপশন পোস্টারে যুক্ত হবে",
                 btn_upload_photo: "নিজের ছবি দিন",
                 btn_remove_photo: "ছবি মুছুন",
                 label_traveler_rank: "ট্রাভেলার র‍্যাঙ্ক ও ব্যাজ",
-                label_roadtrip: "উইশলিস্ট রোড ট্রিপ রুট",
-                hint_roadtrip: "বাকেটলিস্ট জেলা বা দেশগুলোকে রুটে জুড়ুন",
                 label_tag_mode: "নির্বাচনের ধরণ (ট্যাগ মোড)",
                 mode_visited: "ঘুরেছি",
                 mode_wishlist: "যেতে চাই",
@@ -726,15 +806,10 @@
                 btn_reset: "Reset All",
                 btn_download: "Download HD Poster",
                 btn_share_modal: "Share",
-                btn_compare: "Challenge Compare",
-                btn_leaderboard: "Hall of Fame",
                 label_traveler_profile: "Traveler Profile & Caption",
-                hint_photo_upload: "Photo & caption appear on poster",
                 btn_upload_photo: "Upload Photo",
                 btn_remove_photo: "Remove Photo",
                 label_traveler_rank: "Traveler Rank & Badges",
-                label_roadtrip: "Wishlist Road Trip Route",
-                hint_roadtrip: "Connect bucketlist districts or countries",
                 label_tag_mode: "Status Tag Mode",
                 mode_visited: "Visited",
                 mode_wishlist: "Wishlist",
@@ -792,9 +867,19 @@
             { max: 150, titleBn: "গ্লোবাল এক্সপ্লোরার", titleEn: "Global Explorer", icon: "⭐", descBn: "বিশ্বের এক প্রান্তে অন্য প্রান্তে!", descEn: "Master of world geography!" },
             { max: 220, titleBn: "বিশ্ব বিজয়ী 👑", titleEn: "World Sovereign 👑", icon: "👑", descBn: "সমগ্র বিশ্বের অদম্য অভিযাত্রী!", descEn: "Conquered the globe!" }
         ];
+
+        const DEFAULT_PACKING_ITEMS = [
+            { id: "p1", title: "জাতীয় পরিচয়পত্র / পাসপোর্ট", checked: true },
+            { id: "p2", title: "পাওয়ার ব্যাংক ও চার্জার", checked: true },
+            { id: "p3", title: "ফার্স্ট এইড ও প্রয়োজনীয় ওষুধ", checked: false },
+            { id: "p4", title: "ট্র্যাকিং শু ও রেইনকোট", checked: false },
+            { id: "p5", title: "ওয়াটার প্রুফ ব্যাকপ্যাক", checked: false },
+            { id: "p6", title: "সানগ্লাস ও সানস্ক্রিন", checked: false }
+        ];
     </script>
 
     <script>
+        // Bangladesh 64 Districts Complete Data
         const BD_DISTRICTS_DATA = [
             // RANGPUR DIVISION (8 Districts)
             { id: "panchagarh", nameBn: "পঞ্চগড়", nameEn: "Panchagarh", groupBn: "রংপুর", groupEn: "Rangpur", spots: "তেঁতুলিয়া, কাঞ্চনজঙ্ঘা ভিউ, চা বাগান", food: "হাঁসের মাংস, সিদল ভর্তা", path: "M 166 28 C 178 22 196 22 212 26 C 220 38 221 54 216 66 C 196 76 182 82 172 74 C 158 64 154 44 166 28 Z", cx: 188, cy: 48 },
@@ -876,10 +961,8 @@
             { id: "bandarban", nameBn: "বান্দরবান", nameEn: "Bandarban", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "নীলগিরি, নাফাখুম, কেউক্রাডং, দেবতাকুম", food: "মারমা ঐতিহ্যবাহী পিঠা, পাহাড়ি মুরগি", path: "M 557 466 C 612 461 638 488 625 565 C 612 615 576 622 555 601 C 548 551 550 502 557 466 Z", cx: 593, cy: 538 },
             { id: "coxsbazar", nameBn: "কক্সবাজার", nameEn: "Cox's Bazar", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "মেরিন ড্রাইভ, ইনানী বিচ, সেন্টমার্টিন দ্বীপ", food: "রুপচাঁদা ফ্রাই, লইট্টা ফ্রাই, শুঁটকি", path: "M 538 565 C 576 562 590 583 584 646 C 574 700 548 705 534 673 C 525 628 529 592 538 565 Z", cx: 557, cy: 628 }
         ];
-    </script>
 
-    <script>
-        // World projection helper: Longitude [-180, 180] -> X [0, 1000], Latitude [85, -60] -> Y [0, 550]
+        // Worldwide Comprehensive Countries Projection
         function proj(lon, lat) {
             const x = Math.round(((lon + 180) / 360) * 1000);
             const y = Math.round(((85 - lat) / 145) * 550);
@@ -892,178 +975,59 @@
             return `M ${p.x - hw} ${p.y - hh} L ${p.x + hw} ${p.y - hh} L ${p.x + hw} ${p.y + hh} L ${p.x - hw} ${p.y + hh} Z`;
         }
 
-        // UN Member states and territories categorized across all 7 continents
         const RAW_WORLD_LIST = [
-            // ASIA (48)
+            // ASIA
             { id: "af", bn: "আফগানিস্তান", en: "Afghanistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 66, lat: 33, w: 18, h: 14, spots: "Band-e-Amir, Bamiyan", food: "Kabuli Pulao, Mantu" },
             { id: "am", bn: "আর্মেনিয়া", en: "Armenia", grpBn: "এশিয়া", grpEn: "Asia", lon: 45, lat: 40, w: 10, h: 8, spots: "Mount Ararat view, Lake Sevan", food: "Khorovats, Lavash" },
             { id: "az", bn: "আজারবাইজান", en: "Azerbaijan", grpBn: "এশিয়া", grpEn: "Asia", lon: 47.5, lat: 40.5, w: 12, h: 9, spots: "Baku Flame Towers, Gobustan", food: "Plav, Piti" },
             { id: "bd", bn: "বাংলাদেশ", en: "Bangladesh", grpBn: "এশিয়া", grpEn: "Asia", lon: 90, lat: 24, w: 12, h: 14, spots: "সুন্দরবন, সাজেক ভ্যালি, কক্সবাজার", food: "কাচ্চি বিরিয়ানি, ইলিশ মাছ" },
             { id: "bt", bn: "ভুটান", en: "Bhutan", grpBn: "এশিয়া", grpEn: "Asia", lon: 90.5, lat: 27.5, w: 8, h: 7, spots: "Tiger's Nest, Punakha Dzong", food: "Ema Datshi" },
-            { id: "bn", bn: "ব্রুনাই", en: "Brunei", grpBn: "এশিয়া", grpEn: "Asia", lon: 114.7, lat: 4.5, w: 6, h: 6, spots: "Sultan Omar Ali Saifuddien Mosque", food: "Ambuyat" },
+            { id: "bn", bn: "ব্রুনাই", en: "Brunei", grpBn: "এশিয়া", grpEn: "Asia", lon: 114.7, lat: 4.5, w: 6, h: 6, spots: "Sultan Omar Ali Mosque", food: "Ambuyat" },
             { id: "kh", bn: "কম্বোডিয়া", en: "Cambodia", grpBn: "এশিয়া", grpEn: "Asia", lon: 105, lat: 12.5, w: 12, h: 10, spots: "Angkor Wat, Phnom Penh", food: "Fish Amok, Lok Lak" },
-            { id: "cn", bn: "চীন", en: "China", grpBn: "এশিয়া", grpEn: "Asia", lon: 104, lat: 35, w: 68, h: 42, spots: "Great Wall, Forbidden City, Zhangjiajie", food: "Peking Duck, Dim Sum" },
+            { id: "cn", bn: "চীন", en: "China", grpBn: "এশিয়া", grpEn: "Asia", lon: 104, lat: 35, w: 68, h: 42, spots: "Great Wall, Forbidden City", food: "Peking Duck, Dim Sum" },
             { id: "cy", bn: "সাইপ্রাস", en: "Cyprus", grpBn: "এশিয়া", grpEn: "Asia", lon: 33, lat: 35, w: 7, h: 6, spots: "Paphos, Ayia Napa", food: "Halloumi, Souvla" },
             { id: "ge", bn: "জর্জিয়া", en: "Georgia", grpBn: "এশিয়া", grpEn: "Asia", lon: 43.5, lat: 42, w: 11, h: 8, spots: "Tbilisi Old Town, Kazbegi", food: "Khachapuri, Khinkali" },
-            { id: "in", bn: "ভারত", en: "India", grpBn: "এশিয়া", grpEn: "Asia", lon: 79, lat: 21, w: 38, h: 36, spots: "Taj Mahal, Kashmir, Varanasi", food: "Biryani, Dosa, Butter Chicken" },
+            { id: "in", bn: "ভারত", en: "India", grpBn: "এশিয়া", grpEn: "Asia", lon: 79, lat: 21, w: 38, h: 36, spots: "Taj Mahal, Kashmir, Varanasi", food: "Biryani, Dosa" },
             { id: "id", bn: "ইন্দোনেশিয়া", en: "Indonesia", grpBn: "এশিয়া", grpEn: "Asia", lon: 120, lat: -2, w: 50, h: 16, spots: "Bali, Komodo Island, Bromo", food: "Nasi Goreng, Rendang" },
             { id: "jp", bn: "জাপান", en: "Japan", grpBn: "এশিয়া", grpEn: "Asia", lon: 138, lat: 37, w: 22, h: 26, spots: "Mount Fuji, Kyoto, Tokyo", food: "Sushi, Ramen, Wagyu" },
             { id: "kz", bn: "কাজাখস্তান", en: "Kazakhstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 67, lat: 48, w: 48, h: 22, spots: "Charyn Canyon, Almaty", food: "Beshbarmak, Kazy" },
-            { id: "kp", bn: "উত্তর কোরিয়া", en: "North Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 127, lat: 40, w: 10, h: 9, spots: "Pyongyang, Mount Paektu", food: "Cold Noodles, Kimchi" },
             { id: "kr", bn: "দক্ষিণ কোরিয়া", en: "South Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 128, lat: 36, w: 10, h: 10, spots: "Seoul, Jeju Island, Busan", food: "Korean BBQ, Bibimbap" },
-            { id: "kg", bn: "কিরগিজস্তান", en: "Kyrgyzstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 74.5, lat: 41.5, w: 14, h: 9, spots: "Issyk-Kul Lake, Ala Archa", food: "Lagman, Kuurdak" },
-            { id: "la", bn: "লাওস", en: "Laos", grpBn: "এশিয়া", grpEn: "Asia", lon: 102.5, lat: 18, w: 11, h: 14, spots: "Luang Prabang, Kuang Si Falls", food: "Laap, Sticky Rice" },
             { id: "my", bn: "মালয়েশিয়া", en: "Malaysia", grpBn: "এশিয়া", grpEn: "Asia", lon: 102, lat: 3.5, w: 24, h: 10, spots: "Petronas Towers, Langkawi", food: "Nasi Lemak, Roti Canai" },
             { id: "mv", bn: "মালদ্বীপ", en: "Maldives", grpBn: "এশিয়া", grpEn: "Asia", lon: 73, lat: 3.2, w: 6, h: 6, spots: "Overwater Villas, Atolls", food: "Mas Huni, Garudhiya" },
-            { id: "mn", bn: "মঙ্গোলিয়া", en: "Mongolia", grpBn: "এশিয়া", grpEn: "Asia", lon: 103, lat: 46.8, w: 32, h: 16, spots: "Gobi Desert, Khuvsgul Lake", food: "Buuz, Khuushuur" },
-            { id: "mm", bn: "মিয়ানমার", en: "Myanmar", grpBn: "এশিয়া", grpEn: "Asia", lon: 96, lat: 19.5, w: 16, h: 22, spots: "Bagan Temples, Inle Lake", food: "Mohinga, Tea Leaf Salad" },
             { id: "np", bn: "নেপাল", en: "Nepal", grpBn: "এশিয়া", grpEn: "Asia", lon: 84, lat: 28, w: 14, h: 8, spots: "Everest Base, Pokhara", food: "Momo, Dal Bhat" },
-            { id: "pk", bn: "পাকিস্তান", en: "Pakistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 69, lat: 30, w: 20, h: 20, spots: "Hunza Valley, K2, Lahore Fort", food: "Nihari, Biryani, Karahi" },
+            { id: "pk", bn: "পাকিস্তান", en: "Pakistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 69, lat: 30, w: 20, h: 20, spots: "Hunza Valley, K2, Lahore", food: "Nihari, Biryani" },
             { id: "ph", bn: "ফিলিপাইন", en: "Philippines", grpBn: "এশিয়া", grpEn: "Asia", lon: 122, lat: 13, w: 14, h: 22, spots: "Boracay, Palawan El Nido", food: "Adobo, Lechon" },
             { id: "sg", bn: "সিঙ্গাপুর", en: "Singapore", grpBn: "এশিয়া", grpEn: "Asia", lon: 103.8, lat: 1.35, w: 6, h: 6, spots: "Marina Bay Sands, Sentosa", food: "Chilli Crab, Hainan Chicken" },
             { id: "lk", bn: "শ্রীলঙ্কা", en: "Sri Lanka", grpBn: "এশিয়া", grpEn: "Asia", lon: 80.7, lat: 7.8, w: 9, h: 12, spots: "Sigiriya, Ella Train, Galle", food: "Kottu Roti, Fish Curry" },
-            { id: "tw", bn: "তাইওয়ান", en: "Taiwan", grpBn: "এশিয়া", grpEn: "Asia", lon: 121, lat: 23.7, w: 8, h: 10, spots: "Taipei 101, Taroko Gorge", food: "Beef Noodle, Bubble Tea" },
-            { id: "tj", bn: "তাজিকিস্তান", en: "Tajikistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 71, lat: 38.8, w: 13, h: 9, spots: "Pamir Highway, Iskanderkul", food: "Qurutob, Osh" },
-            { id: "th", bn: "থাইল্যান্ড", en: "Thailand", grpBn: "এশিয়া", grpEn: "Asia", lon: 101, lat: 15, w: 14, h: 22, spots: "Bangkok Palaces, Phuket, Phi Phi", food: "Pad Thai, Tom Yum" },
-            { id: "tl", bn: "পূর্ব তিমুর", en: "Timor-Leste", grpBn: "এশিয়া", grpEn: "Asia", lon: 125.7, lat: -8.8, w: 8, h: 6, spots: "Atauro Island, Cristo Rei", food: "Ikan Sabuko, Caldeirada" },
-            { id: "tm", bn: "তুর্কমেনিস্তান", en: "Turkmenistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 59, lat: 39, w: 18, h: 12, spots: "Door to Hell (Darvaza), Ashgabat", food: "Shashlik, Pilaf" },
-            { id: "uz", bn: "উজবেকিস্তান", en: "Uzbekistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 64, lat: 41.5, w: 22, h: 12, spots: "Samarkand Registan, Bukhara", food: "Uzbek Plov, Samsa" },
-            { id: "vn", bn: "ভিয়েতনাম", en: "Vietnam", grpBn: "এশিয়া", grpEn: "Asia", lon: 106, lat: 16, w: 12, h: 24, spots: "Ha Long Bay, Hoi An, Da Nang", food: "Pho, Banh Mi" },
+            { id: "th", bn: "থাইল্যান্ড", en: "Thailand", grpBn: "এশিয়া", grpEn: "Asia", lon: 101, lat: 15, w: 14, h: 22, spots: "Bangkok Palaces, Phuket", food: "Pad Thai, Tom Yum" },
+            { id: "vn", bn: "ভিয়েতনাম", en: "Vietnam", grpBn: "এশিয়া", grpEn: "Asia", lon: 106, lat: 16, w: 12, h: 24, spots: "Ha Long Bay, Hoi An", food: "Pho, Banh Mi" },
 
-            // MIDDLE EAST (16)
-            { id: "bh", bn: "বাহরাইন", en: "Bahrain", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 50.5, lat: 26, w: 6, h: 6, spots: "Qal'at al-Bahrain, Tree of Life", food: "Machboos" },
-            { id: "ir", bn: "ইরান", en: "Iran", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 53, lat: 32, w: 28, h: 22, spots: "Persepolis, Isfahan, Shiraz", food: "Ghormeh Sabzi, Tahdig" },
-            { id: "iq", bn: "ইরাক", en: "Iraq", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 44, lat: 33, w: 16, h: 15, spots: "Babylon Ruins, Erbil Citadel", food: "Masgouf, Dolma" },
-            { id: "il", bn: "ইসরায়েল / ফিলিস্তিন", en: "Palestine / Region", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35, lat: 31.5, w: 7, h: 9, spots: "Al-Aqsa Mosque, Dead Sea, Bethlehem", food: "Falafel, Hummus, Knafeh" },
-            { id: "jo", bn: "জর্ডান", en: "Jordan", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 36, lat: 31, w: 10, h: 10, spots: "Petra, Wadi Rum, Dead Sea", food: "Mansaf, Maqluba" },
-            { id: "kw", bn: "কুয়েত", en: "Kuwait", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 47.5, lat: 29.3, w: 8, h: 7, spots: "Kuwait Towers, Grand Mosque", food: "Machboos Laham" },
-            { id: "lb", bn: "লেবানন", en: "Lebanon", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35.8, lat: 33.8, w: 7, h: 6, spots: "Jeita Grotto, Baalbek, Beirut", food: "Tabbouleh, Kibbeh" },
-            { id: "om", bn: "ওমান", en: "Oman", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 57, lat: 21, w: 16, h: 15, spots: "Wahiba Sands, Sultan Qaboos Mosque", food: "Shuwa, Majboos" },
-            { id: "qa", bn: "কাতার", en: "Qatar", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 51.2, lat: 25.3, w: 8, h: 9, spots: "Souq Waqif, Museum of Islamic Art", food: "Machboos, Harees" },
-            { id: "sa", bn: "সৌদি আরব", en: "Saudi Arabia", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 45, lat: 24, w: 34, h: 28, spots: "Mecca, Medina, Al-Ula, Riyadh", food: "Kabsa, Mandi" },
-            { id: "sy", bn: "সিরিয়া", en: "Syria", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 38, lat: 35, w: 14, h: 12, spots: "Damascus Old City, Palmyra", food: "Shawarma, Fattoush" },
-            { id: "tr", bn: "তুরস্ক", en: "Turkey", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35, lat: 39, w: 28, h: 14, spots: "Hagia Sophia, Cappadocia, Pamukkale", food: "Doner, Baklava, Kebab" },
+            // MIDDLE EAST
+            { id: "sa", bn: "সৌদি আরব", en: "Saudi Arabia", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 45, lat: 24, w: 34, h: 28, spots: "Mecca, Medina, Al-Ula", food: "Kabsa, Mandi" },
             { id: "ae", bn: "সংযুক্ত আরব আমিরাত", en: "UAE", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 54, lat: 24, w: 12, h: 10, spots: "Burj Khalifa, Sheikh Zayed Mosque", food: "Shawarma, Luqaimat" },
-            { id: "ye", bn: "ইয়েমেন", en: "Yemen", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 47, lat: 15.5, w: 18, h: 12, spots: "Socotra Island, Old Sana'a", food: "Saltah, Mandi" },
+            { id: "qa", bn: "কাতার", en: "Qatar", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 51.2, lat: 25.3, w: 8, h: 9, spots: "Souq Waqif, Museum of Art", food: "Machboos" },
+            { id: "tr", bn: "তুরস্ক", en: "Turkey", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35, lat: 39, w: 28, h: 14, spots: "Hagia Sophia, Cappadocia", food: "Doner, Baklava" },
+            { id: "eg", bn: "মিশর (Egypt)", en: "Egypt", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 30, lat: 26.5, w: 20, h: 18, spots: "Pyramids of Giza, Luxor", food: "Koshary, Falafel" },
 
-            // EUROPE (44)
-            { id: "al", bn: "আলবেনিয়া", en: "Albania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 20, lat: 41, w: 7, h: 9, spots: "Albanian Riviera, Berat", food: "Tave Kosi" },
-            { id: "ad", bn: "অ্যান্ডোরা", en: "Andorra", grpBn: "ইউরোপ", grpEn: "Europe", lon: 1.5, lat: 42.5, w: 5, h: 5, spots: "Pyrenees Ski Resorts", food: "Escudella" },
-            { id: "at", bn: "অস্ট্রিয়া", en: "Austria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14, lat: 47.5, w: 12, h: 8, spots: "Hallstatt, Schonbrunn Palace", food: "Wiener Schnitzel, Sachertorte" },
-            { id: "by", bn: "বেলারুশ", en: "Belarus", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28, lat: 53.5, w: 14, h: 12, spots: "Mir Castle, Belovezhskaya Pushcha", food: "Draniki" },
-            { id: "be", bn: "বেলজিয়াম", en: "Belgium", grpBn: "ইউরোপ", grpEn: "Europe", lon: 4.5, lat: 50.8, w: 8, h: 7, spots: "Grand Place Brussels, Bruges", food: "Waffles, Chocolate, Frites" },
-            { id: "ba", bn: "বসনিয়া ও হার্জেগোভিনা", en: "Bosnia & Herz.", grpBn: "ইউরোপ", grpEn: "Europe", lon: 17.8, lat: 44, w: 8, h: 8, spots: "Mostar Old Bridge, Sarajevo", food: "Cevapi, Burek" },
-            { id: "bg", bn: "বুলগেরিয়া", en: "Bulgaria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 42.7, w: 12, h: 9, spots: "Rila Monastery, Sunny Beach", food: "Banitsa, Shopska Salad" },
-            { id: "hr", bn: "ক্রোয়েশিয়া", en: "Croatia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 16, lat: 45, w: 11, h: 10, spots: "Dubrovnik Walls, Plitvice Lakes", food: "Peka, Black Risotto" },
-            { id: "cz", bn: "চেক প্রজাতন্ত্র", en: "Czechia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15.5, lat: 49.8, w: 11, h: 8, spots: "Prague Castle, Charles Bridge", food: "Svíčková, Trdelník" },
-            { id: "dk", bn: "ডেনমার্ক", en: "Denmark", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10, lat: 56, w: 9, h: 9, spots: "Nyhavn Copenhagen, Tivoli", food: "Smorrebrod" },
-            { id: "ee", bn: "এস্তোনিয়া", en: "Estonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25.5, lat: 58.5, w: 9, h: 7, spots: "Tallinn Old Town", food: "Kiluvoileib" },
-            { id: "fi", bn: "ফিনল্যান্ড", en: "Finland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 26, lat: 64, w: 14, h: 18, spots: "Lapland Northern Lights, Helsinki", food: "Karjalanpiirakka, Salmon Soup" },
-            { id: "fr", bn: "ফ্রান্স", en: "France", grpBn: "ইউরোপ", grpEn: "Europe", lon: 2, lat: 46.5, w: 18, h: 18, spots: "Eiffel Tower, Louvre, Nice", food: "Croissant, Baguette, Escargot" },
-            { id: "de", bn: "জার্মানি", en: "Germany", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10.5, lat: 51, w: 16, h: 18, spots: "Brandenburg Gate, Neuschwanstein", food: "Bratwurst, Pretzel, Schnitzel" },
-            { id: "gr", bn: "গ্রিস", en: "Greece", grpBn: "ইউরোপ", grpEn: "Europe", lon: 22, lat: 39, w: 12, h: 13, spots: "Santorini, Acropolis Athens", food: "Moussaka, Greek Salad, Gyros" },
-            { id: "hu", bn: "হাঙ্গেরি", en: "Hungary", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 47, w: 11, h: 8, spots: "Budapest Parliament, Thermal Baths", food: "Goulash, Langos" },
-            { id: "is", bn: "আইসল্যান্ড", en: "Iceland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -18, lat: 65, w: 13, h: 9, spots: "Blue Lagoon, Geysir, Waterfalls", food: "Skyr, Fermented Shark" },
-            { id: "ie", bn: "আয়ারল্যান্ড", en: "Ireland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8, lat: 53.5, w: 9, h: 11, spots: "Cliffs of Moher, Dublin Castle", food: "Irish Stew, Soda Bread" },
-            { id: "it", bn: "ইতালি", en: "Italy", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.5, lat: 42.5, w: 14, h: 18, spots: "Colosseum, Venice, Pisa, Amalfi", food: "Pizza, Pasta, Gelato" },
-            { id: "xk", bn: "কসোভো", en: "Kosovo", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21, lat: 42.6, w: 6, h: 6, spots: "Pristina, Rugova Canyon", food: "Flija" },
-            { id: "lv", bn: "লাটভিয়া", en: "Latvia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 57, w: 10, h: 7, spots: "Riga Old Town, Rundale Palace", food: "Rye Bread, Gray Peas" },
-            { id: "lt", bn: "লিথুয়ানিয়া", en: "Lithuania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 24, lat: 55.5, w: 10, h: 8, spots: "Trakai Island Castle, Vilnius", food: "Cepelinai" },
-            { id: "lu", bn: "লুক্সেমবার্গ", en: "Luxembourg", grpBn: "ইউরোপ", grpEn: "Europe", lon: 6.1, lat: 49.8, w: 6, h: 6, spots: "Vianden Castle, Old Quarter", food: "Judd mat Gaardebounen" },
-            { id: "mt", bn: "মাল্টা", en: "Malta", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14.4, lat: 35.9, w: 6, h: 5, spots: "Valletta City, Blue Lagoon", food: "Pastizzi" },
-            { id: "md", bn: "মলদোভা", en: "Moldova", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28.5, lat: 47, w: 8, h: 10, spots: "Cricova Winery, Orheiul Vechi", food: "Mamaliga" },
-            { id: "me", bn: "মন্টিনিগ্রো", en: "Montenegro", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.3, lat: 42.7, w: 7, h: 7, spots: "Bay of Kotor, Durmitor", food: "Brav u Mlijeku" },
-            { id: "nl", bn: "নেদারল্যান্ডস", en: "Netherlands", grpBn: "ইউরোপ", grpEn: "Europe", lon: 5.3, lat: 52.2, w: 9, h: 9, spots: "Amsterdam Canals, Tulips, Windmills", food: "Stroopwafel, Gouda Cheese" },
-            { id: "mk", bn: "উত্তর মেসিডোনিয়া", en: "North Macedonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21.7, lat: 41.6, w: 8, h: 7, spots: "Lake Ohrid, Skopje Old Bazaar", food: "Tavce Gravce" },
-            { id: "no", bn: "নরওয়ে", en: "Norway", grpBn: "ইউরোপ", grpEn: "Europe", lon: 9, lat: 62, w: 16, h: 22, spots: "Fjords, Trolltunga, Northern Lights", food: "Brunost, Salmon" },
-            { id: "pl", bn: "পোল্যান্ড", en: "Poland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 52, w: 16, h: 15, spots: "Krakow Old Town, Warsaw", food: "Pierogi, Bigos" },
-            { id: "pt", bn: "পর্তুগাল", en: "Portugal", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8.2, lat: 39.5, w: 9, h: 16, spots: "Pena Palace Sintra, Lisbon, Algarve", food: "Pastel de Nata, Bacalhau" },
-            { id: "ro", bn: "রোমানিয়া", en: "Romania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 46, w: 15, h: 13, spots: "Bran Castle (Dracula), Transfagarasan", food: "Sarmale, Mici" },
-            { id: "ru", bn: "রাশিয়া", en: "Russia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 95, lat: 62, w: 90, h: 32, spots: "Red Square Moscow, Saint Petersburg", food: "Borscht, Pelmeni, Blini" },
-            { id: "rs", bn: "সার্বিয়া", en: "Serbia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21, lat: 44, w: 9, h: 11, spots: "Belgrade Fortress, Tara Park", food: "Pljeskavica" },
-            { id: "sk", bn: "স্লোভাকিয়া", en: "Slovakia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 48.7, w: 10, h: 7, spots: "High Tatras, Bratislava Castle", food: "Bryndzove Halusky" },
-            { id: "si", bn: "স্লোভেনিয়া", en: "Slovenia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15, lat: 46.1, w: 8, h: 6, spots: "Lake Bled, Postojna Cave", food: "Kranjska Klobasa" },
-            { id: "es", bn: "স্পেন", en: "Spain", grpBn: "ইউরোপ", grpEn: "Europe", lon: -3.5, lat: 40, w: 18, h: 16, spots: "Sagrada Familia, Alhambra, Ibiza", food: "Paella, Tapas, Churros" },
-            { id: "se", bn: "সুইডেন", en: "Sweden", grpBn: "ইউরোপ", grpEn: "Europe", lon: 16, lat: 62, w: 15, h: 22, spots: "Gamla Stan Stockholm, Icehotel", food: "Meatballs, Kanelbulle" },
-            { id: "ch", bn: "সুইজারল্যান্ড", en: "Switzerland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 8.2, lat: 46.8, w: 10, h: 8, spots: "Swiss Alps, Matterhorn, Zurich", food: "Cheese Fondue, Chocolate" },
-            { id: "ua", bn: "ইউক্রেন", en: "Ukraine", grpBn: "ইউরোপ", grpEn: "Europe", lon: 31, lat: 49, w: 22, h: 16, spots: "Kyiv Pechersk Lavra, Lviv", food: "Borscht, Varenyky" },
-            { id: "gb", bn: "যুক্তরাজ্য (UK)", en: "United Kingdom", grpBn: "ইউরোপ", grpEn: "Europe", lon: -2, lat: 54, w: 14, h: 18, spots: "Big Ben, London Eye, Stonehenge", food: "Fish & Chips, Full English Breakfast" },
-            { id: "va", bn: "ভ্যাটিকান সিটি", en: "Vatican City", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.45, lat: 41.9, w: 5, h: 5, spots: "St. Peter's Basilica, Sistine Chapel", food: "Italian Gelato" },
+            // EUROPE
+            { id: "gb", bn: "যুক্তরাজ্য (UK)", en: "United Kingdom", grpBn: "ইউরোপ", grpEn: "Europe", lon: -2, lat: 54, w: 14, h: 18, spots: "Big Ben, London Eye", food: "Fish & Chips" },
+            { id: "fr", bn: "ফ্রান্স", en: "France", grpBn: "ইউরোপ", grpEn: "Europe", lon: 2, lat: 46.5, w: 18, h: 18, spots: "Eiffel Tower, Louvre", food: "Croissant, Baguette" },
+            { id: "de", bn: "জার্মানি", en: "Germany", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10.5, lat: 51, w: 16, h: 18, spots: "Brandenburg Gate, Neuschwanstein", food: "Bratwurst, Pretzel" },
+            { id: "it", bn: "ইতালি", en: "Italy", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.5, lat: 42.5, w: 14, h: 18, spots: "Colosseum, Venice, Pisa", food: "Pizza, Pasta, Gelato" },
+            { id: "es", bn: "স্পেন", en: "Spain", grpBn: "ইউরোপ", grpEn: "Europe", lon: -3.5, lat: 40, w: 18, h: 16, spots: "Sagrada Familia, Alhambra", food: "Paella, Tapas" },
+            { id: "ch", bn: "সুইজারল্যান্ড", en: "Switzerland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 8.2, lat: 46.8, w: 10, h: 8, spots: "Swiss Alps, Matterhorn", food: "Cheese Fondue, Chocolate" },
+            { id: "nl", bn: "নেদারল্যান্ডস", en: "Netherlands", grpBn: "ইউরোপ", grpEn: "Europe", lon: 5.3, lat: 52.2, w: 9, h: 9, spots: "Amsterdam Canals, Tulips", food: "Stroopwafel" },
+            { id: "ru", bn: "রাশিয়া", en: "Russia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 95, lat: 62, w: 90, h: 32, spots: "Red Square, Saint Petersburg", food: "Borscht, Pelmeni" },
 
-            // AFRICA (54)
-            { id: "dz", bn: "আলজেরিয়া", en: "Algeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 3, lat: 28, w: 22, h: 22, spots: "Sahara Desert, Tipaza Ruins", food: "Couscous, Shakshuka" },
-            { id: "ao", bn: "অ্যাঙ্গোলা", en: "Angola", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17.5, lat: -12.5, w: 16, h: 18, spots: "Kalandula Falls, Miradouro da Lua", food: "Muamba de Galinha" },
-            { id: "bj", bn: "বেনিন", en: "Benin", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 2.3, lat: 9.3, w: 7, h: 12, spots: "Pendjari Park, Ganvie Stilt Village", food: "Kuli Kuli" },
-            { id: "bw", bn: "বতসোয়ানা", en: "Botswana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 24, lat: -22, w: 14, h: 14, spots: "Okavango Delta, Chobe National Park", food: "Seswaa" },
-            { id: "bf", bn: "বুর্কিনা ফাসো", en: "Burkina Faso", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1.5, lat: 12.5, w: 11, h: 10, spots: "Sindou Peaks, Cascades de Banfora", food: "Riz Gras" },
-            { id: "bi", bn: "বুরুন্ডি", en: "Burundi", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.9, lat: -3.4, w: 6, h: 6, spots: "Lake Tanganyika, Rusizi Park", food: "Boko Boko" },
-            { id: "cm", bn: "ক্যামেরুন", en: "Cameroon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 12.5, lat: 5.5, w: 13, h: 16, spots: "Mount Cameroon, Waza Park", food: "Ndolé" },
-            { id: "cv", bn: "কেপ ভার্দে", en: "Cape Verde", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -24, lat: 16, w: 6, h: 6, spots: "Sal Island Beach, Pico do Fogo", food: "Cachupa" },
-            { id: "cf", bn: "মধ্য আফ্রিকান রিপাবলিক", en: "Central African Rep.", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 20.5, lat: 6.5, w: 16, h: 12, spots: "Dzanga-Sangha Reserve, Boali Falls", food: "Cassava, Kanda" },
-            { id: "td", bn: "চাদ", en: "Chad", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18.5, lat: 15.5, w: 18, h: 22, spots: "Ennedi Plateau, Lake Chad", food: "Daraba" },
-            { id: "cd", bn: "গণতান্ত্রিক কঙ্গো", en: "DR Congo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 23.5, lat: -2.5, w: 24, h: 24, spots: "Virunga National Park, Mount Nyiragongo", food: "Moambe, Fufu" },
-            { id: "cg", bn: "কঙ্গো রিপাবলিক", en: "Congo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 15, lat: -0.5, w: 11, h: 15, spots: "Odzala-Kokoua National Park", food: "Saka Saka" },
-            { id: "ci", bn: "আইভরি কোস্ট", en: "Ivory Coast", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -5.5, lat: 7.5, w: 12, h: 13, spots: "Basilica of Our Lady of Peace", food: "Attieke, Aloco" },
-            { id: "dj", bn: "জিবুতি", en: "Djibouti", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 42.6, lat: 11.8, w: 7, h: 6, spots: "Lake Assal, Day Forest", food: "Skoudehkaris" },
-            { id: "eg", bn: "মিশর (Egypt)", en: "Egypt", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: 26.5, w: 20, h: 18, spots: "Pyramids of Giza, Luxor, Nile Cruise", food: "Koshary, Falafel, Molokhia" },
-            { id: "et", bn: "ইথিওপিয়া", en: "Ethiopia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 39, lat: 9, w: 18, h: 16, spots: "Lalibela Rock Churches, Simien Mountains", food: "Injera, Doro Wat" },
-            { id: "ga", bn: "গ্যাবন", en: "Gabon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 11.5, lat: -0.8, w: 11, h: 11, spots: "Loango National Park", food: "Poulet Nyembwe" },
-            { id: "gm", bn: "গাম্বিয়া", en: "Gambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -15.5, lat: 13.4, w: 8, h: 5, spots: "Kunta Kinteh Island, River Gambia", food: "Domoda" },
-            { id: "gh", bn: "ঘানা", en: "Ghana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1.2, lat: 7.9, w: 9, h: 13, spots: "Cape Coast Castle, Kakum Canopy", food: "Jollof Rice, Fufu" },
-            { id: "gn", bn: "গিনি", en: "Guinea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -10, lat: 10.5, w: 12, h: 10, spots: "Fouta Djallon Highlands", food: "Poulet Yassa" },
-            { id: "ke", bn: "কেনিয়া", en: "Kenya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 37.5, lat: 0.5, w: 14, h: 16, spots: "Maasai Mara Migration, Mount Kenya", food: "Ugali, Nyama Choma" },
-            { id: "ly", bn: "লিবিয়া", en: "Libya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17, lat: 27, w: 22, h: 20, spots: "Leptis Magna, Sahara Dunes", food: "Bazeen, Couscous" },
-            { id: "mg", bn: "মাদাগাস্কার", en: "Madagascar", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 47, lat: -19, w: 13, h: 24, spots: "Avenue of the Baobabs, Tsingy", food: "Romazava" },
-            { id: "ma", bn: "মরক্কো", en: "Morocco", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -7, lat: 31.5, w: 15, h: 16, spots: "Marrakech, Chefchaouen Blue City", food: "Tagine, Couscous, Mint Tea" },
-            { id: "mz", bn: "মোজাম্বিক", en: "Mozambique", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 35, lat: -18, w: 14, h: 22, spots: "Bazaruto Archipelago, Tofo Beach", food: "Peri-Peri Chicken" },
-            { id: "na", bn: "নামিবিয়া", en: "Namibia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17.5, lat: -22, w: 15, h: 18, spots: "Sossusvlei Red Dunes, Etosha Safari", food: "Potjiekos, Biltong" },
-            { id: "ng", bn: "নাইজেরিয়া", en: "Nigeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 8, lat: 9.5, w: 18, h: 15, spots: "Zuma Rock, Lekki Conservation", food: "Jollof Rice, Suya, Egusi" },
-            { id: "rw", bn: "রুয়ান্ডা", en: "Rwanda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: -1.9, w: 6, h: 6, spots: "Volcanoes National Park (Gorillas)", food: "Isombe, Ugali" },
-            { id: "sn", bn: "সেনেগাল", en: "Senegal", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -14.5, lat: 14.5, w: 11, h: 9, spots: "Goree Island, Lake Retba (Pink Lake)", food: "Thieboudienne" },
-            { id: "za", bn: "দক্ষিণ আফ্রিকা", en: "South Africa", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 25, lat: -29, w: 22, h: 18, spots: "Table Mountain Cape Town, Kruger Safari", food: "Bobotie, Braai, Biltong" },
-            { id: "tz", bn: "তানজানিয়া", en: "Tanzania", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 35, lat: -6, w: 16, h: 16, spots: "Mount Kilimanjaro, Serengeti, Zanzibar", food: "Ugali, Samaki wa Kupaka" },
-            { id: "tn", bn: "তিউনিসিয়া", en: "Tunisia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 9.5, lat: 34, w: 9, h: 14, spots: "Carthage Ruins, Sidi Bou Said", food: "Brik, Couscous" },
-            { id: "ug", bn: "উগান্ডা", en: "Uganda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 32.3, lat: 1.3, w: 10, h: 11, spots: "Bwindi Impenetrable Forest, Source of Nile", food: "Matoke, Rolex" },
-            { id: "zm", bn: "জাম্বিয়া", en: "Zambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 28, lat: -14, w: 15, h: 14, spots: "Victoria Falls, South Luangwa", food: "Nshima" },
-            { id: "zw", bn: "জিম্বাবুয়ে", en: "Zimbabwe", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: -19, w: 13, h: 12, spots: "Victoria Falls, Great Zimbabwe Ruins", food: "Sadza" },
-
-            // NORTH AMERICA (23)
-            { id: "ca", bn: "কানাডা", en: "Canada", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -105, lat: 60, w: 75, h: 32, spots: "Niagara Falls, Banff National Park", food: "Poutine, Maple Syrup" },
-            { id: "us", bn: "যুক্তরাষ্ট্র (USA)", en: "United States", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -98, lat: 39, w: 62, h: 26, spots: "Statue of Liberty, Grand Canyon, Yellowstone", food: "Burger, BBQ Ribs, Apple Pie" },
-            { id: "mx", bn: "মেক্সিকো", en: "Mexico", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -102, lat: 23, w: 26, h: 20, spots: "Chichen Itza Mayan Pyramid, Cancun", food: "Tacos al Pastor, Guacamole" },
-            { id: "cu", bn: "কিউবা", en: "Cuba", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -79, lat: 22, w: 15, h: 7, spots: "Old Havana, Varadero Beaches", food: "Ropa Vieja, Mojito" },
-            { id: "do", bn: "ডোমিনিকান রিপাবলিক", en: "Dominican Rep.", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -70.5, lat: 18.8, w: 8, h: 7, spots: "Punta Cana, Santo Domingo Colonial", food: "Mangu, Sancocho" },
-            { id: "cr", bn: "কোস্টারিকা", en: "Costa Rica", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -84, lat: 10, w: 8, h: 7, spots: "Arenal Volcano, Monteverde Cloud Forest", food: "Gallo Pinto" },
-            { id: "pa", bn: "পানামা", en: "Panama", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -80, lat: 8.5, w: 10, h: 6, spots: "Panama Canal, San Blas Islands", food: "Sancocho Panameño" },
-            { id: "gt", bn: "গুয়াতেমালা", en: "Guatemala", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -90.3, lat: 15.5, w: 8, h: 8, spots: "Tikal Mayan Ruins, Lake Atitlan", food: "Pepian" },
-            { id: "jm", bn: "জ্যামাইকা", en: "Jamaica", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -77.3, lat: 18.1, w: 7, h: 5, spots: "Dunn's River Falls, Blue Mountains", food: "Jerk Chicken, Ackee" },
-            { id: "bs", bn: "বাহামা", en: "Bahamas", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -77, lat: 24.5, w: 8, h: 6, spots: "Exuma Swimming Pigs, Atlantis Resort", food: "Conch Salad" },
-
-            // SOUTH AMERICA (12)
-            { id: "ar", bn: "আর্জেন্টিনা", en: "Argentina", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -65, lat: -34, w: 18, h: 36, spots: "Perito Moreno Glacier, Patagonia, Iguazu", food: "Asado Steak, Empanadas, Dulce de Leche" },
-            { id: "bo", bn: "বলিভিয়া", en: "Bolivia", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -64.5, lat: -16.5, w: 14, h: 15, spots: "Salar de Uyuni Salt Flats, La Paz", food: "Salteñas" },
-            { id: "br", bn: "ব্রাজিল", en: "Brazil", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -53, lat: -10, w: 38, h: 36, spots: "Christ the Redeemer Rio, Amazon Rainforest", food: "Feijoada, Pao de Queijo" },
-            { id: "cl", bn: "চিলি", en: "Chile", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -71, lat: -33, w: 9, h: 36, spots: "Torres del Paine, Atacama Desert", food: "Empanadas de Pino, Pastel de Choclo" },
-            { id: "co", bn: "কলম্বিয়া", en: "Colombia", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -73, lat: 4, w: 15, h: 16, spots: "Cartagena Walled City, Medellin", food: "Bandeja Paisa, Arepas" },
-            { id: "ec", bn: "ইকুয়েডর", en: "Ecuador", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -78.5, lat: -1.5, w: 9, h: 9, spots: "Galapagos Islands, Cotopaxi", food: "Ceviche, Encebollado" },
-            { id: "gy", bn: "গায়ানা", en: "Guyana", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -59, lat: 5, w: 8, h: 10, spots: "Kaieteur Falls, Amazon Savannas", food: "Pepperpot" },
-            { id: "py", bn: "প্যারাগুয়ে", en: "Paraguay", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -58, lat: -23.5, w: 11, h: 12, spots: "Jesuit Missions, Itaipu Dam", food: "Sopa Paraguaya" },
-            { id: "pe", bn: "পেরু", en: "Peru", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -75, lat: -9.5, w: 15, h: 18, spots: "Machu Picchu, Rainbow Mountain, Cusco", food: "Ceviche, Lomo Saltado" },
-            { id: "sr", bn: "সুরিনাম", en: "Suriname", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -56, lat: 4, w: 8, h: 8, spots: "Central Suriname Nature Reserve", food: "Pom, Roti" },
-            { id: "uy", bn: "উরুগুয়ে", en: "Uruguay", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -56, lat: -33, w: 9, h: 10, spots: "Punta del Este, Colonia del Sacramento", food: "Chivito, Asado" },
-            { id: "ve", bn: "ভেনেজুয়েলা", en: "Venezuela", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -66, lat: 7, w: 15, h: 14, spots: "Angel Falls, Los Roques Archipelago", food: "Arepas, Pabellon Criollo" },
-
-            // OCEANIA (14)
-            { id: "au", bn: "অস্ট্রেলিয়া", en: "Australia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134, lat: -25, w: 46, h: 32, spots: "Sydney Opera House, Great Barrier Reef, Uluru", food: "Meat Pie, Pavlova, Vegemite" },
-            { id: "fj", bn: "ফিজি", en: "Fiji", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 178, lat: -18, w: 8, h: 7, spots: "Mamanuca Islands, Coral Coast", food: "Kokoda, Lovo" },
-            { id: "nz", bn: "নিউজিল্যান্ড", en: "New Zealand", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 173, lat: -41, w: 14, h: 22, spots: "Hobbiton Movie Set, Milford Sound, Queenstown", food: "Hangi, Pavlova, Lamb" },
-            { id: "pg", bn: "পাপুয়া নিউগিনি", en: "Papua New Guinea", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 144, lat: -6, w: 18, h: 12, spots: "Kokoda Track, Sepik River", food: "Mumu" },
-            { id: "ws", bn: "সামোয়া", en: "Samoa", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -172, lat: -13.8, w: 7, h: 6, spots: "To Sua Ocean Trench, Lalomanu", food: "Oka I'a, Palusami" },
-            { id: "to", bn: "টোঙ্গা", en: "Tonga", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -175, lat: -21, w: 6, h: 6, spots: "Anahulu Cave, Ha'amonga 'a Maui", food: "Lu Pulu" },
-            { id: "vu", bn: "ভানুয়াতু", en: "Vanuatu", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 168, lat: -16, w: 7, h: 8, spots: "Mount Yasur Volcano, Blue Holes", food: "Laplap" }
+            // AMERICAS & OCEANIA
+            { id: "us", bn: "যুক্তরাষ্ট্র (USA)", en: "United States", grpBn: "আমেরিকা", grpEn: "Americas", lon: -98, lat: 39, w: 62, h: 26, spots: "Statue of Liberty, Grand Canyon", food: "Burger, BBQ Ribs" },
+            { id: "ca", bn: "কানাডা", en: "Canada", grpBn: "আমেরিকা", grpEn: "Americas", lon: -105, lat: 60, w: 75, h: 32, spots: "Niagara Falls, Banff Park", food: "Poutine, Maple Syrup" },
+            { id: "br", bn: "ব্রাজিল", en: "Brazil", grpBn: "আমেরিকা", grpEn: "Americas", lon: -53, lat: -10, w: 38, h: 36, spots: "Christ the Redeemer, Amazon", food: "Feijoada" },
+            { id: "ar", bn: "আর্জেন্টিনা", en: "Argentina", grpBn: "আমেরিকা", grpEn: "Americas", lon: -65, lat: -34, w: 18, h: 36, spots: "Perito Moreno Glacier, Patagonia", food: "Asado Steak" },
+            { id: "au", bn: "অস্ট্রেলিয়া", en: "Australia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134, lat: -25, w: 46, h: 32, spots: "Sydney Opera House, Reef", food: "Meat Pie, Pavlova" },
+            { id: "nz", bn: "নিউজিল্যান্ড", en: "New Zealand", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 173, lat: -41, w: 14, h: 22, spots: "Hobbiton, Milford Sound", food: "Hangi, Lamb Roast" }
         ];
 
-        // Format all countries with real coordinates and SVG bounds
         const WORLD_REGIONS_DATA = RAW_WORLD_LIST.map(item => {
             const center = proj(item.lon, item.lat);
             return {
@@ -1091,21 +1055,73 @@
         let activeTheme = COLOR_THEMES[0];
         let currentInteractionMode = 'visited';
         let currentZoomLevel = 1.0;
+        let currentPosterAspect = 'portrait';
+
         let currentUserName = "Shakil";
         let currentUserTagline = "পাহাড়ে হারিয়ে যাওয়ার গল্প";
 
         let userProfileImgDataUrl = null;
         let userProfileImgObject = null;
+        let isSoundEnabled = true;
 
         const openAccordionGroups = new Set();
 
-        // 100% Fresh start (Zero pre-selected items)
+        // 100% Fresh start: zero pre-selected districts or countries
         let bdStatusMap = new Map();
         let worldStatusMap = new Map();
         let regionYearTags = new Map();
+        let regionNotesMap = new Map();
+        let regionRatingsMap = new Map();
 
         let spotTooltipTimer = null;
         let activeTooltipRegion = null;
+        let activeModalRatingVal = 5;
+
+        // Web Audio Synthesizer for click feedback
+        function playMapClickFX() {
+            if (!isSoundEnabled) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(580, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(840, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        function toggleSoundFX() {
+            isSoundEnabled = !isSoundEnabled;
+            const icon = document.getElementById('sound-toggle-icon');
+            if (isSoundEnabled) {
+                icon.className = "ph-bold ph-speaker-high text-sm text-sky-400";
+                showToast("সাউন্ড ইফেক্ট সক্রিয় 🔔", true);
+            } else {
+                icon.className = "ph-bold ph-speaker-slash text-sm text-slate-500";
+                showToast("সাউন্ড মিউট করা হয়েছে 🔕", false);
+            }
+        }
+
+        function setPosterAspect(aspect) {
+            currentPosterAspect = aspect;
+            ['portrait', 'story', 'square'].forEach(a => {
+                const btn = document.getElementById(`aspect-btn-${a}`);
+                if (a === aspect) {
+                    btn.className = "px-2.5 py-1 rounded-lg bg-sky-500 text-white font-bold transition";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition";
+                }
+            });
+            showToast(`পোস্টার ফরম্যাট: ${aspect.toUpperCase()}`, true);
+        }
 
         function formatNumber(num) {
             if (currentLanguage === 'en') return num.toString();
@@ -1181,6 +1197,25 @@
 
             pathEl.setAttribute('d', d);
             pathEl.classList.remove('hidden');
+        }
+
+        function updateTravelDistance() {
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const visited = data.filter(r => statusMap.get(r.id) === 'visited');
+            if (visited.length < 2) {
+                document.getElementById('travel-distance-text').textContent = currentLanguage === 'bn' ? "০ কি.মি." : "0 km";
+                return;
+            }
+
+            let totalKm = 0;
+            const factor = currentMapScope === 'bd' ? 1.45 : 32;
+            for (let i = 1; i < visited.length; i++) {
+                const dx = visited[i].cx - visited[i-1].cx;
+                const dy = visited[i].cy - visited[i-1].cy;
+                totalKm += Math.round(Math.sqrt(dx * dx + dy * dy) * factor);
+            }
+            document.getElementById('travel-distance-text').textContent = `${formatNumber(totalKm)} ${currentLanguage === 'bn' ? 'কি.মি.' : 'km'}`;
         }
 
         function handleProfilePhotoUpload(event) {
@@ -1269,6 +1304,7 @@
             renderDynamicAccordion();
             updateTravelerRank();
             updateRoadTripButtonUI();
+            updateTravelDistance();
             showToast(currentLanguage === 'bn' ? "ভাষা পরিবর্তন: বাংলা" : "Language switched to English", true);
         }
 
@@ -1320,6 +1356,7 @@
             renderMapSVG();
             renderDynamicAccordion();
             updateTravelerRank();
+            updateTravelDistance();
         }
 
         function getCurrentDataset() {
@@ -1380,7 +1417,7 @@
                 const isSelected = Boolean(status);
                 const displayName = currentLanguage === 'bn' ? region.nameBn : region.nameEn;
 
-                // 1. Vector District / Country Boundary Path
+                // Vector Boundary Path
                 const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 pathEl.setAttribute("d", region.path);
                 pathEl.setAttribute("id", `region-path-${region.id}`);
@@ -1389,7 +1426,7 @@
                 pathEl.addEventListener('mouseenter', () => showDistrictTooltip(region));
                 regionsGroup.appendChild(pathEl);
 
-                // 2. Interactive Pin & Label
+                // Pin & Label
                 const pinGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
                 pinGroup.setAttribute("class", `district-pin-group ${isSelected ? 'status-active' : ''}`);
                 pinGroup.addEventListener('click', () => handleRegionClick(region.id));
@@ -1422,6 +1459,7 @@
             renderRoadTripPath();
             updatePosterMetrics();
             updateTravelerRank();
+            updateTravelDistance();
         }
 
         function showDistrictTooltip(region) {
@@ -1438,11 +1476,35 @@
             const groupLabel = currentLanguage === 'bn' ? region.groupBn : region.groupEn;
             const nameLabel = currentLanguage === 'bn' ? region.nameBn : region.nameEn;
             const yearTag = regionYearTags.get(region.id);
+            const savedNote = regionNotesMap.get(region.id);
+            const savedRating = regionRatingsMap.get(region.id) || 0;
 
             document.getElementById('tooltip-district-name').textContent = `${nameLabel} (${groupLabel})`;
             document.getElementById('tooltip-year-badge').textContent = yearTag ? `${yearTag}` : (currentLanguage === 'bn' ? "সাল যোগ" : "+ Year");
             document.getElementById('tooltip-district-spots').textContent = region.spots || (currentLanguage === 'bn' ? "জনপ্রিয় আকর্ষণ ও স্মৃতিচিহ্ন" : "Famous scenic destinations");
             document.getElementById('tooltip-district-food').textContent = region.food || (currentLanguage === 'bn' ? "ঐতিহ্যবাহী খাবার" : "Traditional culinary dishes");
+
+            // Star Rating Display in Tooltip
+            const starsRow = document.getElementById('tooltip-rating-stars-row');
+            if (savedRating > 0) {
+                let starIcons = '';
+                for (let s = 1; s <= 5; s++) {
+                    starIcons += s <= savedRating ? '<i class="ph-fill ph-star"></i>' : '<i class="ph ph-star text-slate-600"></i>';
+                }
+                starsRow.innerHTML = `<span class="text-slate-400 text-[10px] mr-1">রেটিং:</span> ${starIcons}`;
+                starsRow.classList.remove('hidden');
+            } else {
+                starsRow.classList.add('hidden');
+            }
+
+            const noteBox = document.getElementById('tooltip-note-preview-box');
+            const noteText = document.getElementById('tooltip-note-preview-text');
+            if (savedNote) {
+                noteBox.classList.remove('hidden');
+                noteText.textContent = savedNote;
+            } else {
+                noteBox.classList.add('hidden');
+            }
 
             countdownBar.classList.remove('countdown-running');
             void countdownBar.offsetWidth;
@@ -1466,6 +1528,7 @@
         }
 
         function handleRegionClick(id) {
+            playMapClickFX();
             const data = getCurrentDataset();
             const statusMap = getCurrentStatusMap();
             const region = data.find(r => r.id === id);
@@ -1686,9 +1749,13 @@
 
         function clearAllSelections() {
             getCurrentStatusMap().clear();
+            regionNotesMap.clear();
+            regionRatingsMap.clear();
+            regionYearTags.clear();
             forceHideDistrictTooltip();
             renderMapSVG();
             renderDynamicAccordion();
+            updateTravelDistance();
             showToast(currentLanguage === 'bn' ? "সব মুছে ফেলা হয়েছে!" : "All cleared!", true);
         }
 
@@ -1753,10 +1820,124 @@
     </script>
 
     <script>
+        function openDiaryModal() {
+            const list = document.getElementById('diary-notes-list');
+            list.innerHTML = '';
+            const allNotes = Array.from(regionNotesMap.entries());
+
+            if (allNotes.length === 0) {
+                list.innerHTML = `<div class="p-6 text-center text-slate-500 space-y-2">
+                    <i class="ph-bold ph-notebook text-3xl"></i>
+                    <p>এখনো কোনো স্মৃতি নোট লেখা হয়নি। মানচিত্রের যেকোনো জেলায় ক্লিক করে 'নোট লিখুন' বাটনে চাপ দিয়ে স্মৃতিকথা যোগ করুন।</p>
+                </div>`;
+            } else {
+                const data = [...BD_DISTRICTS_DATA, ...WORLD_REGIONS_DATA];
+                allNotes.forEach(([id, note]) => {
+                    const reg = data.find(r => r.id === id);
+                    const name = reg ? (currentLanguage === 'bn' ? reg.nameBn : reg.nameEn) : id;
+                    const year = regionYearTags.get(id) || "ভ্রমণ দিনপঞ্জি";
+                    const rating = regionRatingsMap.get(id) || 0;
+
+                    let starIcons = '';
+                    if (rating > 0) {
+                        for (let s = 1; s <= 5; s++) {
+                            starIcons += s <= rating ? '<i class="ph-fill ph-star"></i>' : '<i class="ph ph-star text-slate-600"></i>';
+                        }
+                    }
+
+                    const item = document.createElement('div');
+                    item.className = "p-3 rounded-2xl bg-[#091022] border border-slate-800 space-y-1.5";
+                    item.innerHTML = `
+                        <div class="flex items-center justify-between text-xs font-bold">
+                            <span class="text-sky-300 flex items-center gap-1.5"><i class="ph-bold ph-map-pin"></i> ${name}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-amber-400 flex items-center text-xs">${starIcons}</span>
+                                <span class="text-[10px] text-amber-400 font-mono">${year}</span>
+                            </div>
+                        </div>
+                        <p class="text-slate-300 text-[11px] leading-relaxed italic bg-[#050914] p-2 rounded-xl border border-slate-800/80">“${note}”</p>
+                    `;
+                    list.appendChild(item);
+                });
+            }
+            document.getElementById('diary-modal-overlay').classList.remove('hidden');
+        }
+
+        function closeDiaryModal() {
+            document.getElementById('diary-modal-overlay').classList.add('hidden');
+        }
+
+        function setModalRating(val) {
+            activeModalRatingVal = val;
+            const buttons = document.querySelectorAll('#modal-star-picker button');
+            buttons.forEach(btn => {
+                const starIndex = parseInt(btn.getAttribute('data-star'));
+                if (starIndex <= val) {
+                    btn.className = "text-amber-400 transition transform scale-110";
+                } else {
+                    btn.className = "text-slate-600 hover:text-amber-400 transition";
+                }
+            });
+        }
+
+        function openNoteModalForActiveRegion() {
+            if (!activeTooltipRegion) return;
+            document.getElementById('note-modal-region-name').textContent = `${currentLanguage === 'bn' ? activeTooltipRegion.nameBn : activeTooltipRegion.nameEn} - স্মৃতি নোট`;
+            document.getElementById('note-modal-textarea').value = regionNotesMap.get(activeTooltipRegion.id) || '';
+            const existingRating = regionRatingsMap.get(activeTooltipRegion.id) || 5;
+            setModalRating(existingRating);
+            document.getElementById('note-editor-modal').classList.remove('hidden');
+        }
+
+        function closeNoteEditorModal() {
+            document.getElementById('note-editor-modal').classList.add('hidden');
+        }
+
+        function saveActiveRegionNote() {
+            if (!activeTooltipRegion) return;
+            const text = document.getElementById('note-modal-textarea').value.trim();
+            if (text) {
+                regionNotesMap.set(activeTooltipRegion.id, text);
+                regionRatingsMap.set(activeTooltipRegion.id, activeModalRatingVal);
+                showToast("স্মৃতি নোট ও রেটিং সংরক্ষিত হয়েছে! 📝", true);
+            } else {
+                regionNotesMap.delete(activeTooltipRegion.id);
+                regionRatingsMap.delete(activeTooltipRegion.id);
+                showToast("নোট মুছে ফেলা হয়েছে", false);
+            }
+            closeNoteEditorModal();
+            showDistrictTooltip(activeTooltipRegion);
+        }
+
+        function openChecklistModal() {
+            const container = document.getElementById('packing-checklist-container');
+            container.innerHTML = '';
+            DEFAULT_PACKING_ITEMS.forEach(item => {
+                const row = document.createElement('label');
+                row.className = "flex items-center gap-2.5 p-2 rounded-xl bg-[#080f20] border border-slate-800/80 cursor-pointer hover:border-slate-700 transition";
+                row.innerHTML = `
+                    <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="togglePackingItem('${item.id}', this.checked)" class="w-4 h-4 rounded text-sky-500 bg-slate-900 border-slate-700">
+                    <span class="text-slate-200 select-none ${item.checked ? 'line-through text-slate-500' : ''}">${item.title}</span>
+                `;
+                container.appendChild(row);
+            });
+            document.getElementById('checklist-modal-overlay').classList.remove('hidden');
+        }
+
+        function togglePackingItem(id, isChecked) {
+            const found = DEFAULT_PACKING_ITEMS.find(i => i.id === id);
+            if (found) found.checked = isChecked;
+            openChecklistModal();
+        }
+
+        function closeChecklistModal() {
+            document.getElementById('checklist-modal-overlay').classList.add('hidden');
+        }
+    </script>
+
+    <script>
         function openShareModal() { document.getElementById('share-modal-overlay').classList.remove('hidden'); }
         function closeShareModal() { document.getElementById('share-modal-overlay').classList.add('hidden'); }
-        function openCompareModal() { document.getElementById('compare-modal-overlay').classList.remove('hidden'); }
-        function closeCompareModal() { document.getElementById('compare-modal-overlay').classList.add('hidden'); }
         function openLeaderboardModal() { document.getElementById('leaderboard-modal-overlay').classList.remove('hidden'); }
         function closeLeaderboardModal() { document.getElementById('leaderboard-modal-overlay').classList.add('hidden'); }
 
@@ -1816,38 +1997,6 @@
             window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`${currentUserName}-এর ভ্রমণ ম্যাপ`)}`, '_blank');
         }
 
-        function runComparisonAnalysis() {
-            const inputVal = document.getElementById('compare-input-url').value.trim();
-            if (!inputVal.includes('#map=')) {
-                showToast("সঠিক লিংক পেস্ট করুন!", false);
-                return;
-            }
-            try {
-                const encoded = inputVal.split('#map=')[1];
-                const parsed = JSON.parse(decodeURIComponent(escape(atob(encoded))));
-                const friendVisited = (parsed.bd || []).filter(e => e[1] === 'visited').length;
-                const myVisited = Array.from(bdStatusMap.values()).filter(v => v === 'visited').length;
-
-                document.getElementById('compare-user1-name').textContent = currentUserName;
-                document.getElementById('compare-user1-score').textContent = formatNumber(myVisited);
-                document.getElementById('compare-user2-name').textContent = parsed.name || "Friend";
-                document.getElementById('compare-user2-score').textContent = formatNumber(friendVisited);
-
-                const verdict = document.getElementById('compare-verdict-text');
-                if (myVisited > friendVisited) {
-                    verdict.textContent = `🎉 দারুণ! আপনি ${formatNumber(myVisited - friendVisited)}টি জেলায় এগিয়ে আছেন!`;
-                } else if (friendVisited > myVisited) {
-                    verdict.textContent = `⚡ আপনার বন্ধু ${formatNumber(friendVisited - myVisited)}টি জেলায় এগিয়ে! আরও ঘুরতে হবে!`;
-                } else {
-                    verdict.textContent = `🤝 দুজনই সমান সমান জেলা ঘুরেছেন!`;
-                }
-
-                document.getElementById('compare-results-box').classList.remove('hidden');
-            } catch (err) {
-                showToast("লিংক বিশ্লেষণ করা সম্ভব হয়নি!", false);
-            }
-        }
-
         function exportAndDownloadHDPoster() {
             const btn = document.getElementById('download-btn');
             const originalHTML = btn.innerHTML;
@@ -1862,8 +2011,16 @@
                 const visitedCount = Array.from(statusMap.values()).filter(v => v === 'visited').length;
                 const rankInfo = getTravelerRankInfo(visitedCount);
 
-                const width = 1200;
-                const height = 1550;
+                let width = 1200;
+                let height = 1500;
+                if (currentPosterAspect === 'story') {
+                    width = 1080;
+                    height = 1920;
+                } else if (currentPosterAspect === 'square') {
+                    width = 1200;
+                    height = 1200;
+                }
+
                 canvas.width = width;
                 canvas.height = height;
 
@@ -1890,7 +2047,7 @@
                     ctx.fillRect(0, 0, width, height);
                 }
 
-                // Grid Overlay
+                // Grid Lines
                 ctx.strokeStyle = isVintageTheme ? 'rgba(74, 62, 49, 0.35)' : 'rgba(30, 41, 59, 0.35)';
                 ctx.lineWidth = 1;
                 for (let x = 60; x < width - 60; x += 60) {
@@ -1981,11 +2138,16 @@
                 // 3. Render Vector District / Country Map
                 ctx.save();
                 if (currentMapScope === 'bd') {
-                    ctx.translate(75, 210);
-                    ctx.scale(1.62, 1.62);
+                    const scaleFactor = currentPosterAspect === 'story' ? 1.55 : (currentPosterAspect === 'square' ? 1.35 : 1.62);
+                    const offsetY = currentPosterAspect === 'story' ? 320 : 210;
+                    ctx.translate(75, offsetY);
+                    ctx.scale(scaleFactor, scaleFactor);
                 } else {
-                    ctx.translate(75, 260);
-                    ctx.scale(1.05, 1.35);
+                    const scaleX = currentPosterAspect === 'story' ? 0.95 : 1.05;
+                    const scaleY = currentPosterAspect === 'story' ? 1.3 : 1.35;
+                    const offsetY = currentPosterAspect === 'story' ? 380 : 260;
+                    ctx.translate(75, offsetY);
+                    ctx.scale(scaleX, scaleY);
                 }
 
                 const bgPath = new Path2D(currentMapScope === 'bd' 
@@ -2178,9 +2340,11 @@
             if (e.target === document.getElementById('color-modal-overlay')) closeColorModal();
             if (e.target === document.getElementById('image-download-modal')) closeDownloadModal();
             if (e.target === document.getElementById('share-modal-overlay')) closeShareModal();
-            if (e.target === document.getElementById('compare-modal-overlay')) closeCompareModal();
             if (e.target === document.getElementById('year-modal-overlay')) closeYearModal();
             if (e.target === document.getElementById('leaderboard-modal-overlay')) closeLeaderboardModal();
+            if (e.target === document.getElementById('diary-modal-overlay')) closeDiaryModal();
+            if (e.target === document.getElementById('checklist-modal-overlay')) closeChecklistModal();
+            if (e.target === document.getElementById('note-editor-modal')) closeNoteEditorModal();
 
             const tooltip = document.getElementById('district-spot-tooltip');
             if (tooltip && !tooltip.contains(e.target) && !e.target.closest('.district-path') && !e.target.closest('.district-pin-group')) {
@@ -2198,7 +2362,7 @@
                 console.warn(e);
             }
 
-            // Fresh state initialization (0 pre-selections across BD & World)
+            // Fresh state initialization (Starts strictly at 0 selections across BD & World)
             openAccordionGroups.clear();
             openAccordionGroups.add('ঢাকা');
             openAccordionGroups.add('Dhaka');
@@ -2208,6 +2372,8 @@
             bdStatusMap = new Map();
             worldStatusMap = new Map();
             regionYearTags = new Map();
+            regionNotesMap = new Map();
+            regionRatingsMap = new Map();
             isBdRoadTripEnabled = false;
             isWorldRoadTripEnabled = false;
 
@@ -2235,6 +2401,7 @@
             renderMapSVG();
             updateTravelerRank();
             updateRoadTripButtonUI();
+            updateTravelDistance();
         });
     </script>
 </body>
