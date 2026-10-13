@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unseen World - ভ্রমণ মানচিত্র ও পোস্টার জেনারেটর</title>
+    <title>Unseen World - ভ্রমণ মানচিত্র ও পোস্টার জেনারেটর (বাংলাদেশ ও সমগ্র বিশ্ব)</title>
 
     <!-- Google Fonts for Bengali, Latin, and Vintage Cartography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,7 +56,7 @@
 
             --unvisited-fill: #0c1424;
             --unvisited-border: #1e2c45;
-            --unvisited-text: rgba(226, 232, 240, 0.55);
+            --unvisited-text: rgba(226, 232, 240, 0.6);
             --poster-bg: #0c1322;
         }
 
@@ -64,83 +64,83 @@
         body.theme-vintage {
             background-color: #1a1612;
             color: #f7eedd;
-            --unvisited-fill: #2d261e;
+            --unvisited-fill: #2a2219;
             --unvisited-border: #4a3e31;
-            --unvisited-text: rgba(247, 238, 221, 0.65);
+            --unvisited-text: rgba(247, 238, 221, 0.7);
             --poster-bg: #221c16;
         }
 
-        /* Geographic Map District & Country Vector Paths */
-        .geo-path {
+        /* Map District & Country Vector Path Styles */
+        .district-path {
             fill: var(--unvisited-fill);
             stroke: var(--unvisited-border);
-            stroke-width: 1.1;
+            stroke-width: 0.9;
             cursor: pointer;
-            transition: fill 0.18s ease, stroke 0.18s ease, filter 0.18s ease;
+            transition: fill 0.15s ease, stroke 0.15s ease, filter 0.15s ease;
             vector-effect: non-scaling-stroke;
         }
-        .geo-path:hover {
-            fill: #192742 !important;
-            stroke: #94a3b8 !important;
-            stroke-width: 1.8 !important;
+        .district-path:hover {
+            fill: #1a2947 !important;
+            stroke: #93c5fd !important;
+            stroke-width: 1.6 !important;
+            filter: drop-shadow(0 0 6px rgba(147, 197, 253, 0.5));
         }
-        body.theme-vintage .geo-path:hover {
-            fill: #3e3327 !important;
+        body.theme-vintage .district-path:hover {
+            fill: #443728 !important;
             stroke: #d4af37 !important;
         }
 
-        .geo-path.status-visited {
+        .district-path.status-visited {
             fill: var(--neon-visited) !important;
             stroke: var(--neon-visited-border) !important;
-            stroke-width: 1.6 !important;
-            filter: drop-shadow(0 0 10px var(--neon-visited-glow));
+            stroke-width: 1.4 !important;
+            filter: drop-shadow(0 0 8px var(--neon-visited-glow));
         }
-        .geo-path.status-wishlist {
+        .district-path.status-wishlist {
             fill: var(--neon-wishlist) !important;
             stroke: var(--neon-wishlist-border) !important;
-            stroke-width: 1.6 !important;
-            filter: drop-shadow(0 0 10px var(--neon-wishlist-glow));
+            stroke-width: 1.4 !important;
+            filter: drop-shadow(0 0 8px var(--neon-wishlist-glow));
         }
-        .geo-path.status-favorite {
+        .district-path.status-favorite {
             fill: var(--neon-favorite) !important;
             stroke: var(--neon-favorite-border) !important;
-            stroke-width: 1.6 !important;
-            filter: drop-shadow(0 0 10px var(--neon-favorite-glow));
+            stroke-width: 1.4 !important;
+            filter: drop-shadow(0 0 8px var(--neon-favorite-glow));
         }
 
-        /* Center Pin Labels */
-        .map-label-text {
-            font-size: 10px;
-            font-weight: 600;
+        /* Labels Typography */
+        .district-label-text {
+            font-size: 7.5px;
+            font-weight: 700;
             fill: var(--unvisited-text);
             paint-order: stroke fill;
             stroke: #060b17;
-            stroke-width: 2.8px;
+            stroke-width: 2.2px;
             stroke-linecap: round;
             stroke-linejoin: round;
             user-select: none;
             pointer-events: none;
             transition: all 0.2s ease;
         }
-        body.theme-vintage .map-label-text {
+        body.theme-vintage .district-label-text {
             stroke: #18130e;
         }
-        .map-pin-group.status-active .map-label-text {
+        .district-pin-group.status-active .district-label-text {
             fill: #ffffff !important;
             font-weight: 800;
-            font-size: 11px;
+            font-size: 8.5px;
             stroke: #030712;
-            stroke-width: 3.5px;
-            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+            stroke-width: 2.8px;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
         }
 
-        /* Road Trip SVG Route Animation */
         @keyframes dash-travel {
-            to { stroke-dashoffset: -100; }
+            to { stroke-dashoffset: -120; }
         }
         .animated-route-path {
             stroke-dasharray: 6, 6;
-            animation: dash-travel 2.5s linear infinite;
+            animation: dash-travel 2.4s linear infinite;
         }
 
         .poster-glow {
@@ -159,7 +159,6 @@
 </head>
 <body class="min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800/80 bg-[#070d1a]/95 backdrop-blur-md sticky top-0 z-40 px-3 sm:px-6 py-2.5">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center flex-wrap gap-3">
@@ -170,58 +169,51 @@
                     <span class="text-sm font-extrabold text-white tracking-wide">Unseen World</span>
                 </div>
 
-                <!-- Scope Switcher: Bangladesh 64 Districts vs World Map -->
+                <!-- Scope Switcher: Bangladesh (64 Districts) vs World Map (190+ Countries) -->
                 <div class="flex bg-[#0b1222] p-1 rounded-xl border border-slate-800 text-xs font-bold">
                     <button onclick="switchMapScope('bd')" id="tab-btn-bd" class="px-3 py-1 rounded-lg transition bg-sky-500 text-white shadow-sm flex items-center gap-1.5">
                         <i class="ph-bold ph-map-pin"></i>
-                        <span data-i18n="tab_bd">বাংলাদেশ</span>
+                        <span data-i18n="tab_bd">বাংলাদেশ (৬৪ জেলা)</span>
                     </button>
                     <button onclick="switchMapScope('world')" id="tab-btn-world" class="px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
                         <i class="ph-bold ph-globe-hemisphere-west"></i>
-                        <span data-i18n="tab_world">বিশ্ব মানচিত্র</span>
+                        <span data-i18n="tab_world">বিশ্ব মানচিত্র (১৯০+ দেশ)</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Header Quick Actions -->
+            <!-- Top Header Action Controls -->
             <div class="flex items-center flex-wrap gap-2">
-                <!-- Social Share Modal Trigger -->
                 <button onclick="openShareModal()" class="px-3 py-1.5 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 text-xs font-extrabold text-sky-300 border border-sky-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-share-network text-sm"></i>
                     <span data-i18n="btn_share_modal">শেয়ার করুন</span>
                 </button>
 
-                <!-- Friend Comparison Challenge -->
                 <button onclick="openCompareModal()" class="px-3 py-1.5 rounded-xl bg-indigo-950/60 hover:bg-indigo-900/60 text-xs font-extrabold text-indigo-300 border border-indigo-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-sword text-sm"></i>
                     <span data-i18n="btn_compare">তুলনা চ্যালেঞ্জ</span>
                 </button>
 
-                <!-- Vintage Paper / Neon Mode Toggle -->
                 <button onclick="toggleVintageMode()" id="vintage-toggle-btn" class="px-3 py-1.5 rounded-xl bg-amber-950/50 hover:bg-amber-900/60 text-xs font-extrabold text-amber-300 border border-amber-700/60 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-scroll text-sm"></i>
                     <span id="vintage-indicator">ভিন্টেজ থিম</span>
                 </button>
 
-                <!-- Bilingual Switcher: বাংলা / ENG -->
                 <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-xs font-extrabold text-slate-200 border border-slate-700/80 flex items-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i class="ph-bold ph-translate text-sm"></i>
                     <span id="lang-indicator">বাং / ENG</span>
                 </button>
 
-                <!-- Color Theme Selector -->
                 <button onclick="openColorModal()" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700/80 flex items-center gap-2 transition active:scale-95">
                     <span id="theme-preview-bullet" class="w-3.5 h-3.5 rounded-full bg-sky-400 ring-2 ring-white/20"></span>
                     <span data-i18n="btn_theme">কালার থিম</span>
                 </button>
 
-                <!-- Reset All / সব মুছুন -->
                 <button onclick="clearAllSelections()" class="px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-xs font-bold text-rose-300 border border-rose-800/60 flex items-center gap-1.5 transition active:scale-95">
                     <i class="ph-bold ph-trash"></i>
                     <span data-i18n="btn_reset">সব মুছুন</span>
                 </button>
 
-                <!-- 100% Guaranteed Native Ultra-HD Canvas Poster Exporter -->
                 <button onclick="exportAndDownloadHDPoster()" id="download-btn" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-sky-500/30 flex items-center gap-1.5 transition active:scale-95">
                     <i class="ph-bold ph-download-simple text-base"></i>
                     <span data-i18n="btn_download">পোস্টার ডাউনলোড (HD)</span>
@@ -232,10 +224,10 @@
 
     <main class="max-w-7xl mx-auto w-full p-3 sm:p-5 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Left Panel: Profile, Accordions, Road Trip, and Controls -->
+        <!-- Left Panel: User Profile, Badges, Tag Modes, and Full Accordion Explorer -->
         <div class="lg:col-span-5 space-y-4 order-2 lg:order-1">
             
-            <!-- Profile, Tagline & Photo Upload -->
+            <!-- Profile, Tagline & Avatar -->
             <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-3">
                 <div class="flex items-center justify-between">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_traveler_profile">ভ্রমণকারীর প্রোফাইল ও ক্যাপশন</label>
@@ -292,20 +284,20 @@
 
                 <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-[#111a30] to-[#0a101f] border border-slate-800">
                     <div id="badge-icon-container" class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-400 text-2xl shadow-lg shadow-amber-500/20 animate-rank-badge flex-shrink-0">
-                        🏆
+                        🌱
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 id="badge-title-text" class="text-sm font-extrabold text-white truncate">বিগিনার ট্রাভেলার</h4>
-                        <p id="badge-desc-text" class="text-[11px] text-slate-400 truncate">পরবর্তী পদবী আনলক করতে আরও ঘুরুন!</p>
+                        <h4 id="badge-title-text" class="text-sm font-extrabold text-white truncate">নবাগত ট্রাভেলার</h4>
+                        <p id="badge-desc-text" class="text-[11px] text-slate-400 truncate">আপনার ভ্রমণ যাত্রা শুরু করুন!</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Virtual Road Trip Route Switcher (Isolated strictly between BD & World) -->
+            <!-- Virtual Road Trip Route Switcher -->
             <div class="bg-[#0b1222] p-3.5 rounded-2xl border border-slate-800/80 shadow-lg flex flex-wrap items-center justify-between gap-2">
                 <div>
                     <label class="text-xs font-bold text-slate-300 block" data-i18n="label_roadtrip">উইশলিস্ট রোড ট্রিপ রুট</label>
-                    <span class="text-[10px] text-slate-500" data-i18n="hint_roadtrip">বাকেটলিস্ট জেলাসমূহকে রুটে জুড়ুন</span>
+                    <span class="text-[10px] text-slate-500" data-i18n="hint_roadtrip">বাকেটলিস্ট জেলা বা দেশগুলোকে রুটে জুড়ুন</span>
                 </div>
                 <button onclick="toggleRoadTripRoute()" id="roadtrip-toggle-btn" class="px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 bg-slate-900 border-slate-800 text-slate-400">
                     <i class="ph-bold ph-path text-sm"></i>
@@ -332,11 +324,11 @@
                 </div>
             </div>
 
-            <!-- Persistent Accordion Drawer (Never Collapses on Child Click) -->
+            <!-- Non-Collapsing Accordion Drawer with Select-All -->
             <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-3">
                 <div class="flex items-center justify-between">
                     <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block" id="accordion-drawer-title" data-i18n="title_group_accordion_bd">বিভাগভিত্তিক ড্রপডাউন</label>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block" id="accordion-drawer-title" data-i18n="title_group_accordion_bd">বিভাগভিত্তিক ড্রপডাউন (৮টি বিভাগ)</label>
                         <span class="text-[11px] text-slate-500 font-medium" data-i18n="subtitle_group_accordion">ক্লিক করে সিলেক্ট করুন (ড্রপডাউন বন্ধ হবে না)</span>
                     </div>
                     <span class="text-xs text-sky-400 font-bold font-mono" id="group-summary-stat">০ সমাপ্ত</span>
@@ -345,7 +337,7 @@
                 <div id="dynamic-accordion-container" class="space-y-2 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar"></div>
             </div>
 
-            <!-- Instant Search Bar -->
+            <!-- Instant Search Bar across all regions -->
             <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-2.5">
                 <div class="flex items-center justify-between">
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_search">দ্রুত খুঁজুন</label>
@@ -360,10 +352,9 @@
 
         </div>
 
-        <!-- Right Panel: Authentic Travel Poster Canvas -->
         <div class="lg:col-span-7 flex flex-col items-center justify-center order-1 lg:order-2 w-full">
             
-            <div id="travel-poster-element" class="w-full max-w-[640px] bg-[#0c1322] border border-slate-800/90 rounded-3xl p-5 sm:p-7 poster-glow relative overflow-hidden flex flex-col justify-between select-none">
+            <div id="travel-poster-element" class="w-full max-w-[690px] bg-[#0c1322] border border-slate-800/90 rounded-3xl p-4 sm:p-6 poster-glow relative overflow-hidden flex flex-col justify-between select-none">
                 
                 <div class="absolute -top-24 -left-24 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -379,7 +370,7 @@
                         <div class="min-w-0">
                             <div class="flex items-center gap-2">
                                 <p class="text-[12px] sm:text-[13px] font-bold text-slate-400 tracking-wide truncate" id="poster-subtitle-text" data-i18n="poster_subtitle_bd">বাংলাদেশ ভ্রমণ ম্যাপ</p>
-                                <span id="poster-badge-chip" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40">🏆 বিগিনার</span>
+                                <span id="poster-badge-chip" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40">🌱 নবাগত</span>
                             </div>
                             
                             <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mt-0.5 leading-snug truncate">
@@ -398,13 +389,14 @@
                     </div>
                 </div>
 
-                <!-- Map Canvas Container with Zoom & Hover Spot Cards -->
+                <!-- Interactive SVG Map Canvas Container -->
                 <div class="relative w-full">
-                    <div class="absolute top-2 right-2 z-20 flex flex-col gap-1.5 bg-[#091122]/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 shadow-lg">
-                        <button onclick="zoomMap(1.15)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs font-bold transition active:scale-90" title="Zoom In">
+                    <!-- Zoom & Reset floating controller -->
+                    <div class="absolute top-2 right-2 z-20 flex flex-col gap-1.5 bg-[#091122]/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800 shadow-xl">
+                        <button onclick="zoomMap(1.18)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs font-bold transition active:scale-90" title="Zoom In">
                             <i class="ph-bold ph-plus"></i>
                         </button>
-                        <button onclick="zoomMap(0.85)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs font-bold transition active:scale-90" title="Zoom Out">
+                        <button onclick="zoomMap(0.82)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs font-bold transition active:scale-90" title="Zoom Out">
                             <i class="ph-bold ph-minus"></i>
                         </button>
                         <button onclick="resetMapZoom()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold transition active:scale-90" title="Reset Zoom">
@@ -412,7 +404,7 @@
                         </button>
                     </div>
 
-                    <!-- Isolated Tourist Spots, Timeline Year & Food Guide Popover with Auto-Hide Countdown -->
+                    <!-- Interactive District / Country Spot & Food Specialty Tooltip -->
                     <div id="district-spot-tooltip" class="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm z-30 bg-[#081020]/95 backdrop-blur-md border border-sky-500/40 p-3.5 rounded-2xl shadow-2xl transition-all duration-300 opacity-0 translate-y-3 pointer-events-none">
                         <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2 mb-2">
                             <div class="flex items-center gap-1.5 text-xs font-extrabold text-white">
@@ -435,22 +427,22 @@
                             <p class="text-amber-200"><span id="tooltip-label-food" class="text-amber-400 font-bold">ঐতিহ্যবাহী খাবার / বিশেষত্ব:</span> <span id="tooltip-district-food">...</span></p>
                         </div>
 
-                        <!-- Animated Countdown Progress Bar for Auto-Hide -->
+                        <!-- Animated Countdown Progress Bar -->
                         <div class="mt-2.5 w-full bg-slate-800/90 h-1 rounded-full overflow-hidden">
                             <div id="tooltip-countdown-bar" class="h-full bg-gradient-to-r from-sky-400 to-indigo-400 rounded-full w-full"></div>
                         </div>
                     </div>
 
-                    <!-- Real Geographic Vector SVG Map -->
-                    <div class="relative w-full h-[520px] sm:h-[630px] flex items-center justify-center my-1 z-10 overflow-hidden">
+                    <!-- Interactive Dynamic SVG Vector Map (BD: 650x820, World: 1000x550) -->
+                    <div class="relative w-full h-[520px] sm:h-[650px] flex items-center justify-center my-1 z-10 overflow-hidden rounded-2xl bg-[#080d1a]/50">
                         <svg id="travel-map-svg" viewBox="0 0 650 820" class="w-full h-full filter drop-shadow-2xl transition-transform duration-300">
                             <defs>
                                 <pattern id="infographic-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#16223b" stroke-width="0.5" stroke-opacity="0.3"/>
+                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#16223b" stroke-width="0.5" stroke-opacity="0.35"/>
                                 </pattern>
                             </defs>
 
-                            <rect width="650" height="820" fill="url(#infographic-grid)" opacity="0.6"/>
+                            <rect width="100%" height="100%" fill="url(#infographic-grid)" opacity="0.7"/>
 
                             <g id="map-zoom-wrapper" class="origin-center transition-transform duration-200">
                                 <path id="svg-background-contour" d="" fill="#080e1b" stroke="#131e33" stroke-width="1.8" opacity="0.8"/>
@@ -479,7 +471,7 @@
                         </div>
                     </div>
 
-                    <!-- Watermark Footer: Unseen World • unseenworld.com -->
+                    <!-- Watermark Footer -->
                     <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/50">
                         <div class="flex items-center gap-1.5">
                             <span id="footer-rank-label" class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-mono text-[10px]">Rank: Explorer</span>
@@ -499,7 +491,6 @@
         </div>
     </main>
 
-    <!-- Social Share Modal -->
     <div id="share-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -529,7 +520,7 @@
         </div>
     </div>
 
-    <!-- Friend Comparison Challenge Modal -->
+    <!-- Friend Comparison Modal -->
     <div id="compare-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -542,7 +533,7 @@
                 </button>
             </div>
 
-            <p class="text-xs text-slate-400" data-i18n="modal_compare_desc">আপনার বন্ধুর শেয়ার লিংকটি নিচে পেস্ট করে দেখুন কার বেশি জেলা ঘোরা হয়েছে!</p>
+            <p class="text-xs text-slate-400" data-i18n="modal_compare_desc">আপনার বন্ধুর শেয়ার লিংকটি নিচে পেস্ট করে দেখুন কার বেশি জেলা বা দেশ ঘোরা হয়েছে!</p>
             
             <div class="relative">
                 <input type="text" id="compare-input-url" placeholder="Paste friend's map URL here..." class="w-full bg-[#121c33] border border-slate-700 text-white px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-indigo-500 transition">
@@ -552,16 +543,16 @@
                 তুলনা শুরু করুন 🚀
             </button>
 
-            <!-- Comparison Visual Results -->
+            <!-- Results display -->
             <div id="compare-results-box" class="hidden p-3 rounded-2xl bg-[#080e1b] border border-slate-800 space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-2 text-center">
                     <div class="p-2 rounded-xl bg-sky-950/40 border border-sky-800/60">
                         <p class="text-sky-300 font-bold" id="compare-user1-name">Shakil</p>
-                        <p class="text-2xl font-black text-white mt-1" id="compare-user1-score">২৯</p>
+                        <p class="text-2xl font-black text-white mt-1" id="compare-user1-score">০</p>
                     </div>
                     <div class="p-2 rounded-xl bg-purple-950/40 border border-purple-800/60">
                         <p class="text-purple-300 font-bold" id="compare-user2-name">Friend</p>
-                        <p class="text-2xl font-black text-white mt-1" id="compare-user2-score">১৮</p>
+                        <p class="text-2xl font-black text-white mt-1" id="compare-user2-score">০</p>
                     </div>
                 </div>
                 <p id="compare-verdict-text" class="text-center font-bold text-amber-300"></p>
@@ -569,7 +560,7 @@
         </div>
     </div>
 
-    <!-- Travel Year / Timeline Tag Modal -->
+    <!-- Travel Year Tag Modal -->
     <div id="year-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-xs p-5 space-y-3 shadow-2xl">
             <h3 class="font-bold text-white text-sm" id="year-modal-title">ভ্রমণের সাল যুক্ত করুন</h3>
@@ -580,7 +571,7 @@
         </div>
     </div>
 
-    <!-- Top Explorers Hall of Fame Leaderboard Modal -->
+    <!-- Hall of Fame Modal -->
     <div id="leaderboard-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -597,7 +588,7 @@
                 <div class="flex items-center justify-between p-2 rounded-xl bg-amber-950/30 border border-amber-700/50">
                     <div class="flex items-center gap-2">
                         <span class="text-lg">🥇</span>
-                        <div><p class="font-bold text-white">তারেক রহমান</p><p class="text-[10px] text-amber-300">King of Bangladesh 👑</p></div>
+                        <div><p class="font-bold text-white">তারেক রহমান</p><p class="text-[10px] text-amber-300">King of Explorer 👑</p></div>
                     </div>
                     <span class="font-mono font-black text-amber-400">৬৪ / ৬৪</span>
                 </div>
@@ -619,7 +610,7 @@
         </div>
     </div>
 
-    <!-- Color Theme Selector Modal -->
+    <!-- Color Theme Modal -->
     <div id="color-modal-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -641,7 +632,7 @@
         </div>
     </div>
 
-    <!-- Mobile Guaranteed Image Save Modal -->
+    <!-- Poster Download Preview Modal -->
     <div id="image-download-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-[#0b1222] border border-slate-800 rounded-3xl w-full max-w-md p-5 space-y-4 shadow-2xl flex flex-col items-center">
             <div class="w-full flex items-center justify-between border-b border-slate-800 pb-3">
@@ -677,14 +668,14 @@
         <span id="toast-msg">হালনাগাদ সম্পন্ন</span>
     </div>
 
-    <!-- Native Offscreen Retina Canvas for 3x Direct Export -->
+    <!-- Native Offscreen Retina Canvas for Ultra-HD Direct Export -->
     <canvas id="native-export-canvas" class="hidden"></canvas>
 
     <script>
         const I18N = {
             bn: {
-                tab_bd: "বাংলাদেশ",
-                tab_world: "বিশ্ব মানচিত্র",
+                tab_bd: "বাংলাদেশ (৬৪ জেলা)",
+                tab_world: "বিশ্ব মানচিত্র (১৯০+ দেশ)",
                 btn_theme: "কালার থিম",
                 btn_reset: "সব মুছুন",
                 btn_download: "পোস্টার ডাউনলোড (HD)",
@@ -697,17 +688,17 @@
                 btn_remove_photo: "ছবি মুছুন",
                 label_traveler_rank: "ট্রাভেলার র‍্যাঙ্ক ও ব্যাজ",
                 label_roadtrip: "উইশলিস্ট রোড ট্রিপ রুট",
-                hint_roadtrip: "বাকেটলিস্ট জেলাসমূহকে রুটে জুড়ুন",
+                hint_roadtrip: "বাকেটলিস্ট জেলা বা দেশগুলোকে রুটে জুড়ুন",
                 label_tag_mode: "নির্বাচনের ধরণ (ট্যাগ মোড)",
                 mode_visited: "ঘুরেছি",
                 mode_wishlist: "যেতে চাই",
                 mode_favorite: "ফেভারিট",
-                title_group_accordion_bd: "বিভাগভিত্তিক ড্রপডাউন",
-                title_group_accordion_world: "মহাদেশভিত্তিক ড্রপডাউন (৮০+ দেশ)",
+                title_group_accordion_bd: "বিভাগভিত্তিক ড্রপডাউন (৮টি বিভাগ)",
+                title_group_accordion_world: "মহাদেশভিত্তিক ড্রপডাউন (১৯০+ দেশ)",
                 subtitle_group_accordion: "ক্লিক করে সিলেক্ট করুন (ড্রপডাউন বন্ধ হবে না)",
                 label_search: "দ্রুত খুঁজুন",
                 search_placeholder_bd: "জেলায় সার্চ দিন (যেমন: কক্সবাজার, সিলেট, ঢাকা)...",
-                search_placeholder_world: "দেশ বা মহাদেশ খুঁজুন (যেমন: Japan, France, Brazil)...",
+                search_placeholder_world: "বিশ্বের দেশ খুঁজুন (যেমন: Japan, France, Brazil, Saudi)...",
                 poster_subtitle_bd: "বাংলাদেশ ভ্রমণ ম্যাপ",
                 poster_subtitle_world: "বিশ্ব ভ্রমণ ম্যাপ",
                 title_suffix_bd: "-এর বাংলাদেশ",
@@ -729,8 +720,8 @@
                 label_food: "ঐতিহ্যবাহী খাবার / বিশেষত্ব:"
             },
             en: {
-                tab_bd: "Bangladesh",
-                tab_world: "World Map",
+                tab_bd: "Bangladesh (64 Districts)",
+                tab_world: "World Map (190+ Countries)",
                 btn_theme: "Color Theme",
                 btn_reset: "Reset All",
                 btn_download: "Download HD Poster",
@@ -743,17 +734,17 @@
                 btn_remove_photo: "Remove Photo",
                 label_traveler_rank: "Traveler Rank & Badges",
                 label_roadtrip: "Wishlist Road Trip Route",
-                hint_roadtrip: "Connect bucketlist districts on map",
+                hint_roadtrip: "Connect bucketlist districts or countries",
                 label_tag_mode: "Status Tag Mode",
                 mode_visited: "Visited",
                 mode_wishlist: "Wishlist",
                 mode_favorite: "Favorite",
-                title_group_accordion_bd: "Division Accordion",
-                title_group_accordion_world: "Continent Accordion (80+ Countries)",
+                title_group_accordion_bd: "Division Accordion (8 Divisions)",
+                title_group_accordion_world: "Continent Accordion (190+ Countries)",
                 subtitle_group_accordion: "Click to select regions (drawer stays open)",
                 label_search: "Quick Search",
                 search_placeholder_bd: "Search district (e.g., Cox's Bazar, Sylhet)...",
-                search_placeholder_world: "Search country (e.g., Japan, France, Brazil)...",
+                search_placeholder_world: "Search country (e.g., Japan, France, Brazil, Saudi)...",
                 poster_subtitle_bd: "Bangladesh Travel Map",
                 poster_subtitle_world: "World Travel Map",
                 title_suffix_bd: "'s Bangladesh",
@@ -780,7 +771,7 @@
             { id: "neon-cyan", nameBn: "ইলেকট্রিক ব্লু (মূল)", nameEn: "Electric Blue (Default)", primary: "#38bdf8", border: "#bae6fd", glow: "rgba(56, 189, 248, 0.75)" },
             { id: "emerald-green", nameBn: "সবুজ শ্যামল", nameEn: "Emerald Green", primary: "#10b981", border: "#6ee7b7", glow: "rgba(16, 185, 129, 0.75)" },
             { id: "sunset-orange", nameBn: "সানসেট অরেঞ্জ", nameEn: "Sunset Orange", primary: "#f97316", border: "#fdba74", glow: "rgba(249, 115, 22, 0.75)" },
-            { id: "cyber-purple", nameBn: "সাইবার ভায়োলেট", primary: "#8b5cf6", nameEn: "Cyber Violet", border: "#c4b5fd", glow: "rgba(139, 92, 246, 0.75)" },
+            { id: "cyber-purple", nameBn: "সাইবার ভায়োলেট", nameEn: "Cyber Violet", primary: "#8b5cf6", border: "#c4b5fd", glow: "rgba(139, 92, 246, 0.75)" },
             { id: "neon-pink", nameBn: "নিয়ন পিঙ্ক", nameEn: "Neon Pink", primary: "#f43f5e", border: "#fecdd3", glow: "rgba(244, 63, 94, 0.75)" }
         ];
 
@@ -795,16 +786,17 @@
 
         const RANKS_TIERS_WORLD = [
             { max: 0, titleBn: "গ্লোবাল ট্রাভেলার", titleEn: "Global Newbie", icon: "🌱", descBn: "বিশ্ব ভ্রমণের সূচনা!", descEn: "Start your world journey!" },
-            { max: 5, titleBn: "ভয়েজার", titleEn: "Voyager", icon: "✈️", descBn: "আন্তর্জাতিক রুটের যাত্রী!", descEn: "Flying international routes!" },
-            { max: 15, titleBn: "গ্লোবট্রটার", titleEn: "Globetrotter", icon: "🌍", descBn: "বহু সংস্কৃতি ছোঁয়ার অভিজ্ঞতা!", descEn: "Exploring diverse cultures!" },
-            { max: 30, titleBn: "ওয়ার্ল্ড নোম্যাড", titleEn: "World Nomad", icon: "🧭", descBn: "মহাদেশ থেকে মহাদেশে ভ্রমণ!", descEn: "Crossing continents!" },
-            { max: 50, titleBn: "গ্লোবাল এক্সপ্লোরার", titleEn: "Global Explorer", icon: "⭐", descBn: "বিশ্বের এক প্রান্তে অন্য প্রান্তে!", descEn: "Master of world geography!" },
-            { max: 100, titleBn: "বিশ্ব বিজয়ী 👑", titleEn: "World Sovereign 👑", icon: "👑", descBn: "সমগ্র বিশ্বের অদম্য অভিযাত্রী!", descEn: "Conquered the globe!" }
+            { max: 10, titleBn: "ভয়েজার", titleEn: "Voyager", icon: "✈️", descBn: "আন্তর্জাতিক রুটের যাত্রী!", descEn: "Flying international routes!" },
+            { max: 35, titleBn: "গ্লোবট্রটার", titleEn: "Globetrotter", icon: "🌍", descBn: "বহু সংস্কৃতি ছোঁয়ার অভিজ্ঞতা!", descEn: "Exploring diverse cultures!" },
+            { max: 80, titleBn: "ওয়ার্ল্ড নোম্যাড", titleEn: "World Nomad", icon: "🧭", descBn: "মহাদেশ থেকে মহাদেশে ভ্রমণ!", descEn: "Crossing continents!" },
+            { max: 150, titleBn: "গ্লোবাল এক্সপ্লোরার", titleEn: "Global Explorer", icon: "⭐", descBn: "বিশ্বের এক প্রান্তে অন্য প্রান্তে!", descEn: "Master of world geography!" },
+            { max: 220, titleBn: "বিশ্ব বিজয়ী 👑", titleEn: "World Sovereign 👑", icon: "👑", descBn: "সমগ্র বিশ্বের অদম্য অভিযাত্রী!", descEn: "Conquered the globe!" }
         ];
+    </script>
 
-        // Authentic Geographic Vector Contours for 64 Districts of Bangladesh
+    <script>
         const BD_DISTRICTS_DATA = [
-            // RANGPUR DIVISION
+            // RANGPUR DIVISION (8 Districts)
             { id: "panchagarh", nameBn: "পঞ্চগড়", nameEn: "Panchagarh", groupBn: "রংপুর", groupEn: "Rangpur", spots: "তেঁতুলিয়া, কাঞ্চনজঙ্ঘা ভিউ, চা বাগান", food: "হাঁসের মাংস, সিদল ভর্তা", path: "M 166 28 C 178 22 196 22 212 26 C 220 38 221 54 216 66 C 196 76 182 82 172 74 C 158 64 154 44 166 28 Z", cx: 188, cy: 48 },
             { id: "thakurgaon", nameBn: "ঠাকুরগাঁও", nameEn: "Thakurgaon", groupBn: "রংপুর", groupEn: "Rangpur", spots: "বালিয়া মসজিদ, হরিপুর রাজবাড়ি", food: "সূর্যপুরী আম, সিদল ভর্তা", path: "M 152 64 C 170 78 180 78 185 92 C 182 110 175 128 165 134 C 146 130 137 110 133 88 C 138 74 144 66 152 64 Z", cx: 160, cy: 98 },
             { id: "dinajpur", nameBn: "দিনাজপুর", nameEn: "Dinajpur", groupBn: "রংপুর", groupEn: "Rangpur", spots: "কান্তজীউ মন্দির, রামসাগর দিঘি", food: "কাটারিভোগ চাল, বেদানা লিচু", path: "M 185 96 C 204 96 222 101 234 115 C 241 142 234 170 222 182 C 198 179 184 170 170 148 C 170 124 178 106 185 96 Z", cx: 204, cy: 142 },
@@ -814,7 +806,7 @@
             { id: "kurigram", nameBn: "কুড়িগ্রাম", nameEn: "Kurigram", groupBn: "রংপুর", groupEn: "Rangpur", spots: "চিলমারী নদী বন্দর, ধরলা সেতু", food: "ব্রহ্মপুত্রের ইলিশ, নলেন গুড়ের পিঠা", path: "M 308 86 C 336 73 360 82 362 104 C 355 131 339 158 322 161 C 308 136 303 109 308 86 Z", cx: 332, cy: 118 },
             { id: "gaibandha", nameBn: "গাইবান্ধা", nameEn: "Gaibandha", groupBn: "রংপুর", groupEn: "Rangpur", spots: "বালাসী ঘাট, মীরবাগ রাজবাড়ি", food: "রসমঞ্জরী (বিখ্যাত মিষ্টি)", path: "M 272 168 C 298 161 322 163 330 181 C 324 204 310 217 284 215 C 270 199 270 181 272 168 Z", cx: 298, cy: 190 },
 
-            // RAJSHAHI DIVISION
+            // RAJSHAHI DIVISION (8 Districts)
             { id: "joypurhat", nameBn: "জয়পুরহাট", nameEn: "Joypurhat", groupBn: "রাজশাহী", groupEn: "Rajshahi", spots: "লকমা রাজবাড়ি, নান্দাইল দিঘি", food: "কালাই রুটি ও বেগুন ভর্তা", path: "M 222 180 C 241 177 257 177 266 189 C 263 204 253 218 234 220 C 222 204 219 191 222 180 Z", cx: 242, cy: 198 },
             { id: "bogura", nameBn: "বগুড়া", nameEn: "Bogura", groupBn: "রাজশাহী", groupEn: "Rajshahi", spots: "মহাস্থানগড়, বেহুলার বাসর ঘর", food: "বগুড়ার ঐতিহ্যবাহী লাল দই", path: "M 270 200 C 298 195 324 204 326 225 C 317 250 298 259 272 254 C 263 234 265 216 270 200 Z", cx: 295, cy: 228 },
             { id: "naogaon", nameBn: "নওগাঁ", nameEn: "Naogaon", groupBn: "রাজশাহী", groupEn: "Rajshahi", spots: "পাহাড়পুর বৌদ্ধবিহার, কুসুম্বা মসজিদ", food: "সন্দেশ, প্যারা মিষ্টি", path: "M 170 177 C 198 177 219 183 222 207 C 217 231 198 247 175 243 C 160 222 160 198 170 177 Z", cx: 192, cy: 210 },
@@ -824,19 +816,19 @@
             { id: "sirajganj", nameBn: "সিরাজগঞ্জ", nameEn: "Sirajganj", groupBn: "রাজশাহী", groupEn: "Rajshahi", spots: "যমুনা সেতু, রবীন্দ্রনাথের কাচারী বাড়ি", food: "ধানসিঁড়ির দই ও ঘোল", path: "M 268 256 C 299 254 324 265 321 290 C 310 313 286 322 261 316 C 255 295 258 274 268 256 Z", cx: 292, cy: 285 },
             { id: "pabna", nameBn: "পাবনা", nameEn: "Pabna", groupBn: "রাজশাহী", groupEn: "Rajshahi", spots: "হার্ডিঞ্জ ব্রিজ, লালন শাহ সেতু", food: "ঘি ও প্যারা প্যারা মিষ্টি", path: "M 215 300 C 250 298 274 307 272 334 C 257 352 225 356 203 343 C 200 322 206 309 215 300 Z", cx: 237, cy: 325 },
 
-            // MYMENSINGH DIVISION
+            // MYMENSINGH DIVISION (4 Districts)
             { id: "sherpur", nameBn: "শেরপুর", nameEn: "Sherpur", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", spots: "গজনী অবকাশ কেন্দ্র, মধুটিলা ইকোপার্ক", food: "ছানার পায়েস ও ছানার চপ", path: "M 326 161 C 350 156 371 161 376 177 C 371 195 354 207 330 207 C 321 190 319 174 326 161 Z", cx: 348, cy: 181 },
             { id: "jamalpur", nameBn: "জামালপুর", nameEn: "Jamalpur", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", spots: "গান্ধী আশ্রম, লাউচাপড়া পাহাড়", food: "মিল্ক ক্যান্ডি ও ছানার মিষ্টি", path: "M 288 204 C 317 204 333 210 333 234 C 323 255 303 265 282 258 C 276 237 279 217 288 204 Z", cx: 308, cy: 231 },
             { id: "mymensingh", nameBn: "ময়মনসিংহ", nameEn: "Mymensingh", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", spots: "শশী লজ, কৃষি বিশ্ববিদ্যালয়", food: "মুক্তাগাছার বিখ্যাত মণ্ডা", path: "M 338 207 C 373 201 402 207 405 231 C 397 258 367 270 338 265 C 329 243 330 222 338 207 Z", cx: 368, cy: 234 },
             { id: "netrokona", nameBn: "নেত্রকোণা", nameEn: "Netrokona", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", spots: "বিরিশিরি, বিজয়পুর চীনা মাটির পাহাড়", food: "বালিশ মিষ্টি (গয়ানাথ)", path: "M 402 195 C 433 189 458 198 458 222 C 449 247 423 258 399 252 C 392 231 395 208 402 195 Z", cx: 426, cy: 222 },
 
-            // SYLHET DIVISION
+            // SYLHET DIVISION (4 Districts)
             { id: "sunamganj", nameBn: "সুনামগঞ্জ", nameEn: "Sunamganj", groupBn: "সিলেট", groupEn: "Sylhet", spots: "টাঙ্গুয়ার হাওর, যাদুকাটা নদী, বারেক টিলা", food: "হাওরের বোয়াল ও বাতাসি মাছ", path: "M 461 186 C 501 180 534 189 531 216 C 520 240 487 252 455 245 C 449 222 451 199 461 186 Z", cx: 490, cy: 213 },
             { id: "sylhet", nameBn: "সিলেট", nameEn: "Sylhet", groupBn: "সিলেট", groupEn: "Sylhet", spots: "জাফলং, রাতারগুল, সাদা পাথর", food: "সাতকড়া গরুর মাংস, সাত রঙের চা", path: "M 534 180 C 576 177 609 195 603 228 C 584 254 548 258 525 243 C 520 217 522 195 534 180 Z", cx: 562, cy: 216 },
             { id: "moulvibazar", nameBn: "মৌলভীবাজার", nameEn: "Moulvibazar", groupBn: "সিলেট", groupEn: "Sylhet", spots: "শ্রীমঙ্গল চা বাগান, মাধবকুণ্ড জলপ্রপাত", food: "আনারস, লেবু ও মণিপুরি খাবার", path: "M 522 249 C 556 249 591 258 586 291 C 567 319 537 321 512 303 C 508 276 512 258 522 249 Z", cx: 548, cy: 280 },
             { id: "habiganj", nameBn: "হবিগঞ্জ", nameEn: "Habiganj", groupBn: "সিলেট", groupEn: "Sylhet", spots: "সাতছড়ি জাতীয় উদ্যান, রেমা-কালেঙ্গা", food: "হবিগঞ্জের চাপাতা ও পিঠা", path: "M 458 249 C 493 246 515 258 510 289 C 499 312 471 321 449 308 C 444 282 449 262 458 249 Z", cx: 480, cy: 280 },
 
-            // DHAKA DIVISION
+            // DHAKA DIVISION (13 Districts)
             { id: "tangail", nameBn: "টাঙ্গাইল", nameEn: "Tangail", groupBn: "ঢাকা", groupEn: "Dhaka", spots: "মহেড়া জমিদার বাড়ি, ধনবাড়ি মসজিদ", food: "পোড়াবাড়ির বিখ্যাত চমচম", path: "M 281 264 C 313 262 338 273 335 300 C 323 324 297 330 274 321 C 269 299 272 281 281 264 Z", cx: 304, cy: 294 },
             { id: "gazipur", nameBn: "গাজীপুর", nameEn: "Gazipur", groupBn: "ঢাকা", groupEn: "Dhaka", spots: "ভাওয়াল জাতীয় উদ্যান, সাফারি পার্ক", food: "কাঁঠাল, পেয়ারা", path: "M 338 267 C 370 267 395 279 392 303 C 378 326 354 330 332 321 C 329 300 330 281 338 267 Z", cx: 360, cy: 297 },
             { id: "kishoreganj", nameBn: "কিশোরগঞ্জ", nameEn: "Kishoreganj", groupBn: "ঢাকা", groupEn: "Dhaka", spots: "নিকলী হাওর, এগারসিন্দুর দুর্গ", food: "হাওরের বাইম মাছ, চিড়া-মুড়ি", path: "M 399 255 C 433 251 458 264 454 294 C 439 321 411 327 389 316 C 387 294 389 271 399 255 Z", cx: 422, cy: 288 },
@@ -851,7 +843,7 @@
             { id: "madaripur", nameBn: "মাদারীপুর", nameEn: "Madaripur", groupBn: "ঢাকা", groupEn: "Dhaka", spots: "শকুনি লেক, পর্বত রাজবাড়ি", food: "রসগোল্লা ও খেজুরের পাটালি", path: "M 307 423 C 336 421 354 432 350 457 C 336 475 312 477 298 466 C 295 448 298 434 307 423 Z", cx: 323, cy: 447 },
             { id: "shariatpur", nameBn: "শরীয়তপুর", nameEn: "Shariatpur", groupBn: "ঢাকা", groupEn: "Dhaka", spots: "পদ্মা ব্রিজ ভিউ, ফতেহজংপুর দুর্গ", food: "নদীর রূপালী ইলিশ", path: "M 350 427 C 376 425 395 436 389 461 C 376 477 354 480 340 470 C 338 452 342 438 350 427 Z", cx: 366, cy: 452 },
 
-            // KHULNA DIVISION
+            // KHULNA DIVISION (10 Districts)
             { id: "kushtia", nameBn: "কুষ্টিয়া", nameEn: "Kushtia", groupBn: "খুলনা", groupEn: "Khulna", spots: "লালন শাহ মাজার, শিলাইদহ কুঠিবাড়ি", food: "তিলের খাজা ও কুলফি মালাই", path: "M 184 318 C 215 317 238 327 234 351 C 222 369 196 373 179 362 C 177 344 179 330 184 318 Z", cx: 207, cy: 342 },
             { id: "meherpur", nameBn: "মেহেরপুর", nameEn: "Meherpur", groupBn: "খুলনা", groupEn: "Khulna", spots: "মুজিবনগর স্মৃতিসৌধ", food: "সাবিত্রী ও রসকদম্ব মিষ্টি", path: "M 137 321 C 162 321 177 333 175 353 C 162 369 143 371 130 360 C 128 344 130 330 137 321 Z", cx: 153, cy: 344 },
             { id: "chuadanga", nameBn: "চুয়াডাঙ্গা", nameEn: "Chuadanga", groupBn: "খুলনা", groupEn: "Khulna", spots: "ঘোলদাঁড়ি মসজিদ, নাটুদহ", food: "পান ও চমৎকার গুড়ের সন্দেশ", path: "M 140 364 C 168 362 187 373 184 393 C 172 411 149 414 134 402 C 132 387 134 373 140 364 Z", cx: 160, cy: 387 },
@@ -863,7 +855,7 @@
             { id: "khulna", nameBn: "খুলনা", nameEn: "Khulna", groupBn: "খুলনা", groupEn: "Khulna", spots: "সুন্দরবন (করমজল, কটকা), রূপসা সেতু", food: "চুইঝাল গরুর মাংস, সুন্দরবনের মধু", path: "M 189 475 C 222 472 244 484 238 534 C 231 588 203 595 184 579 C 179 529 181 490 189 475 Z", cx: 211, cy: 529 },
             { id: "bagerhat", nameBn: "বাগেরহাট", nameEn: "Bagerhat", groupBn: "খুলনা", groupEn: "Khulna", spots: "ষাট গম্বুজ মসজিদ, খান জাহান আলীর মাজার", food: "চিংড়ি মাছ ও সুপারি", path: "M 241 477 C 274 475 297 488 291 538 C 281 592 253 599 234 583 C 231 534 234 496 241 477 Z", cx: 263, cy: 533 },
 
-            // BARISHAL DIVISION
+            // BARISHAL DIVISION (6 Districts)
             { id: "pirojpur", nameBn: "পিরোজপুর", nameEn: "Pirojpur", groupBn: "বরিশাল", groupEn: "Barishal", spots: "ভাসমান পেয়ারা বাজার, স্বরূপকাঠি", food: "আমড়া, পেয়ারা ও মিষ্টি পান", path: "M 255 484 C 281 481 300 493 294 520 C 283 541 259 542 247 531 C 245 513 247 496 255 484 Z", cx: 271, cy: 511 },
             { id: "jhalakathi", nameBn: "ঝালকাঠি", nameEn: "Jhalakathi", groupBn: "বরিশাল", groupEn: "Barishal", spots: "ভিমরুলী ভাসমান বাজার, সুজাবাদ কেল্লা", food: "রসালো পেয়ারা ও সুপারি", path: "M 297 486 C 323 484 338 495 332 517 C 321 535 302 538 291 529 C 288 513 291 497 297 486 Z", cx: 312, cy: 508 },
             { id: "barishal", nameBn: "বরিশাল", nameEn: "Barishal", groupBn: "বরিশাল", groupEn: "Barishal", spots: "দুর্গাসাগর দিঘি, গুঠিয়া মসজিদ", food: "ইলিশ পোলাও, বাখরখানি ও রসমালাই", path: "M 319 457 C 354 452 378 466 373 497 C 359 520 330 522 316 511 C 312 493 313 472 319 457 Z", cx: 344, cy: 484 },
@@ -871,7 +863,7 @@
             { id: "patuakhali", nameBn: "পটুয়াখালী", nameEn: "Patuakhali", groupBn: "বরিশাল", groupEn: "Barishal", spots: "কুয়াকাটা সমুদ্র সৈকত, ফাতরার বন", food: "সামুদ্রিক কাঁকড়া ফ্রাই, শুঁটকি ও ইলিশ", path: "M 288 533 C 326 529 351 542 345 588 C 332 624 302 628 283 610 C 279 574 281 547 288 533 Z", cx: 314, cy: 578 },
             { id: "barguna", nameBn: "বরগুনা", nameEn: "Barguna", groupBn: "বরিশাল", groupEn: "Barishal", spots: "হরিণঘাটা বন, শুভসন্ধ্যা সমুদ্র সৈকত", food: "লোনা ইলিশ, তালশাঁস", path: "M 247 538 C 279 535 295 547 288 592 C 279 624 253 626 241 610 C 236 577 238 551 247 538 Z", cx: 263, cy: 583 },
 
-            // CHATTOGRAM DIVISION
+            // CHATTOGRAM DIVISION (11 Districts)
             { id: "brahmanbaria", nameBn: "ব্রাহ্মণবাড়িয়া", nameEn: "Brahmanbaria", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "আরিফাইল মসজিদ, তিতাস নদী", food: "বিখ্যাত ছানামুখী মিষ্টি", path: "M 421 316 C 454 315 477 326 473 355 C 458 378 433 382 416 371 C 411 351 414 333 421 316 Z", cx: 444, cy: 345 },
             { id: "cumilla", nameBn: "কুমিল্লা", nameEn: "Cumilla", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "শালবন বিহার, ময়নামতি", food: "মাতৃভাণ্ডারের বিখ্যাত রসমালাই", path: "M 416 375 C 458 373 482 384 477 421 C 461 448 430 450 411 436 C 406 411 408 389 416 375 Z", cx: 444, cy: 409 },
             { id: "chandpur", nameBn: "চাঁদপুর", nameEn: "Chandpur", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "বড় স্টেশন মোহনা (মেঘনা-পদ্মা সংগম)", food: "তাজা পদ্মা-মেঘনার রূপালী ইলিশ", path: "M 367 402 C 397 400 416 411 411 439 C 397 459 373 461 359 450 C 357 432 359 416 367 402 Z", cx: 387, cy: 430 },
@@ -884,80 +876,215 @@
             { id: "bandarban", nameBn: "বান্দরবান", nameEn: "Bandarban", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "নীলগিরি, নাফাখুম, কেউক্রাডং, দেবতাকুম", food: "মারমা ঐতিহ্যবাহী পিঠা, পাহাড়ি মুরগি", path: "M 557 466 C 612 461 638 488 625 565 C 612 615 576 622 555 601 C 548 551 550 502 557 466 Z", cx: 593, cy: 538 },
             { id: "coxsbazar", nameBn: "কক্সবাজার", nameEn: "Cox's Bazar", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", spots: "মেরিন ড্রাইভ, ইনানী বিচ, সেন্টমার্টিন দ্বীপ", food: "রুপচাঁদা ফ্রাই, লইট্টা ফ্রাই, শুঁটকি", path: "M 538 565 C 576 562 590 583 584 646 C 574 700 548 705 534 673 C 525 628 529 592 538 565 Z", cx: 557, cy: 628 }
         ];
+    </script>
 
-        // Comprehensive 80+ Countries Dataset across Continents
-        const WORLD_REGIONS_DATA = [
-            // ASIA
-            { id: "w_bd", nameBn: "বাংলাদেশ", nameEn: "Bangladesh", groupBn: "এশিয়া", groupEn: "Asia", spots: "সুন্দরবন, সাজেক ভ্যালি, কক্সবাজার", food: "কাচ্চি বিরিয়ানি, ইলিশ মাছ", path: "M 425 365 C 438 360 445 372 440 382 C 432 388 424 380 425 365 Z", cx: 432, cy: 372 },
-            { id: "w_in", nameBn: "ভারত", nameEn: "India", groupBn: "এশিয়া", groupEn: "Asia", spots: "Taj Mahal, Kashmir Valley, Varanasi Ghats", food: "Biryani, Butter Chicken, Dosa", path: "M 390 335 C 420 330 435 350 420 395 C 405 425 385 410 375 375 C 375 350 380 340 390 335 Z", cx: 400, cy: 375 },
-            { id: "w_pk", nameBn: "পাকিস্তান", nameEn: "Pakistan", groupBn: "এশিয়া", groupEn: "Asia", spots: "Hunza Valley, Badshahi Mosque, K2", food: "Nihari, Chapli Kebab, Karahi", path: "M 370 315 C 388 312 392 332 384 348 C 372 355 365 340 370 315 Z", cx: 378, cy: 334 },
-            { id: "w_np", nameBn: "নেপাল", nameEn: "Nepal", groupBn: "এশিয়া", groupEn: "Asia", spots: "Mount Everest, Pokhara Lake, Kathmandu Durbar", food: "Momo, Dal Bhat, Sel Roti", path: "M 412 328 C 432 325 435 336 418 340 C 410 340 408 332 412 328 Z", cx: 422, cy: 334 },
-            { id: "w_bt", nameBn: "ভুটান", nameEn: "Bhutan", groupBn: "এশিয়া", groupEn: "Asia", spots: "Tiger's Nest Monastery, Punakha Dzong", food: "Ema Datshi, Red Rice", path: "M 436 328 C 446 326 448 335 438 338 C 434 336 432 332 436 328 Z", cx: 442, cy: 332 },
-            { id: "w_lk", nameBn: "শ্রীলঙ্কা", nameEn: "Sri Lanka", groupBn: "এশিয়া", groupEn: "Asia", spots: "Sigiriya Rock, Ella Train, Galle Fort", food: "Kottu Roti, Fish Ambul Thiyal", path: "M 398 420 C 408 418 410 430 402 435 C 395 435 394 425 398 420 Z", cx: 402, cy: 426 },
-            { id: "w_mv", nameBn: "মালদ্বীপ", nameEn: "Maldives", groupBn: "এশিয়া", groupEn: "Asia", spots: "Overwater Villas, Maafushi, Coral Reefs", food: "Mas Huni, Garudhiya", path: "M 380 435 C 386 433 388 440 382 443 C 378 443 376 438 380 435 Z", cx: 382, cy: 438 },
-            { id: "w_cn", nameBn: "চীন", nameEn: "China", groupBn: "এশিয়া", groupEn: "Asia", spots: "Great Wall of China, Forbidden City, Zhangjiajie", food: "Peking Duck, Dim Sum, Hotpot", path: "M 430 260 C 520 240 550 280 510 340 C 460 350 420 330 430 260 Z", cx: 480, cy: 295 },
-            { id: "w_jp", nameBn: "জাপান", nameEn: "Japan", groupBn: "এশিয়া", groupEn: "Asia", spots: "Mount Fuji, Kyoto Temples, Shibuya Crossing", food: "Sushi, Ramen, Wagyu Beef", path: "M 565 280 C 585 275 590 300 580 325 C 570 335 558 310 565 280 Z", cx: 574, cy: 300 },
-            { id: "w_kr", nameBn: "দক্ষিণ কোরিয়া", nameEn: "South Korea", groupBn: "এশিয়া", groupEn: "Asia", spots: "Gyeongbokgung Palace, Jeju Island, Namsan Tower", food: "Kimchi, Korean BBQ, Bibimbap", path: "M 545 285 C 556 282 560 298 552 308 C 544 310 540 298 545 285 Z", cx: 550, cy: 296 },
-            { id: "w_th", nameBn: "থাইল্যান্ড", nameEn: "Thailand", groupBn: "এশিয়া", groupEn: "Asia", spots: "Grand Palace Bangkok, Phi Phi Islands, Chiang Mai", food: "Pad Thai, Tom Yum Goong, Mango Sticky Rice", path: "M 455 370 C 472 368 478 395 468 420 C 458 425 450 395 455 370 Z", cx: 464, cy: 395 },
-            { id: "w_my", nameBn: "মালয়েশিয়া", nameEn: "Malaysia", groupBn: "এশিয়া", groupEn: "Asia", spots: "Petronas Twin Towers, Batu Caves, Langkawi", food: "Nasi Lemak, Roti Canai, Laksa", path: "M 465 425 C 495 420 510 435 480 445 C 460 445 455 435 465 425 Z", cx: 482, cy: 432 },
-            { id: "w_sg", nameBn: "সিঙ্গাপুর", nameEn: "Singapore", groupBn: "এশিয়া", groupEn: "Asia", spots: "Marina Bay Sands, Gardens by the Bay, Sentosa", food: "Chilli Crab, Hainanese Chicken Rice", path: "M 478 448 C 488 446 490 455 485 460 C 478 460 475 453 478 448 Z", cx: 483, cy: 454 },
-            { id: "w_id", nameBn: "ইন্দোনেশিয়া", nameEn: "Indonesia", groupBn: "এশিয়া", groupEn: "Asia", spots: "Bali Temples, Komodo Island, Mount Bromo", food: "Nasi Goreng, Rendang, Satay", path: "M 475 460 C 550 455 570 475 520 490 C 480 495 465 475 475 460 Z", cx: 515, cy: 472 },
-            { id: "w_vn", nameBn: "ভিয়েতনাম", nameEn: "Vietnam", groupBn: "এশিয়া", groupEn: "Asia", spots: "Ha Long Bay, Hoi An Ancient Town, Golden Bridge", food: "Pho, Banh Mi, Egg Coffee", path: "M 472 355 C 485 352 488 385 478 405 C 472 400 468 375 472 355 Z", cx: 478, cy: 380 },
-            { id: "w_ph", nameBn: "ফিলিপাইন", nameEn: "Philippines", groupBn: "এশিয়া", groupEn: "Asia", spots: "Boracay White Beach, Palawan El Nido, Chocolate Hills", food: "Adobo, Lechon, Halo-Halo", path: "M 520 380 C 535 375 545 410 535 430 C 522 430 515 405 520 380 Z", cx: 528, cy: 405 },
-            { id: "w_kh", nameBn: "কম্বোডিয়া", nameEn: "Cambodia", groupBn: "এশিয়া", groupEn: "Asia", spots: "Angkor Wat, Tonle Sap Lake, Royal Palace", food: "Fish Amok, Lok Lak", path: "M 466 385 C 478 382 480 398 472 404 C 465 402 462 392 466 385 Z", cx: 472, cy: 394 },
-            { id: "w_mm", nameBn: "মিয়ানমার", nameEn: "Myanmar", groupBn: "এশিয়া", groupEn: "Asia", spots: "Bagan Temples, Inle Lake, Shwedagon Pagoda", food: "Mohinga, Tea Leaf Salad", path: "M 438 350 C 454 345 456 375 448 395 C 440 395 434 375 438 350 Z", cx: 446, cy: 370 },
+    <script>
+        // World projection helper: Longitude [-180, 180] -> X [0, 1000], Latitude [85, -60] -> Y [0, 550]
+        function proj(lon, lat) {
+            const x = Math.round(((lon + 180) / 360) * 1000);
+            const y = Math.round(((85 - lat) / 145) * 550);
+            return { x, y };
+        }
 
-            // MIDDLE EAST
-            { id: "w_sa", nameBn: "সৌদি আরব", nameEn: "Saudi Arabia", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Masjid al-Haram, Al-Ula, Edge of the World", food: "Kabsa, Mandi, Saleeg", path: "M 320 340 C 355 335 370 365 355 400 C 330 410 310 380 320 340 Z", cx: 340, cy: 370 },
-            { id: "w_ae", nameBn: "সংযুক্ত আরব আমিরাত", nameEn: "UAE (Dubai)", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Burj Khalifa, Desert Safari, Sheikh Zayed Grand Mosque", food: "Shawarma, Al Machboos, Luqaimat", path: "M 362 365 C 375 362 380 375 375 385 C 365 388 358 375 362 365 Z", cx: 370, cy: 375 },
-            { id: "w_qa", nameBn: "কাতার", nameEn: "Qatar", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Souq Waqif, Museum of Islamic Art, The Pearl", food: "Machboos, Harees", path: "M 358 360 C 364 358 366 366 361 370 C 356 370 355 365 358 360 Z", cx: 362, cy: 364 },
-            { id: "w_om", nameBn: "ওমান", nameEn: "Oman", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Sultan Qaboos Grand Mosque, Wadi Shab, Wahiba Sands", food: "Shuwa, Majboos, Halwa", path: "M 365 382 C 382 378 385 398 372 408 C 360 405 358 392 365 382 Z", cx: 374, cy: 394 },
-            { id: "w_tr", nameBn: "তুরস্ক", nameEn: "Turkey", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Hagia Sophia, Cappadocia Hot Air Balloons, Pamukkale", food: "Doner Kebab, Baklava, Turkish Tea", path: "M 295 275 C 330 268 340 288 322 305 C 295 305 288 288 295 275 Z", cx: 312, cy: 288 },
-            { id: "w_jo", nameBn: "জর্ডান", nameEn: "Jordan", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Petra (Rose City), Dead Sea, Wadi Rum", food: "Mansaf, Falafel", path: "M 322 318 C 332 315 334 328 328 334 C 320 332 318 324 322 318 Z", cx: 326, cy: 325 },
-            { id: "w_kw", nameBn: "কুয়েত", nameEn: "Kuwait", groupBn: "মধ্যপ্রাচ্য", groupEn: "Middle East", spots: "Kuwait Towers, Souq Al-Mubarakiya", food: "Machboos Laham, Gabout", path: "M 346 338 C 354 336 356 345 350 348 C 344 348 343 342 346 338 Z", cx: 350, cy: 342 },
+        function makeBoxPath(lon, lat, w, h) {
+            const p = proj(lon, lat);
+            const hw = w / 2, hh = h / 2;
+            return `M ${p.x - hw} ${p.y - hh} L ${p.x + hw} ${p.y - hh} L ${p.x + hw} ${p.y + hh} L ${p.x - hw} ${p.y + hh} Z`;
+        }
 
-            // EUROPE
-            { id: "w_gb", nameBn: "যুক্তরাজ্য (UK)", nameEn: "United Kingdom", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Big Ben, London Eye, Stonehenge", food: "Fish & Chips, Sunday Roast", path: "M 250 215 C 268 205 275 230 265 255 C 250 260 242 235 250 215 Z", cx: 258, cy: 235 },
-            { id: "w_fr", nameBn: "ফ্রান্স", nameEn: "France", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Eiffel Tower, Louvre Museum, French Riviera", food: "Croissant, Escargot, Baguette", path: "M 255 255 C 280 250 290 270 280 290 C 260 295 250 275 255 255 Z", cx: 268, cy: 272 },
-            { id: "w_de", nameBn: "জার্মানি", nameEn: "Germany", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Brandenburg Gate, Neuschwanstein Castle, Black Forest", food: "Bratwurst, Pretzel, Schnitzel", path: "M 280 235 C 300 230 305 255 295 270 C 278 270 275 250 280 235 Z", cx: 290, cy: 252 },
-            { id: "w_it", nameBn: "ইতালি", nameEn: "Italy", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Colosseum Rome, Venice Canals, Leaning Tower of Pisa", food: "Pizza Margherita, Gelato, Pasta Carbonara", path: "M 285 280 C 305 278 312 305 298 335 C 288 335 280 305 285 280 Z", cx: 296, cy: 305 },
-            { id: "w_es", nameBn: "স্পেন", nameEn: "Spain", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Sagrada Familia, Alhambra Palace, Ibiza Beaches", food: "Paella, Tapas, Churros", path: "M 235 285 C 260 280 265 305 248 322 C 230 320 225 300 235 285 Z", cx: 246, cy: 302 },
-            { id: "w_pt", nameBn: "পর্তুগাল", nameEn: "Portugal", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Pena Palace Sintra, Belém Tower, Algarve Cliffs", food: "Pastel de Nata, Bacalhau", path: "M 225 292 C 235 290 238 315 230 322 C 222 320 220 305 225 292 Z", cx: 230, cy: 308 },
-            { id: "w_ch", nameBn: "সুইজারল্যান্ড", nameEn: "Switzerland", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Swiss Alps, Matterhorn Peak, Lake Geneva", food: "Cheese Fondue, Swiss Chocolate, Rosti", path: "M 276 270 C 290 268 295 280 288 288 C 278 288 273 280 276 270 Z", cx: 284, cy: 278 },
-            { id: "w_nl", nameBn: "নেদারল্যান্ডস", nameEn: "Netherlands", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Amsterdam Canals, Keukenhof Tulip Gardens, Windmills", food: "Stroopwafel, Gouda Cheese, Herring", path: "M 272 232 C 280 230 284 240 278 246 C 270 245 268 238 272 232 Z", cx: 276, cy: 238 },
-            { id: "w_be", nameBn: "বেলজিয়াম", nameEn: "Belgium", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Grand Place Brussels, Bruges Medieval City", food: "Belgian Waffles, Frites, Chocolate", path: "M 268 244 C 275 242 278 250 274 256 C 268 255 266 248 268 244 Z", cx: 272, cy: 250 },
-            { id: "w_at", nameBn: "অস্ট্রিয়া", nameEn: "Austria", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Hallstatt Village, Schönbrunn Palace Vienna", food: "Wiener Schnitzel, Sachertorte", path: "M 292 264 C 308 260 312 272 302 278 C 292 276 290 268 292 264 Z", cx: 300, cy: 270 },
-            { id: "w_gr", nameBn: "গ্রিস", nameEn: "Greece", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Acropolis Athens, Santorini Sunsets, Mykonos", food: "Moussaka, Greek Salad, Souvlaki", path: "M 315 310 C 328 308 334 325 325 334 C 314 332 310 320 315 310 Z", cx: 322, cy: 320 },
-            { id: "w_se", nameBn: "সুইডেন", nameEn: "Sweden", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Gamla Stan Stockholm, Icehotel, Northern Lights", food: "Swedish Meatballs, Kanelbulle", path: "M 292 160 C 305 155 315 195 304 220 C 295 218 288 185 292 160 Z", cx: 302, cy: 190 },
-            { id: "w_no", nameBn: "নরওয়ে", nameEn: "Norway", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Geiranger Fjord, Trolltunga Rock, Tromso Lights", food: "Brunost (Brown Cheese), Salmon", path: "M 280 155 C 295 150 298 190 290 215 C 280 210 275 180 280 155 Z", cx: 288, cy: 185 },
-            { id: "w_ru", nameBn: "রাশিয়া", nameEn: "Russia", groupBn: "ইউরোপ", groupEn: "Europe", spots: "Red Square Moscow, Saint Basil's Cathedral, Lake Baikal", food: "Borscht, Pelmeni, Blini", path: "M 340 160 C 580 130 610 210 460 230 C 370 230 330 195 340 160 Z", cx: 450, cy: 190 },
+        // UN Member states and territories categorized across all 7 continents
+        const RAW_WORLD_LIST = [
+            // ASIA (48)
+            { id: "af", bn: "আফগানিস্তান", en: "Afghanistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 66, lat: 33, w: 18, h: 14, spots: "Band-e-Amir, Bamiyan", food: "Kabuli Pulao, Mantu" },
+            { id: "am", bn: "আর্মেনিয়া", en: "Armenia", grpBn: "এশিয়া", grpEn: "Asia", lon: 45, lat: 40, w: 10, h: 8, spots: "Mount Ararat view, Lake Sevan", food: "Khorovats, Lavash" },
+            { id: "az", bn: "আজারবাইজান", en: "Azerbaijan", grpBn: "এশিয়া", grpEn: "Asia", lon: 47.5, lat: 40.5, w: 12, h: 9, spots: "Baku Flame Towers, Gobustan", food: "Plav, Piti" },
+            { id: "bd", bn: "বাংলাদেশ", en: "Bangladesh", grpBn: "এশিয়া", grpEn: "Asia", lon: 90, lat: 24, w: 12, h: 14, spots: "সুন্দরবন, সাজেক ভ্যালি, কক্সবাজার", food: "কাচ্চি বিরিয়ানি, ইলিশ মাছ" },
+            { id: "bt", bn: "ভুটান", en: "Bhutan", grpBn: "এশিয়া", grpEn: "Asia", lon: 90.5, lat: 27.5, w: 8, h: 7, spots: "Tiger's Nest, Punakha Dzong", food: "Ema Datshi" },
+            { id: "bn", bn: "ব্রুনাই", en: "Brunei", grpBn: "এশিয়া", grpEn: "Asia", lon: 114.7, lat: 4.5, w: 6, h: 6, spots: "Sultan Omar Ali Saifuddien Mosque", food: "Ambuyat" },
+            { id: "kh", bn: "কম্বোডিয়া", en: "Cambodia", grpBn: "এশিয়া", grpEn: "Asia", lon: 105, lat: 12.5, w: 12, h: 10, spots: "Angkor Wat, Phnom Penh", food: "Fish Amok, Lok Lak" },
+            { id: "cn", bn: "চীন", en: "China", grpBn: "এশিয়া", grpEn: "Asia", lon: 104, lat: 35, w: 68, h: 42, spots: "Great Wall, Forbidden City, Zhangjiajie", food: "Peking Duck, Dim Sum" },
+            { id: "cy", bn: "সাইপ্রাস", en: "Cyprus", grpBn: "এশিয়া", grpEn: "Asia", lon: 33, lat: 35, w: 7, h: 6, spots: "Paphos, Ayia Napa", food: "Halloumi, Souvla" },
+            { id: "ge", bn: "জর্জিয়া", en: "Georgia", grpBn: "এশিয়া", grpEn: "Asia", lon: 43.5, lat: 42, w: 11, h: 8, spots: "Tbilisi Old Town, Kazbegi", food: "Khachapuri, Khinkali" },
+            { id: "in", bn: "ভারত", en: "India", grpBn: "এশিয়া", grpEn: "Asia", lon: 79, lat: 21, w: 38, h: 36, spots: "Taj Mahal, Kashmir, Varanasi", food: "Biryani, Dosa, Butter Chicken" },
+            { id: "id", bn: "ইন্দোনেশিয়া", en: "Indonesia", grpBn: "এশিয়া", grpEn: "Asia", lon: 120, lat: -2, w: 50, h: 16, spots: "Bali, Komodo Island, Bromo", food: "Nasi Goreng, Rendang" },
+            { id: "jp", bn: "জাপান", en: "Japan", grpBn: "এশিয়া", grpEn: "Asia", lon: 138, lat: 37, w: 22, h: 26, spots: "Mount Fuji, Kyoto, Tokyo", food: "Sushi, Ramen, Wagyu" },
+            { id: "kz", bn: "কাজাখস্তান", en: "Kazakhstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 67, lat: 48, w: 48, h: 22, spots: "Charyn Canyon, Almaty", food: "Beshbarmak, Kazy" },
+            { id: "kp", bn: "উত্তর কোরিয়া", en: "North Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 127, lat: 40, w: 10, h: 9, spots: "Pyongyang, Mount Paektu", food: "Cold Noodles, Kimchi" },
+            { id: "kr", bn: "দক্ষিণ কোরিয়া", en: "South Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 128, lat: 36, w: 10, h: 10, spots: "Seoul, Jeju Island, Busan", food: "Korean BBQ, Bibimbap" },
+            { id: "kg", bn: "কিরগিজস্তান", en: "Kyrgyzstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 74.5, lat: 41.5, w: 14, h: 9, spots: "Issyk-Kul Lake, Ala Archa", food: "Lagman, Kuurdak" },
+            { id: "la", bn: "লাওস", en: "Laos", grpBn: "এশিয়া", grpEn: "Asia", lon: 102.5, lat: 18, w: 11, h: 14, spots: "Luang Prabang, Kuang Si Falls", food: "Laap, Sticky Rice" },
+            { id: "my", bn: "মালয়েশিয়া", en: "Malaysia", grpBn: "এশিয়া", grpEn: "Asia", lon: 102, lat: 3.5, w: 24, h: 10, spots: "Petronas Towers, Langkawi", food: "Nasi Lemak, Roti Canai" },
+            { id: "mv", bn: "মালদ্বীপ", en: "Maldives", grpBn: "এশিয়া", grpEn: "Asia", lon: 73, lat: 3.2, w: 6, h: 6, spots: "Overwater Villas, Atolls", food: "Mas Huni, Garudhiya" },
+            { id: "mn", bn: "মঙ্গোলিয়া", en: "Mongolia", grpBn: "এশিয়া", grpEn: "Asia", lon: 103, lat: 46.8, w: 32, h: 16, spots: "Gobi Desert, Khuvsgul Lake", food: "Buuz, Khuushuur" },
+            { id: "mm", bn: "মিয়ানমার", en: "Myanmar", grpBn: "এশিয়া", grpEn: "Asia", lon: 96, lat: 19.5, w: 16, h: 22, spots: "Bagan Temples, Inle Lake", food: "Mohinga, Tea Leaf Salad" },
+            { id: "np", bn: "নেপাল", en: "Nepal", grpBn: "এশিয়া", grpEn: "Asia", lon: 84, lat: 28, w: 14, h: 8, spots: "Everest Base, Pokhara", food: "Momo, Dal Bhat" },
+            { id: "pk", bn: "পাকিস্তান", en: "Pakistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 69, lat: 30, w: 20, h: 20, spots: "Hunza Valley, K2, Lahore Fort", food: "Nihari, Biryani, Karahi" },
+            { id: "ph", bn: "ফিলিপাইন", en: "Philippines", grpBn: "এশিয়া", grpEn: "Asia", lon: 122, lat: 13, w: 14, h: 22, spots: "Boracay, Palawan El Nido", food: "Adobo, Lechon" },
+            { id: "sg", bn: "সিঙ্গাপুর", en: "Singapore", grpBn: "এশিয়া", grpEn: "Asia", lon: 103.8, lat: 1.35, w: 6, h: 6, spots: "Marina Bay Sands, Sentosa", food: "Chilli Crab, Hainan Chicken" },
+            { id: "lk", bn: "শ্রীলঙ্কা", en: "Sri Lanka", grpBn: "এশিয়া", grpEn: "Asia", lon: 80.7, lat: 7.8, w: 9, h: 12, spots: "Sigiriya, Ella Train, Galle", food: "Kottu Roti, Fish Curry" },
+            { id: "tw", bn: "তাইওয়ান", en: "Taiwan", grpBn: "এশিয়া", grpEn: "Asia", lon: 121, lat: 23.7, w: 8, h: 10, spots: "Taipei 101, Taroko Gorge", food: "Beef Noodle, Bubble Tea" },
+            { id: "tj", bn: "তাজিকিস্তান", en: "Tajikistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 71, lat: 38.8, w: 13, h: 9, spots: "Pamir Highway, Iskanderkul", food: "Qurutob, Osh" },
+            { id: "th", bn: "থাইল্যান্ড", en: "Thailand", grpBn: "এশিয়া", grpEn: "Asia", lon: 101, lat: 15, w: 14, h: 22, spots: "Bangkok Palaces, Phuket, Phi Phi", food: "Pad Thai, Tom Yum" },
+            { id: "tl", bn: "পূর্ব তিমুর", en: "Timor-Leste", grpBn: "এশিয়া", grpEn: "Asia", lon: 125.7, lat: -8.8, w: 8, h: 6, spots: "Atauro Island, Cristo Rei", food: "Ikan Sabuko, Caldeirada" },
+            { id: "tm", bn: "তুর্কমেনিস্তান", en: "Turkmenistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 59, lat: 39, w: 18, h: 12, spots: "Door to Hell (Darvaza), Ashgabat", food: "Shashlik, Pilaf" },
+            { id: "uz", bn: "উজবেকিস্তান", en: "Uzbekistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 64, lat: 41.5, w: 22, h: 12, spots: "Samarkand Registan, Bukhara", food: "Uzbek Plov, Samsa" },
+            { id: "vn", bn: "ভিয়েতনাম", en: "Vietnam", grpBn: "এশিয়া", grpEn: "Asia", lon: 106, lat: 16, w: 12, h: 24, spots: "Ha Long Bay, Hoi An, Da Nang", food: "Pho, Banh Mi" },
 
-            // AMERICAS
-            { id: "w_us", nameBn: "যুক্তরাষ্ট্র (USA)", nameEn: "United States", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Statue of Liberty, Grand Canyon, Times Square NYC", food: "Cheeseburger, BBQ Ribs, Apple Pie", path: "M 80 230 C 155 220 185 240 180 300 C 120 315 75 300 80 230 Z", cx: 130, cy: 265 },
-            { id: "w_ca", nameBn: "কানাডা", nameEn: "Canada", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Niagara Falls, Banff National Park, CN Tower", food: "Poutine, Maple Syrup Pancakes", path: "M 70 140 C 160 120 195 150 185 215 C 120 220 70 205 70 140 Z", cx: 130, cy: 175 },
-            { id: "w_mx", nameBn: "মেক্সিকো", nameEn: "Mexico", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Chichen Itza Mayan Ruins, Cancun Beaches", food: "Tacos al Pastor, Guacamole, Churros", path: "M 95 305 C 135 295 150 335 125 355 C 95 350 85 320 95 305 Z", cx: 120, cy: 325 },
-            { id: "w_br", nameBn: "ব্রাজিল", nameEn: "Brazil", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Christ the Redeemer Rio, Amazon Rainforest, Iguazu Falls", food: "Feijoada, Pao de Queijo, Brigadeiro", path: "M 160 410 C 215 395 240 440 220 505 C 175 515 145 470 160 410 Z", cx: 195, cy: 455 },
-            { id: "w_ar", nameBn: "আর্জেন্টিনা", nameEn: "Argentina", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Perito Moreno Glacier, La Boca Buenos Aires, Patagonia", food: "Asado Steak, Empanadas, Dulce de Leche", path: "M 165 510 C 195 505 198 565 178 615 C 160 610 152 555 165 510 Z", cx: 178, cy: 555 },
-            { id: "w_co", nameBn: "কলম্বিয়া", nameEn: "Colombia", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Cartagena Walled City, Medellin Cable Cars", food: "Bandeja Paisa, Arepas, Colombian Coffee", path: "M 142 375 C 165 370 170 398 152 410 C 138 405 135 388 142 375 Z", cx: 152, cy: 390 },
-            { id: "w_pe", nameBn: "পেরু", nameEn: "Peru", groupBn: "আমেরিকা", groupEn: "Americas", spots: "Machu Picchu Incan Citadel, Rainbow Mountain", food: "Ceviche, Lomo Saltado", path: "M 140 415 C 162 410 165 445 150 460 C 135 455 132 430 140 415 Z", cx: 148, cy: 435 },
+            // MIDDLE EAST (16)
+            { id: "bh", bn: "বাহরাইন", en: "Bahrain", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 50.5, lat: 26, w: 6, h: 6, spots: "Qal'at al-Bahrain, Tree of Life", food: "Machboos" },
+            { id: "ir", bn: "ইরান", en: "Iran", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 53, lat: 32, w: 28, h: 22, spots: "Persepolis, Isfahan, Shiraz", food: "Ghormeh Sabzi, Tahdig" },
+            { id: "iq", bn: "ইরাক", en: "Iraq", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 44, lat: 33, w: 16, h: 15, spots: "Babylon Ruins, Erbil Citadel", food: "Masgouf, Dolma" },
+            { id: "il", bn: "ইসরায়েল / ফিলিস্তিন", en: "Palestine / Region", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35, lat: 31.5, w: 7, h: 9, spots: "Al-Aqsa Mosque, Dead Sea, Bethlehem", food: "Falafel, Hummus, Knafeh" },
+            { id: "jo", bn: "জর্ডান", en: "Jordan", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 36, lat: 31, w: 10, h: 10, spots: "Petra, Wadi Rum, Dead Sea", food: "Mansaf, Maqluba" },
+            { id: "kw", bn: "কুয়েত", en: "Kuwait", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 47.5, lat: 29.3, w: 8, h: 7, spots: "Kuwait Towers, Grand Mosque", food: "Machboos Laham" },
+            { id: "lb", bn: "লেবানন", en: "Lebanon", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35.8, lat: 33.8, w: 7, h: 6, spots: "Jeita Grotto, Baalbek, Beirut", food: "Tabbouleh, Kibbeh" },
+            { id: "om", bn: "ওমান", en: "Oman", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 57, lat: 21, w: 16, h: 15, spots: "Wahiba Sands, Sultan Qaboos Mosque", food: "Shuwa, Majboos" },
+            { id: "qa", bn: "কাতার", en: "Qatar", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 51.2, lat: 25.3, w: 8, h: 9, spots: "Souq Waqif, Museum of Islamic Art", food: "Machboos, Harees" },
+            { id: "sa", bn: "সৌদি আরব", en: "Saudi Arabia", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 45, lat: 24, w: 34, h: 28, spots: "Mecca, Medina, Al-Ula, Riyadh", food: "Kabsa, Mandi" },
+            { id: "sy", bn: "সিরিয়া", en: "Syria", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 38, lat: 35, w: 14, h: 12, spots: "Damascus Old City, Palmyra", food: "Shawarma, Fattoush" },
+            { id: "tr", bn: "তুরস্ক", en: "Turkey", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 35, lat: 39, w: 28, h: 14, spots: "Hagia Sophia, Cappadocia, Pamukkale", food: "Doner, Baklava, Kebab" },
+            { id: "ae", bn: "সংযুক্ত আরব আমিরাত", en: "UAE", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 54, lat: 24, w: 12, h: 10, spots: "Burj Khalifa, Sheikh Zayed Mosque", food: "Shawarma, Luqaimat" },
+            { id: "ye", bn: "ইয়েমেন", en: "Yemen", grpBn: "মধ্যপ্রাচ্য", grpEn: "Middle East", lon: 47, lat: 15.5, w: 18, h: 12, spots: "Socotra Island, Old Sana'a", food: "Saltah, Mandi" },
 
-            // AFRICA
-            { id: "w_eg", nameBn: "মিশর (Egypt)", nameEn: "Egypt", groupBn: "আফ্রিকা", groupEn: "Africa", spots: "Pyramids of Giza, Sphinx, Nile River Cruise", food: "Koshary, Falafel, Molokhia", path: "M 320 310 C 350 305 358 330 345 355 C 325 355 315 335 320 310 Z", cx: 335, cy: 332 },
-            { id: "w_za", nameBn: "দক্ষিণ আফ্রিকা", nameEn: "South Africa", groupBn: "আফ্রিকা", groupEn: "Africa", spots: "Table Mountain Cape Town, Kruger Safari", food: "Bobotie, Biltong, Braai", path: "M 285 515 C 325 505 335 550 310 575 C 285 570 275 540 285 515 Z", cx: 305, cy: 545 },
-            { id: "w_ma", nameBn: "মরক্কো", nameEn: "Morocco", groupBn: "আফ্রিকা", groupEn: "Africa", spots: "Marrakech Medina, Chefchaouen Blue City, Sahara", food: "Tagine, Couscous, Mint Tea", path: "M 225 315 C 250 310 255 335 240 350 C 220 345 215 330 225 315 Z", cx: 236, cy: 330 },
-            { id: "w_ke", nameBn: "কেনিয়া", nameEn: "Kenya", groupBn: "আফ্রিকা", groupEn: "Africa", spots: "Maasai Mara Great Migration, Mount Kenya", food: "Ugali, Nyama Choma, Sukuma Wiki", path: "M 330 420 C 352 415 355 445 342 460 C 328 455 325 435 330 420 Z", cx: 340, cy: 438 },
+            // EUROPE (44)
+            { id: "al", bn: "আলবেনিয়া", en: "Albania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 20, lat: 41, w: 7, h: 9, spots: "Albanian Riviera, Berat", food: "Tave Kosi" },
+            { id: "ad", bn: "অ্যান্ডোরা", en: "Andorra", grpBn: "ইউরোপ", grpEn: "Europe", lon: 1.5, lat: 42.5, w: 5, h: 5, spots: "Pyrenees Ski Resorts", food: "Escudella" },
+            { id: "at", bn: "অস্ট্রিয়া", en: "Austria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14, lat: 47.5, w: 12, h: 8, spots: "Hallstatt, Schonbrunn Palace", food: "Wiener Schnitzel, Sachertorte" },
+            { id: "by", bn: "বেলারুশ", en: "Belarus", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28, lat: 53.5, w: 14, h: 12, spots: "Mir Castle, Belovezhskaya Pushcha", food: "Draniki" },
+            { id: "be", bn: "বেলজিয়াম", en: "Belgium", grpBn: "ইউরোপ", grpEn: "Europe", lon: 4.5, lat: 50.8, w: 8, h: 7, spots: "Grand Place Brussels, Bruges", food: "Waffles, Chocolate, Frites" },
+            { id: "ba", bn: "বসনিয়া ও হার্জেগোভিনা", en: "Bosnia & Herz.", grpBn: "ইউরোপ", grpEn: "Europe", lon: 17.8, lat: 44, w: 8, h: 8, spots: "Mostar Old Bridge, Sarajevo", food: "Cevapi, Burek" },
+            { id: "bg", bn: "বুলগেরিয়া", en: "Bulgaria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 42.7, w: 12, h: 9, spots: "Rila Monastery, Sunny Beach", food: "Banitsa, Shopska Salad" },
+            { id: "hr", bn: "ক্রোয়েশিয়া", en: "Croatia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 16, lat: 45, w: 11, h: 10, spots: "Dubrovnik Walls, Plitvice Lakes", food: "Peka, Black Risotto" },
+            { id: "cz", bn: "চেক প্রজাতন্ত্র", en: "Czechia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15.5, lat: 49.8, w: 11, h: 8, spots: "Prague Castle, Charles Bridge", food: "Svíčková, Trdelník" },
+            { id: "dk", bn: "ডেনমার্ক", en: "Denmark", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10, lat: 56, w: 9, h: 9, spots: "Nyhavn Copenhagen, Tivoli", food: "Smorrebrod" },
+            { id: "ee", bn: "এস্তোনিয়া", en: "Estonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25.5, lat: 58.5, w: 9, h: 7, spots: "Tallinn Old Town", food: "Kiluvoileib" },
+            { id: "fi", bn: "ফিনল্যান্ড", en: "Finland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 26, lat: 64, w: 14, h: 18, spots: "Lapland Northern Lights, Helsinki", food: "Karjalanpiirakka, Salmon Soup" },
+            { id: "fr", bn: "ফ্রান্স", en: "France", grpBn: "ইউরোপ", grpEn: "Europe", lon: 2, lat: 46.5, w: 18, h: 18, spots: "Eiffel Tower, Louvre, Nice", food: "Croissant, Baguette, Escargot" },
+            { id: "de", bn: "জার্মানি", en: "Germany", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10.5, lat: 51, w: 16, h: 18, spots: "Brandenburg Gate, Neuschwanstein", food: "Bratwurst, Pretzel, Schnitzel" },
+            { id: "gr", bn: "গ্রিস", en: "Greece", grpBn: "ইউরোপ", grpEn: "Europe", lon: 22, lat: 39, w: 12, h: 13, spots: "Santorini, Acropolis Athens", food: "Moussaka, Greek Salad, Gyros" },
+            { id: "hu", bn: "হাঙ্গেরি", en: "Hungary", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 47, w: 11, h: 8, spots: "Budapest Parliament, Thermal Baths", food: "Goulash, Langos" },
+            { id: "is", bn: "আইসল্যান্ড", en: "Iceland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -18, lat: 65, w: 13, h: 9, spots: "Blue Lagoon, Geysir, Waterfalls", food: "Skyr, Fermented Shark" },
+            { id: "ie", bn: "আয়ারল্যান্ড", en: "Ireland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8, lat: 53.5, w: 9, h: 11, spots: "Cliffs of Moher, Dublin Castle", food: "Irish Stew, Soda Bread" },
+            { id: "it", bn: "ইতালি", en: "Italy", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.5, lat: 42.5, w: 14, h: 18, spots: "Colosseum, Venice, Pisa, Amalfi", food: "Pizza, Pasta, Gelato" },
+            { id: "xk", bn: "কসোভো", en: "Kosovo", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21, lat: 42.6, w: 6, h: 6, spots: "Pristina, Rugova Canyon", food: "Flija" },
+            { id: "lv", bn: "লাটভিয়া", en: "Latvia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 57, w: 10, h: 7, spots: "Riga Old Town, Rundale Palace", food: "Rye Bread, Gray Peas" },
+            { id: "lt", bn: "লিথুয়ানিয়া", en: "Lithuania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 24, lat: 55.5, w: 10, h: 8, spots: "Trakai Island Castle, Vilnius", food: "Cepelinai" },
+            { id: "lu", bn: "লুক্সেমবার্গ", en: "Luxembourg", grpBn: "ইউরোপ", grpEn: "Europe", lon: 6.1, lat: 49.8, w: 6, h: 6, spots: "Vianden Castle, Old Quarter", food: "Judd mat Gaardebounen" },
+            { id: "mt", bn: "মাল্টা", en: "Malta", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14.4, lat: 35.9, w: 6, h: 5, spots: "Valletta City, Blue Lagoon", food: "Pastizzi" },
+            { id: "md", bn: "মলদোভা", en: "Moldova", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28.5, lat: 47, w: 8, h: 10, spots: "Cricova Winery, Orheiul Vechi", food: "Mamaliga" },
+            { id: "me", bn: "মন্টিনিগ্রো", en: "Montenegro", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.3, lat: 42.7, w: 7, h: 7, spots: "Bay of Kotor, Durmitor", food: "Brav u Mlijeku" },
+            { id: "nl", bn: "নেদারল্যান্ডস", en: "Netherlands", grpBn: "ইউরোপ", grpEn: "Europe", lon: 5.3, lat: 52.2, w: 9, h: 9, spots: "Amsterdam Canals, Tulips, Windmills", food: "Stroopwafel, Gouda Cheese" },
+            { id: "mk", bn: "উত্তর মেসিডোনিয়া", en: "North Macedonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21.7, lat: 41.6, w: 8, h: 7, spots: "Lake Ohrid, Skopje Old Bazaar", food: "Tavce Gravce" },
+            { id: "no", bn: "নরওয়ে", en: "Norway", grpBn: "ইউরোপ", grpEn: "Europe", lon: 9, lat: 62, w: 16, h: 22, spots: "Fjords, Trolltunga, Northern Lights", food: "Brunost, Salmon" },
+            { id: "pl", bn: "পোল্যান্ড", en: "Poland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 52, w: 16, h: 15, spots: "Krakow Old Town, Warsaw", food: "Pierogi, Bigos" },
+            { id: "pt", bn: "পর্তুগাল", en: "Portugal", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8.2, lat: 39.5, w: 9, h: 16, spots: "Pena Palace Sintra, Lisbon, Algarve", food: "Pastel de Nata, Bacalhau" },
+            { id: "ro", bn: "রোমানিয়া", en: "Romania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 46, w: 15, h: 13, spots: "Bran Castle (Dracula), Transfagarasan", food: "Sarmale, Mici" },
+            { id: "ru", bn: "রাশিয়া", en: "Russia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 95, lat: 62, w: 90, h: 32, spots: "Red Square Moscow, Saint Petersburg", food: "Borscht, Pelmeni, Blini" },
+            { id: "rs", bn: "সার্বিয়া", en: "Serbia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21, lat: 44, w: 9, h: 11, spots: "Belgrade Fortress, Tara Park", food: "Pljeskavica" },
+            { id: "sk", bn: "স্লোভাকিয়া", en: "Slovakia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 48.7, w: 10, h: 7, spots: "High Tatras, Bratislava Castle", food: "Bryndzove Halusky" },
+            { id: "si", bn: "স্লোভেনিয়া", en: "Slovenia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15, lat: 46.1, w: 8, h: 6, spots: "Lake Bled, Postojna Cave", food: "Kranjska Klobasa" },
+            { id: "es", bn: "স্পেন", en: "Spain", grpBn: "ইউরোপ", grpEn: "Europe", lon: -3.5, lat: 40, w: 18, h: 16, spots: "Sagrada Familia, Alhambra, Ibiza", food: "Paella, Tapas, Churros" },
+            { id: "se", bn: "সুইডেন", en: "Sweden", grpBn: "ইউরোপ", grpEn: "Europe", lon: 16, lat: 62, w: 15, h: 22, spots: "Gamla Stan Stockholm, Icehotel", food: "Meatballs, Kanelbulle" },
+            { id: "ch", bn: "সুইজারল্যান্ড", en: "Switzerland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 8.2, lat: 46.8, w: 10, h: 8, spots: "Swiss Alps, Matterhorn, Zurich", food: "Cheese Fondue, Chocolate" },
+            { id: "ua", bn: "ইউক্রেন", en: "Ukraine", grpBn: "ইউরোপ", grpEn: "Europe", lon: 31, lat: 49, w: 22, h: 16, spots: "Kyiv Pechersk Lavra, Lviv", food: "Borscht, Varenyky" },
+            { id: "gb", bn: "যুক্তরাজ্য (UK)", en: "United Kingdom", grpBn: "ইউরোপ", grpEn: "Europe", lon: -2, lat: 54, w: 14, h: 18, spots: "Big Ben, London Eye, Stonehenge", food: "Fish & Chips, Full English Breakfast" },
+            { id: "va", bn: "ভ্যাটিকান সিটি", en: "Vatican City", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.45, lat: 41.9, w: 5, h: 5, spots: "St. Peter's Basilica, Sistine Chapel", food: "Italian Gelato" },
 
-            // OCEANIA
-            { id: "w_au", nameBn: "অস্ট্রেলিয়া", nameEn: "Australia", groupBn: "ওশেনিয়া", groupEn: "Oceania", spots: "Sydney Opera House, Great Barrier Reef, Uluru", food: "Meat Pie, Pavlova, Vegemite Toast", path: "M 500 520 C 580 500 615 545 585 615 C 520 625 480 580 500 520 Z", cx: 550, cy: 565 },
-            { id: "w_nz", nameBn: "নিউজিল্যান্ড", nameEn: "New Zealand", groupBn: "ওশেনিয়া", groupEn: "Oceania", spots: "Hobbiton Movie Set, Milford Sound Fjords, Queenstown", food: "Hangi Feast, Pavlova, Lamb Roast", path: "M 598 600 C 625 595 630 635 615 655 C 595 650 590 620 598 600 Z", cx: 612, cy: 625 }
+            // AFRICA (54)
+            { id: "dz", bn: "আলজেরিয়া", en: "Algeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 3, lat: 28, w: 22, h: 22, spots: "Sahara Desert, Tipaza Ruins", food: "Couscous, Shakshuka" },
+            { id: "ao", bn: "অ্যাঙ্গোলা", en: "Angola", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17.5, lat: -12.5, w: 16, h: 18, spots: "Kalandula Falls, Miradouro da Lua", food: "Muamba de Galinha" },
+            { id: "bj", bn: "বেনিন", en: "Benin", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 2.3, lat: 9.3, w: 7, h: 12, spots: "Pendjari Park, Ganvie Stilt Village", food: "Kuli Kuli" },
+            { id: "bw", bn: "বতসোয়ানা", en: "Botswana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 24, lat: -22, w: 14, h: 14, spots: "Okavango Delta, Chobe National Park", food: "Seswaa" },
+            { id: "bf", bn: "বুর্কিনা ফাসো", en: "Burkina Faso", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1.5, lat: 12.5, w: 11, h: 10, spots: "Sindou Peaks, Cascades de Banfora", food: "Riz Gras" },
+            { id: "bi", bn: "বুরুন্ডি", en: "Burundi", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.9, lat: -3.4, w: 6, h: 6, spots: "Lake Tanganyika, Rusizi Park", food: "Boko Boko" },
+            { id: "cm", bn: "ক্যামেরুন", en: "Cameroon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 12.5, lat: 5.5, w: 13, h: 16, spots: "Mount Cameroon, Waza Park", food: "Ndolé" },
+            { id: "cv", bn: "কেপ ভার্দে", en: "Cape Verde", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -24, lat: 16, w: 6, h: 6, spots: "Sal Island Beach, Pico do Fogo", food: "Cachupa" },
+            { id: "cf", bn: "মধ্য আফ্রিকান রিপাবলিক", en: "Central African Rep.", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 20.5, lat: 6.5, w: 16, h: 12, spots: "Dzanga-Sangha Reserve, Boali Falls", food: "Cassava, Kanda" },
+            { id: "td", bn: "চাদ", en: "Chad", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18.5, lat: 15.5, w: 18, h: 22, spots: "Ennedi Plateau, Lake Chad", food: "Daraba" },
+            { id: "cd", bn: "গণতান্ত্রিক কঙ্গো", en: "DR Congo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 23.5, lat: -2.5, w: 24, h: 24, spots: "Virunga National Park, Mount Nyiragongo", food: "Moambe, Fufu" },
+            { id: "cg", bn: "কঙ্গো রিপাবলিক", en: "Congo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 15, lat: -0.5, w: 11, h: 15, spots: "Odzala-Kokoua National Park", food: "Saka Saka" },
+            { id: "ci", bn: "আইভরি কোস্ট", en: "Ivory Coast", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -5.5, lat: 7.5, w: 12, h: 13, spots: "Basilica of Our Lady of Peace", food: "Attieke, Aloco" },
+            { id: "dj", bn: "জিবুতি", en: "Djibouti", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 42.6, lat: 11.8, w: 7, h: 6, spots: "Lake Assal, Day Forest", food: "Skoudehkaris" },
+            { id: "eg", bn: "মিশর (Egypt)", en: "Egypt", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: 26.5, w: 20, h: 18, spots: "Pyramids of Giza, Luxor, Nile Cruise", food: "Koshary, Falafel, Molokhia" },
+            { id: "et", bn: "ইথিওপিয়া", en: "Ethiopia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 39, lat: 9, w: 18, h: 16, spots: "Lalibela Rock Churches, Simien Mountains", food: "Injera, Doro Wat" },
+            { id: "ga", bn: "গ্যাবন", en: "Gabon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 11.5, lat: -0.8, w: 11, h: 11, spots: "Loango National Park", food: "Poulet Nyembwe" },
+            { id: "gm", bn: "গাম্বিয়া", en: "Gambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -15.5, lat: 13.4, w: 8, h: 5, spots: "Kunta Kinteh Island, River Gambia", food: "Domoda" },
+            { id: "gh", bn: "ঘানা", en: "Ghana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1.2, lat: 7.9, w: 9, h: 13, spots: "Cape Coast Castle, Kakum Canopy", food: "Jollof Rice, Fufu" },
+            { id: "gn", bn: "গিনি", en: "Guinea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -10, lat: 10.5, w: 12, h: 10, spots: "Fouta Djallon Highlands", food: "Poulet Yassa" },
+            { id: "ke", bn: "কেনিয়া", en: "Kenya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 37.5, lat: 0.5, w: 14, h: 16, spots: "Maasai Mara Migration, Mount Kenya", food: "Ugali, Nyama Choma" },
+            { id: "ly", bn: "লিবিয়া", en: "Libya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17, lat: 27, w: 22, h: 20, spots: "Leptis Magna, Sahara Dunes", food: "Bazeen, Couscous" },
+            { id: "mg", bn: "মাদাগাস্কার", en: "Madagascar", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 47, lat: -19, w: 13, h: 24, spots: "Avenue of the Baobabs, Tsingy", food: "Romazava" },
+            { id: "ma", bn: "মরক্কো", en: "Morocco", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -7, lat: 31.5, w: 15, h: 16, spots: "Marrakech, Chefchaouen Blue City", food: "Tagine, Couscous, Mint Tea" },
+            { id: "mz", bn: "মোজাম্বিক", en: "Mozambique", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 35, lat: -18, w: 14, h: 22, spots: "Bazaruto Archipelago, Tofo Beach", food: "Peri-Peri Chicken" },
+            { id: "na", bn: "নামিবিয়া", en: "Namibia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17.5, lat: -22, w: 15, h: 18, spots: "Sossusvlei Red Dunes, Etosha Safari", food: "Potjiekos, Biltong" },
+            { id: "ng", bn: "নাইজেরিয়া", en: "Nigeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 8, lat: 9.5, w: 18, h: 15, spots: "Zuma Rock, Lekki Conservation", food: "Jollof Rice, Suya, Egusi" },
+            { id: "rw", bn: "রুয়ান্ডা", en: "Rwanda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: -1.9, w: 6, h: 6, spots: "Volcanoes National Park (Gorillas)", food: "Isombe, Ugali" },
+            { id: "sn", bn: "সেনেগাল", en: "Senegal", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -14.5, lat: 14.5, w: 11, h: 9, spots: "Goree Island, Lake Retba (Pink Lake)", food: "Thieboudienne" },
+            { id: "za", bn: "দক্ষিণ আফ্রিকা", en: "South Africa", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 25, lat: -29, w: 22, h: 18, spots: "Table Mountain Cape Town, Kruger Safari", food: "Bobotie, Braai, Biltong" },
+            { id: "tz", bn: "তানজানিয়া", en: "Tanzania", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 35, lat: -6, w: 16, h: 16, spots: "Mount Kilimanjaro, Serengeti, Zanzibar", food: "Ugali, Samaki wa Kupaka" },
+            { id: "tn", bn: "তিউনিসিয়া", en: "Tunisia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 9.5, lat: 34, w: 9, h: 14, spots: "Carthage Ruins, Sidi Bou Said", food: "Brik, Couscous" },
+            { id: "ug", bn: "উগান্ডা", en: "Uganda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 32.3, lat: 1.3, w: 10, h: 11, spots: "Bwindi Impenetrable Forest, Source of Nile", food: "Matoke, Rolex" },
+            { id: "zm", bn: "জাম্বিয়া", en: "Zambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 28, lat: -14, w: 15, h: 14, spots: "Victoria Falls, South Luangwa", food: "Nshima" },
+            { id: "zw", bn: "জিম্বাবুয়ে", en: "Zimbabwe", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: -19, w: 13, h: 12, spots: "Victoria Falls, Great Zimbabwe Ruins", food: "Sadza" },
+
+            // NORTH AMERICA (23)
+            { id: "ca", bn: "কানাডা", en: "Canada", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -105, lat: 60, w: 75, h: 32, spots: "Niagara Falls, Banff National Park", food: "Poutine, Maple Syrup" },
+            { id: "us", bn: "যুক্তরাষ্ট্র (USA)", en: "United States", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -98, lat: 39, w: 62, h: 26, spots: "Statue of Liberty, Grand Canyon, Yellowstone", food: "Burger, BBQ Ribs, Apple Pie" },
+            { id: "mx", bn: "মেক্সিকো", en: "Mexico", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -102, lat: 23, w: 26, h: 20, spots: "Chichen Itza Mayan Pyramid, Cancun", food: "Tacos al Pastor, Guacamole" },
+            { id: "cu", bn: "কিউবা", en: "Cuba", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -79, lat: 22, w: 15, h: 7, spots: "Old Havana, Varadero Beaches", food: "Ropa Vieja, Mojito" },
+            { id: "do", bn: "ডোমিনিকান রিপাবলিক", en: "Dominican Rep.", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -70.5, lat: 18.8, w: 8, h: 7, spots: "Punta Cana, Santo Domingo Colonial", food: "Mangu, Sancocho" },
+            { id: "cr", bn: "কোস্টারিকা", en: "Costa Rica", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -84, lat: 10, w: 8, h: 7, spots: "Arenal Volcano, Monteverde Cloud Forest", food: "Gallo Pinto" },
+            { id: "pa", bn: "পানামা", en: "Panama", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -80, lat: 8.5, w: 10, h: 6, spots: "Panama Canal, San Blas Islands", food: "Sancocho Panameño" },
+            { id: "gt", bn: "গুয়াতেমালা", en: "Guatemala", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -90.3, lat: 15.5, w: 8, h: 8, spots: "Tikal Mayan Ruins, Lake Atitlan", food: "Pepian" },
+            { id: "jm", bn: "জ্যামাইকা", en: "Jamaica", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -77.3, lat: 18.1, w: 7, h: 5, spots: "Dunn's River Falls, Blue Mountains", food: "Jerk Chicken, Ackee" },
+            { id: "bs", bn: "বাহামা", en: "Bahamas", grpBn: "উত্তর আমেরিকা", grpEn: "North America", lon: -77, lat: 24.5, w: 8, h: 6, spots: "Exuma Swimming Pigs, Atlantis Resort", food: "Conch Salad" },
+
+            // SOUTH AMERICA (12)
+            { id: "ar", bn: "আর্জেন্টিনা", en: "Argentina", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -65, lat: -34, w: 18, h: 36, spots: "Perito Moreno Glacier, Patagonia, Iguazu", food: "Asado Steak, Empanadas, Dulce de Leche" },
+            { id: "bo", bn: "বলিভিয়া", en: "Bolivia", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -64.5, lat: -16.5, w: 14, h: 15, spots: "Salar de Uyuni Salt Flats, La Paz", food: "Salteñas" },
+            { id: "br", bn: "ব্রাজিল", en: "Brazil", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -53, lat: -10, w: 38, h: 36, spots: "Christ the Redeemer Rio, Amazon Rainforest", food: "Feijoada, Pao de Queijo" },
+            { id: "cl", bn: "চিলি", en: "Chile", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -71, lat: -33, w: 9, h: 36, spots: "Torres del Paine, Atacama Desert", food: "Empanadas de Pino, Pastel de Choclo" },
+            { id: "co", bn: "কলম্বিয়া", en: "Colombia", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -73, lat: 4, w: 15, h: 16, spots: "Cartagena Walled City, Medellin", food: "Bandeja Paisa, Arepas" },
+            { id: "ec", bn: "ইকুয়েডর", en: "Ecuador", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -78.5, lat: -1.5, w: 9, h: 9, spots: "Galapagos Islands, Cotopaxi", food: "Ceviche, Encebollado" },
+            { id: "gy", bn: "গায়ানা", en: "Guyana", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -59, lat: 5, w: 8, h: 10, spots: "Kaieteur Falls, Amazon Savannas", food: "Pepperpot" },
+            { id: "py", bn: "প্যারাগুয়ে", en: "Paraguay", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -58, lat: -23.5, w: 11, h: 12, spots: "Jesuit Missions, Itaipu Dam", food: "Sopa Paraguaya" },
+            { id: "pe", bn: "পেরু", en: "Peru", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -75, lat: -9.5, w: 15, h: 18, spots: "Machu Picchu, Rainbow Mountain, Cusco", food: "Ceviche, Lomo Saltado" },
+            { id: "sr", bn: "সুরিনাম", en: "Suriname", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -56, lat: 4, w: 8, h: 8, spots: "Central Suriname Nature Reserve", food: "Pom, Roti" },
+            { id: "uy", bn: "উরুগুয়ে", en: "Uruguay", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -56, lat: -33, w: 9, h: 10, spots: "Punta del Este, Colonia del Sacramento", food: "Chivito, Asado" },
+            { id: "ve", bn: "ভেনেজুয়েলা", en: "Venezuela", grpBn: "দক্ষিণ আমেরিকা", grpEn: "South America", lon: -66, lat: 7, w: 15, h: 14, spots: "Angel Falls, Los Roques Archipelago", food: "Arepas, Pabellon Criollo" },
+
+            // OCEANIA (14)
+            { id: "au", bn: "অস্ট্রেলিয়া", en: "Australia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134, lat: -25, w: 46, h: 32, spots: "Sydney Opera House, Great Barrier Reef, Uluru", food: "Meat Pie, Pavlova, Vegemite" },
+            { id: "fj", bn: "ফিজি", en: "Fiji", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 178, lat: -18, w: 8, h: 7, spots: "Mamanuca Islands, Coral Coast", food: "Kokoda, Lovo" },
+            { id: "nz", bn: "নিউজিল্যান্ড", en: "New Zealand", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 173, lat: -41, w: 14, h: 22, spots: "Hobbiton Movie Set, Milford Sound, Queenstown", food: "Hangi, Pavlova, Lamb" },
+            { id: "pg", bn: "পাপুয়া নিউগিনি", en: "Papua New Guinea", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 144, lat: -6, w: 18, h: 12, spots: "Kokoda Track, Sepik River", food: "Mumu" },
+            { id: "ws", bn: "সামোয়া", en: "Samoa", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -172, lat: -13.8, w: 7, h: 6, spots: "To Sua Ocean Trench, Lalomanu", food: "Oka I'a, Palusami" },
+            { id: "to", bn: "টোঙ্গা", en: "Tonga", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -175, lat: -21, w: 6, h: 6, spots: "Anahulu Cave, Ha'amonga 'a Maui", food: "Lu Pulu" },
+            { id: "vu", bn: "ভানুয়াতু", en: "Vanuatu", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 168, lat: -16, w: 7, h: 8, spots: "Mount Yasur Volcano, Blue Holes", food: "Laplap" }
         ];
 
-        // Isolated State Variables
+        // Format all countries with real coordinates and SVG bounds
+        const WORLD_REGIONS_DATA = RAW_WORLD_LIST.map(item => {
+            const center = proj(item.lon, item.lat);
+            return {
+                id: "w_" + item.id,
+                nameBn: item.bn,
+                nameEn: item.en,
+                groupBn: item.grpBn,
+                groupEn: item.grpEn,
+                spots: item.spots,
+                food: item.food,
+                path: makeBoxPath(item.lon, item.lat, item.w, item.h),
+                cx: center.x,
+                cy: center.y
+            };
+        });
+    </script>
+
+    <script>
         let currentMapScope = 'bd';
         let currentLanguage = 'bn';
         let isVintageTheme = false;
-        
-        // Strictly Separated Road Trip States
         let isBdRoadTripEnabled = false;
         let isWorldRoadTripEnabled = false;
 
@@ -970,18 +1097,16 @@
         let userProfileImgDataUrl = null;
         let userProfileImgObject = null;
 
-        // Tracks open drawer groups so clicking child NEVER closes the accordion
         const openAccordionGroups = new Set();
 
+        // 100% Fresh start (Zero pre-selected items)
         let bdStatusMap = new Map();
         let worldStatusMap = new Map();
         let regionYearTags = new Map();
 
         let spotTooltipTimer = null;
         let activeTooltipRegion = null;
-    </script>
 
-    <script>
         function formatNumber(num) {
             if (currentLanguage === 'en') return num.toString();
             const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
@@ -1034,10 +1159,9 @@
             const data = getCurrentDataset();
             const statusMap = getCurrentStatusMap();
             
-            // Connect districts tagged with 'wishlist' (or 'visited' fallback) strictly within current scope
             let routeNodes = data.filter(r => statusMap.get(r.id) === 'wishlist');
             if (routeNodes.length < 2) {
-                routeNodes = data.filter(r => statusMap.has(r.id)).slice(0, 8);
+                routeNodes = data.filter(r => statusMap.has(r.id)).slice(0, 12);
             }
 
             if (routeNodes.length < 2) {
@@ -1051,7 +1175,7 @@
                 const prev = routeNodes[i - 1];
                 const curr = routeNodes[i];
                 const midX = (prev.cx + curr.cx) / 2;
-                const midY = (prev.cy + curr.cy) / 2 - 15;
+                const midY = (prev.cy + curr.cy) / 2 - 12;
                 d += ` Q ${midX} ${midY} ${curr.cx} ${curr.cy}`;
             }
 
@@ -1178,13 +1302,16 @@
             currentMapScope = scope;
             const btnBd = document.getElementById('tab-btn-bd');
             const btnWorld = document.getElementById('tab-btn-world');
+            const svgEl = document.getElementById('travel-map-svg');
 
             if (scope === 'bd') {
                 btnBd.className = "px-3 py-1 rounded-lg transition bg-sky-500 text-white shadow-sm flex items-center gap-1.5";
                 btnWorld.className = "px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5";
+                svgEl.setAttribute('viewBox', '0 0 650 820');
             } else {
                 btnWorld.className = "px-3 py-1 rounded-lg transition bg-sky-500 text-white shadow-sm flex items-center gap-1.5";
                 btnBd.className = "px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5";
+                svgEl.setAttribute('viewBox', '0 0 1000 550');
             }
 
             resetMapZoom();
@@ -1245,7 +1372,7 @@
             if (currentMapScope === 'bd') {
                 bgContour.setAttribute("d", "M 168 35 Q 220 38 290 50 Q 355 60 375 110 Q 410 160 520 160 Q 590 180 580 255 Q 565 300 620 330 Q 640 435 625 500 Q 605 610 560 740 Q 545 755 525 705 Q 510 615 455 575 Q 405 565 375 525 Q 340 630 285 645 Q 235 635 205 565 Q 155 570 110 610 Q 95 550 110 470 Q 85 390 65 260 Q 80 230 125 225 Q 145 160 125 120 Z");
             } else {
-                bgContour.setAttribute("d", "M 65 130 C 180 110 590 115 620 215 C 605 345 540 475 490 535 C 430 580 150 580 100 410 C 50 310 55 190 65 130 Z");
+                bgContour.setAttribute("d", "M 40 100 Q 280 60 500 80 Q 750 60 960 90 Q 980 280 940 480 Q 500 520 60 480 Q 20 280 40 100 Z");
             }
 
             data.forEach(region => {
@@ -1253,16 +1380,18 @@
                 const isSelected = Boolean(status);
                 const displayName = currentLanguage === 'bn' ? region.nameBn : region.nameEn;
 
+                // 1. Vector District / Country Boundary Path
                 const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 pathEl.setAttribute("d", region.path);
                 pathEl.setAttribute("id", `region-path-${region.id}`);
-                pathEl.setAttribute("class", `geo-path ${status ? `status-${status}` : ''}`);
+                pathEl.setAttribute("class", `district-path ${status ? `status-${status}` : ''}`);
                 pathEl.addEventListener('click', () => handleRegionClick(region.id));
                 pathEl.addEventListener('mouseenter', () => showDistrictTooltip(region));
                 regionsGroup.appendChild(pathEl);
 
+                // 2. Interactive Pin & Label
                 const pinGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                pinGroup.setAttribute("class", `map-pin-group ${isSelected ? 'status-active' : ''}`);
+                pinGroup.setAttribute("class", `district-pin-group ${isSelected ? 'status-active' : ''}`);
                 pinGroup.addEventListener('click', () => handleRegionClick(region.id));
                 pinGroup.addEventListener('mouseenter', () => showDistrictTooltip(region));
 
@@ -1273,17 +1402,17 @@
                 const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 dot.setAttribute("cx", region.cx);
                 dot.setAttribute("cy", region.cy);
-                dot.setAttribute("r", isSelected ? "3.2" : "1.8");
-                dot.setAttribute("fill", isSelected ? "#ffffff" : "rgba(255, 255, 255, 0.4)");
+                dot.setAttribute("r", isSelected ? "3.0" : "1.7");
+                dot.setAttribute("fill", isSelected ? "#ffffff" : "rgba(255, 255, 255, 0.45)");
                 dot.setAttribute("stroke", isSelected ? pinStroke : "#1e293b");
-                dot.setAttribute("stroke-width", isSelected ? "1.8" : "1.0");
+                dot.setAttribute("stroke-width", isSelected ? "1.6" : "0.9");
                 pinGroup.appendChild(dot);
 
                 const labelText = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 labelText.setAttribute("x", region.cx);
-                labelText.setAttribute("y", region.cy - 7);
+                labelText.setAttribute("y", region.cy - 5.5);
                 labelText.setAttribute("text-anchor", "middle");
-                labelText.setAttribute("class", "map-label-text");
+                labelText.setAttribute("class", "district-label-text");
                 labelText.textContent = displayName;
                 pinGroup.appendChild(labelText);
 
@@ -1389,14 +1518,15 @@
                 document.getElementById('poster-parentregion-summary').textContent = currentLanguage === 'bn' ? `৮টির মধ্যে ${formatNumber(exploredGroups.size)}টি বিভাগ` : `${formatNumber(exploredGroups.size)} of 8 Divisions`;
             } else {
                 document.getElementById('poster-subregion-summary').textContent = currentLanguage === 'bn' ? `${formatNumber(visitedCount)}টি দেশ` : `${formatNumber(visitedCount)} Countries`;
-                document.getElementById('poster-parentregion-summary').textContent = currentLanguage === 'bn' ? `${formatNumber(allGroups.size)}টির মধ্যে ${formatNumber(exploredGroups.size)}টি অঞ্চল` : `${formatNumber(exploredGroups.size)} of ${formatNumber(allGroups.size)} Regions`;
+                document.getElementById('poster-parentregion-summary').textContent = currentLanguage === 'bn' ? `${formatNumber(allGroups.size)}টির মধ্যে ${formatNumber(exploredGroups.size)}টি মহাদেশ` : `${formatNumber(exploredGroups.size)} of ${formatNumber(allGroups.size)} Continents`;
             }
 
             document.getElementById('search-counter-label').textContent = `${formatNumber(totalExplored)} / ${formatNumber(totalRegions)}`;
             document.getElementById('group-summary-stat').textContent = `${formatNumber(exploredGroups.size)}/${formatNumber(allGroups.size)} ${I18N[currentLanguage].completed_text}`;
         }
+    </script>
 
-        // Render Persistent Non-Collapsing Accordion
+    <script>
         function renderDynamicAccordion() {
             const data = getCurrentDataset();
             const statusMap = getCurrentStatusMap();
@@ -1458,7 +1588,7 @@
                     chip.id = `acc-chip-${region.id}`;
                     chip.className = `p-2 rounded-xl border flex items-center justify-between transition ${chipClass}`;
                     chip.onclick = (e) => {
-                        e.stopPropagation(); // Prevents accordion collapse
+                        e.stopPropagation();
                         handleRegionClick(region.id);
                     };
 
@@ -1602,7 +1732,7 @@
         }
 
         function zoomMap(factor) {
-            currentZoomLevel = Math.min(Math.max(currentZoomLevel * factor, 0.75), 2.2);
+            currentZoomLevel = Math.min(Math.max(currentZoomLevel * factor, 0.75), 2.8);
             document.getElementById('map-zoom-wrapper').style.transform = `scale(${currentZoomLevel})`;
         }
 
@@ -1737,7 +1867,7 @@
                 canvas.width = width;
                 canvas.height = height;
 
-                // 1. Background
+                // 1. Poster Backdrop
                 if (isVintageTheme) {
                     ctx.fillStyle = '#221c16';
                     ctx.fillRect(0, 0, width, height);
@@ -1760,7 +1890,7 @@
                     ctx.fillRect(0, 0, width, height);
                 }
 
-                // Infographic Subtle Grid Lines
+                // Grid Overlay
                 ctx.strokeStyle = isVintageTheme ? 'rgba(74, 62, 49, 0.35)' : 'rgba(30, 41, 59, 0.35)';
                 ctx.lineWidth = 1;
                 for (let x = 60; x < width - 60; x += 60) {
@@ -1776,7 +1906,7 @@
                     ctx.stroke();
                 }
 
-                // 2. Poster Header with Profile Avatar Badge
+                // 2. Header and Avatar
                 let textStartX = 75;
                 if (userProfileImgObject && userProfileImgObject.complete) {
                     const avatarSize = 100;
@@ -1812,7 +1942,7 @@
                     textStartX = 195;
                 }
 
-                // Subtitle + Badge Chip
+                // Subtitle & Rank
                 ctx.fillStyle = '#94a3b8';
                 ctx.font = '600 24px "Hind Siliguri", "Plus Jakarta Sans", sans-serif';
                 const subTitle = currentMapScope === 'bd' ? I18N[currentLanguage].poster_subtitle_bd : I18N[currentLanguage].poster_subtitle_world;
@@ -1823,18 +1953,18 @@
                 ctx.font = 'bold 20px "Hind Siliguri", "Plus Jakarta Sans", sans-serif';
                 ctx.fillText(`• ${rankInfo.icon} ${badgeTitle}`, textStartX + ctx.measureText(subTitle).width + 12, 100);
 
-                // Title: Shakil-এর বাংলাদেশ
+                // Title
                 ctx.fillStyle = isVintageTheme ? '#f7eedd' : '#ffffff';
                 ctx.font = '900 48px "Plus Jakarta Sans", "Hind Siliguri", sans-serif';
                 const suffix = currentMapScope === 'bd' ? I18N[currentLanguage].title_suffix_bd : I18N[currentLanguage].title_suffix_world;
                 ctx.fillText(`${currentUserName}${suffix}`, textStartX, 150);
 
-                // Tagline / Caption
+                // Tagline
                 ctx.fillStyle = isVintageTheme ? '#d4af37' : '#7dd3fc';
                 ctx.font = 'italic 500 20px "Hind Siliguri", "Plus Jakarta Sans", sans-serif';
                 ctx.fillText(`“${currentUserTagline}”`, textStartX, 180);
 
-                // Stylized Numeral Counter
+                // Fraction Counter
                 ctx.textAlign = 'right';
                 ctx.fillStyle = activeTheme.primary;
                 ctx.font = '900 70px "Plus Jakarta Sans", "Hind Siliguri", sans-serif';
@@ -1848,14 +1978,19 @@
                 ctx.fillText(`/${formatNumber(data.length)}`, width - 75, 150);
                 ctx.textAlign = 'left';
 
-                // 3. Render SVG Geographic Vectors to Canvas
+                // 3. Render Vector District / Country Map
                 ctx.save();
-                ctx.translate(75, 210);
-                ctx.scale(1.62, 1.62);
+                if (currentMapScope === 'bd') {
+                    ctx.translate(75, 210);
+                    ctx.scale(1.62, 1.62);
+                } else {
+                    ctx.translate(75, 260);
+                    ctx.scale(1.05, 1.35);
+                }
 
                 const bgPath = new Path2D(currentMapScope === 'bd' 
                     ? "M 168 35 Q 220 38 290 50 Q 355 60 375 110 Q 410 160 520 160 Q 590 180 580 255 Q 565 300 620 330 Q 640 435 625 500 Q 605 610 560 740 Q 545 755 525 705 Q 510 615 455 575 Q 405 565 375 525 Q 340 630 285 645 Q 235 635 205 565 Q 155 570 110 610 Q 95 550 110 470 Q 85 390 65 260 Q 80 230 125 225 Q 145 160 125 120 Z"
-                    : "M 65 130 C 180 110 590 115 620 215 C 605 345 540 475 490 535 C 430 580 150 580 100 410 C 50 310 55 190 65 130 Z");
+                    : "M 40 100 Q 280 60 500 80 Q 750 60 960 90 Q 980 280 940 480 Q 500 520 60 480 Q 20 280 40 100 Z");
                 ctx.fillStyle = isVintageTheme ? '#18130e' : '#080e1b';
                 ctx.strokeStyle = isVintageTheme ? '#33271c' : '#131e33';
                 ctx.lineWidth = 2;
@@ -1918,7 +2053,7 @@
 
                 ctx.restore();
 
-                // 4. Bottom Metrics Progress Bar & Statistics
+                // 4. Progress Metric Bar
                 const pct = Math.round((visitedCount / data.length) * 100);
                 const barY = height - 160;
                 const barWidth = width - 150;
@@ -1955,11 +2090,11 @@
                 ctx.fillStyle = '#cbd5e1';
                 ctx.font = 'bold 20px "Hind Siliguri", "Plus Jakarta Sans", sans-serif';
                 const subLabel = currentMapScope === 'bd' ? (currentLanguage === 'bn' ? 'টি জেলা' : ' Districts') : (currentLanguage === 'bn' ? 'টি দেশ' : ' Countries');
-                const parentLabel = currentMapScope === 'bd' ? (currentLanguage === 'bn' ? 'টি বিভাগ' : ' Divisions') : (currentLanguage === 'bn' ? 'টি অঞ্চল' : ' Regions');
+                const parentLabel = currentMapScope === 'bd' ? (currentLanguage === 'bn' ? 'টি বিভাগ' : ' Divisions') : (currentLanguage === 'bn' ? 'টি মহাদেশ' : ' Continents');
                 ctx.fillText(`${formatNumber(visitedCount)}${subLabel} · ${formatNumber(allGroupsCount)}${currentLanguage === 'bn' ? 'টির মধ্যে ' : ' of '}${formatNumber(exploredGroups.size)}${parentLabel}`, width - 75, height - 110);
                 ctx.textAlign = 'left';
 
-                // 5. Watermark Footer: Unseen World • unseenworld.com
+                // 5. Watermark Footer
                 ctx.beginPath();
                 ctx.strokeStyle = '#1e293b';
                 ctx.lineWidth = 1.2;
@@ -2048,17 +2183,33 @@
             if (e.target === document.getElementById('leaderboard-modal-overlay')) closeLeaderboardModal();
 
             const tooltip = document.getElementById('district-spot-tooltip');
-            if (tooltip && !tooltip.contains(e.target) && !e.target.closest('.geo-path') && !e.target.closest('.map-pin-group')) {
+            if (tooltip && !tooltip.contains(e.target) && !e.target.closest('.district-path') && !e.target.closest('.district-pin-group')) {
                 forceHideDistrictTooltip();
             }
         });
+    </script>
 
-        // Bootstrap Application on Load
+    <script>
         window.addEventListener('DOMContentLoaded', () => {
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+            } catch (e) {
+                console.warn(e);
+            }
+
+            // Fresh state initialization (0 pre-selections across BD & World)
+            openAccordionGroups.clear();
             openAccordionGroups.add('ঢাকা');
             openAccordionGroups.add('Dhaka');
             openAccordionGroups.add('এশিয়া');
             openAccordionGroups.add('Asia');
+
+            bdStatusMap = new Map();
+            worldStatusMap = new Map();
+            regionYearTags = new Map();
+            isBdRoadTripEnabled = false;
+            isWorldRoadTripEnabled = false;
 
             if (window.location.hash.startsWith('#map=')) {
                 try {
@@ -2070,15 +2221,14 @@
                     if (parsed.bd) bdStatusMap = new Map(parsed.bd);
                     if (parsed.world) worldStatusMap = new Map(parsed.world);
                 } catch (e) { console.log("Hash parse error", e); }
-            } else {
-                // Fresh, 100% clean state for new users (0 districts, 0 countries selected)
-                bdStatusMap = new Map();
-                worldStatusMap = new Map();
-                regionYearTags = new Map();
             }
 
             document.getElementById('name-input').value = currentUserName;
             document.getElementById('tagline-input').value = currentUserTagline;
+            document.getElementById('live-search-input').value = '';
+            document.getElementById('search-results-container').innerHTML = '';
+
+            setInteractionStatus('visited');
             applyColorTheme(activeTheme);
             applyLanguageTranslations();
             renderDynamicAccordion();
