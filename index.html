@@ -16,6 +16,10 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- D3.js v7 CDN -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- TopoJSON Client CDN -->
+    <script src="https://unpkg.com/topojson-client@3"></script>
 
     <script>
         tailwind.config = {
@@ -178,7 +182,7 @@
                     </button>
                     <button onclick="switchMapScope('world')" id="tab-btn-world" class="px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
                         <i class="ph-bold ph-globe-hemisphere-west"></i>
-                        <span data-i18n="tab_world">বিশ্ব মানচিত্র (১৯০+ দেশ)</span>
+                        <span data-i18n="tab_world">বিশ্ব মানচিত্র</span>
                     </button>
                 </div>
             </div>
@@ -758,7 +762,7 @@
         const I18N = {
             bn: {
                 tab_bd: "বাংলাদেশ (৬৪ জেলা)",
-                tab_world: "বিশ্ব মানচিত্র (১৯০+ দেশ)",
+                tab_world: "বিশ্ব মানচিত্র",
                 btn_theme: "কালার থিম",
                 btn_reset: "সব মুছুন",
                 btn_download: "পোস্টার ডাউনলোড (HD)",
@@ -799,7 +803,7 @@
             },
             en: {
                 tab_bd: "Bangladesh (64 Districts)",
-                tab_world: "World Map (190+ Countries)",
+                tab_world: "World Map",
                 btn_theme: "Color Theme",
                 btn_reset: "Reset All",
                 btn_download: "Download HD Poster",
@@ -961,242 +965,289 @@
     </script>
 
     <script>
-        function proj(lon, lat) {
-            const x = Math.round(((lon + 180) / 360) * 1000);
-            const y = Math.round(((85 - lat) / 145) * 550);
-            return { x, y };
-        }
+        // Real D3 Natural Earth Projection for 1000x550 SVG canvas
+        const d3Projection = d3.geoNaturalEarth1()
+            .scale(165)
+            .translate([500, 275]);
+        const d3PathGenerator = d3.geoPath().projection(d3Projection);
 
-        function makeBoxPath(lon, lat, w, h) {
-            const p = proj(lon, lat);
-            const hw = w / 2, hh = h / 2;
-            return `M ${p.x - hw} ${p.y - hh} L ${p.x + hw} ${p.y - hh} L ${p.x + hw} ${p.y + hh} L ${p.x - hw} ${p.y + hh} Z`;
-        }
-
-        // Full 190+ Sovereign Countries and Territories Catalog Across All Continents
+        // Catalog of 190+ Countries with ISO codes and Long/Lat coordinates for projection
         const RAW_WORLD_190_PLUS = [
-            // ASIA (48 Countries & Territories)
-            { id: "af", bn: "আফগানিস্তান", en: "Afghanistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 66, lat: 33, w: 18, h: 14, spots: "Band-e-Amir, Bamiyan", food: "Kabuli Pulao, Mantu" },
-            { id: "am", bn: "আর্মেনিয়া", en: "Armenia", grpBn: "এশিয়া", grpEn: "Asia", lon: 45, lat: 40, w: 9, h: 8, spots: "Mount Ararat view, Lake Sevan", food: "Khorovats, Lavash" },
-            { id: "az", bn: "আজারবাইজান", en: "Azerbaijan", grpBn: "এশিয়া", grpEn: "Asia", lon: 47.5, lat: 40.5, w: 11, h: 9, spots: "Baku Flame Towers, Gobustan", food: "Plav, Piti" },
-            { id: "bh", bn: "বাহরাইন", en: "Bahrain", grpBn: "এশিয়া", grpEn: "Asia", lon: 50.5, lat: 26, w: 5, h: 5, spots: "Qal'at al-Bahrain, Tree of Life", food: "Machboos, Halwa Showaiter" },
-            { id: "bd", bn: "বাংলাদেশ", en: "Bangladesh", grpBn: "এশিয়া", grpEn: "Asia", lon: 90, lat: 24, w: 11, h: 14, spots: "সুন্দরবন, সাজেক ভ্যালি, কক্সবাজার", food: "কাচ্চি বিরিয়ানি, ইলিশ মাছ" },
-            { id: "bt", bn: "ভুটান", en: "Bhutan", grpBn: "এশিয়া", grpEn: "Asia", lon: 90.5, lat: 27.5, w: 8, h: 7, spots: "Tiger's Nest, Punakha Dzong", food: "Ema Datshi" },
-            { id: "bn", bn: "ব্রুনাই", en: "Brunei", grpBn: "এশিয়া", grpEn: "Asia", lon: 114.7, lat: 4.5, w: 6, h: 6, spots: "Sultan Omar Ali Mosque", food: "Ambuyat" },
-            { id: "kh", bn: "কম্বোডিয়া", en: "Cambodia", grpBn: "এশিয়া", grpEn: "Asia", lon: 105, lat: 12.5, w: 12, h: 10, spots: "Angkor Wat, Phnom Penh", food: "Fish Amok, Lok Lak" },
-            { id: "cn", bn: "চীন", en: "China", grpBn: "এশিয়া", grpEn: "Asia", lon: 104, lat: 35, w: 62, h: 38, spots: "Great Wall, Forbidden City", food: "Peking Duck, Dim Sum" },
-            { id: "cy", bn: "সাইপ্রাস", en: "Cyprus", grpBn: "এশিয়া", grpEn: "Asia", lon: 33, lat: 35, w: 6, h: 6, spots: "Paphos, Ayia Napa", food: "Halloumi, Souvla" },
-            { id: "ge", bn: "জর্জিয়া", en: "Georgia", grpBn: "এশিয়া", grpEn: "Asia", lon: 43.5, lat: 42, w: 10, h: 8, spots: "Tbilisi Old Town, Kazbegi", food: "Khachapuri, Khinkali" },
-            { id: "in", bn: "ভারত", en: "India", grpBn: "এশিয়া", grpEn: "Asia", lon: 79, lat: 21, w: 36, h: 34, spots: "Taj Mahal, Kashmir, Varanasi", food: "Biryani, Dosa" },
-            { id: "id", bn: "ইন্দোনেশিয়া", en: "Indonesia", grpBn: "এশিয়া", grpEn: "Asia", lon: 120, lat: -2, w: 48, h: 16, spots: "Bali, Komodo Island, Bromo", food: "Nasi Goreng, Rendang" },
-            { id: "ir", bn: "ইরান", en: "Iran", grpBn: "এশিয়া", grpEn: "Asia", lon: 53, lat: 32, w: 26, h: 22, spots: "Persepolis, Isfahan Square", food: "Chelow Kebab, Fesenjan" },
-            { id: "iq", bn: "ইরাক", en: "Iraq", grpBn: "এশিয়া", grpEn: "Asia", lon: 44, lat: 33, w: 16, h: 16, spots: "Babylon Ruins, Erbil Citadel", food: "Masgouf, Dolma" },
-            { id: "il", bn: "ইসরায়েল", en: "Israel", grpBn: "এশিয়া", grpEn: "Asia", lon: 35, lat: 31, w: 6, h: 8, spots: "Dead Sea, Old City", food: "Hummus, Shakshuka" },
-            { id: "jp", bn: "জাপান", en: "Japan", grpBn: "এশিয়া", grpEn: "Asia", lon: 138, lat: 37, w: 20, h: 26, spots: "Mount Fuji, Kyoto, Tokyo", food: "Sushi, Ramen, Wagyu" },
-            { id: "jo", bn: "জর্ডান", en: "Jordan", grpBn: "এশিয়া", grpEn: "Asia", lon: 36, lat: 31, w: 8, h: 9, spots: "Petra, Wadi Rum", food: "Mansaf, Falafel" },
-            { id: "kz", bn: "কাজাখস্তান", en: "Kazakhstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 67, lat: 48, w: 46, h: 20, spots: "Charyn Canyon, Almaty", food: "Beshbarmak, Kazy" },
-            { id: "kw", bn: "কুয়েত", en: "Kuwait", grpBn: "এশিয়া", grpEn: "Asia", lon: 47.5, lat: 29.3, w: 6, h: 6, spots: "Kuwait Towers", food: "Machboos Laham" },
-            { id: "kg", bn: "কিরগিজস্তান", en: "Kyrgyzstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 74.5, lat: 41.2, w: 14, h: 9, spots: "Issyk-Kul Lake, Ala Archa", food: "Lagman, Beshbarmak" },
-            { id: "la", bn: "লাওস", en: "Laos", grpBn: "এশিয়া", grpEn: "Asia", lon: 102.5, lat: 18, w: 10, h: 16, spots: "Luang Prabang, Kuang Si", food: "Larb, Sticky Rice" },
-            { id: "lb", bn: "লেবানন", en: "Lebanon", grpBn: "এশিয়া", grpEn: "Asia", lon: 35.8, lat: 33.8, w: 5, h: 6, spots: "Baalbek, Jeita Grotto", food: "Kibbeh, Tabbouleh" },
-            { id: "my", bn: "মালয়েশিয়া", en: "Malaysia", grpBn: "এশিয়া", grpEn: "Asia", lon: 102, lat: 3.5, w: 22, h: 10, spots: "Petronas Towers, Langkawi", food: "Nasi Lemak, Roti Canai" },
-            { id: "mv", bn: "মালদ্বীপ", en: "Maldives", grpBn: "এশিয়া", grpEn: "Asia", lon: 73, lat: 3.2, w: 5, h: 5, spots: "Overwater Villas, Atolls", food: "Mas Huni, Garudhiya" },
-            { id: "mn", bn: "মঙ্গোলিয়া", en: "Mongolia", grpBn: "এশিয়া", grpEn: "Asia", lon: 103, lat: 46, w: 32, h: 16, spots: "Gobi Desert, Khuvsgul", food: "Buuz, Khorkhog" },
-            { id: "mm", bn: "মিয়ানমার", en: "Myanmar", grpBn: "এশিয়া", grpEn: "Asia", lon: 96, lat: 21, w: 16, h: 24, spots: "Bagan Temples, Inle Lake", food: "Mohinga, Tea Salad" },
-            { id: "np", bn: "নেপাল", en: "Nepal", grpBn: "এশিয়া", grpEn: "Asia", lon: 84, lat: 28, w: 13, h: 8, spots: "Everest Base, Pokhara", food: "Momo, Dal Bhat" },
-            { id: "kp", bn: "উত্তর কোরিয়া", en: "North Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 127, lat: 40, w: 9, h: 9, spots: "Paektu Mountain, Pyongyang", food: "Cold Noodles, Kimchi" },
-            { id: "om", bn: "ওমান", en: "Oman", grpBn: "এশিয়া", grpEn: "Asia", lon: 57, lat: 21, w: 14, h: 14, spots: "Wahiba Sands, Wadi Shab", food: "Shuwa, Majboos" },
-            { id: "pk", bn: "পাকিস্তান", en: "Pakistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 69, lat: 30, w: 18, h: 18, spots: "Hunza Valley, K2, Lahore", food: "Nihari, Biryani" },
-            { id: "ps", bn: "ফিলিস্তিন", en: "Palestine", grpBn: "এশিয়া", grpEn: "Asia", lon: 35.2, lat: 31.9, w: 5, h: 6, spots: "Al-Aqsa Mosque, Bethlehem", food: "Musakhan, Maqluba" },
-            { id: "ph", bn: "ফিলিপাইন", en: "Philippines", grpBn: "এশিয়া", grpEn: "Asia", lon: 122, lat: 13, w: 13, h: 20, spots: "Boracay, Palawan El Nido", food: "Adobo, Lechon" },
-            { id: "qa", bn: "কাতার", en: "Qatar", grpBn: "এশিয়া", grpEn: "Asia", lon: 51.2, lat: 25.3, w: 7, h: 8, spots: "Souq Waqif, Museum of Art", food: "Machboos" },
-            { id: "sa", bn: "সৌদি আরব", en: "Saudi Arabia", grpBn: "এশিয়া", grpEn: "Asia", lon: 45, lat: 24, w: 32, h: 26, spots: "Mecca, Medina, Al-Ula", food: "Kabsa, Mandi" },
-            { id: "sg", bn: "সিঙ্গাপুর", en: "Singapore", grpBn: "এশিয়া", grpEn: "Asia", lon: 103.8, lat: 1.35, w: 5, h: 5, spots: "Marina Bay Sands, Sentosa", food: "Chilli Crab, Hainan Chicken" },
-            { id: "kr", bn: "দক্ষিণ কোরিয়া", en: "South Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 128, lat: 36, w: 9, h: 9, spots: "Seoul, Jeju Island, Busan", food: "Korean BBQ, Bibimbap" },
-            { id: "lk", bn: "শ্রীলঙ্কা", en: "Sri Lanka", grpBn: "এশিয়া", grpEn: "Asia", lon: 80.7, lat: 7.8, w: 8, h: 11, spots: "Sigiriya, Ella Train, Galle", food: "Kottu Roti, Fish Curry" },
-            { id: "sy", bn: "সিরিয়া", en: "Syria", grpBn: "এশিয়া", grpEn: "Asia", lon: 38.5, lat: 35, w: 12, h: 11, spots: "Palmyra, Damascus Old City", food: "Shawarma, Kibbeh" },
-            { id: "tw", bn: "তাইওয়ান", en: "Taiwan", grpBn: "এশিয়া", grpEn: "Asia", lon: 121, lat: 23.5, w: 7, h: 9, spots: "Taipei 101, Taroko Gorge", food: "Beef Noodle, Bubble Tea" },
-            { id: "tj", bn: "তাজিকিস্তান", en: "Tajikistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 71, lat: 38.5, w: 12, h: 8, spots: "Pamir Highway, Iskanderkul", food: "Qurutob, Osh" },
-            { id: "th", bn: "থাইল্যান্ড", en: "Thailand", grpBn: "এশিয়া", grpEn: "Asia", lon: 101, lat: 15, w: 13, h: 20, spots: "Bangkok Palaces, Phuket", food: "Pad Thai, Tom Yum" },
-            { id: "tl", bn: "পূর্ব তিমুর", en: "Timor-Leste", grpBn: "এশিয়া", grpEn: "Asia", lon: 125.7, lat: -8.8, w: 7, h: 5, spots: "Atauro Island, Dili", food: "Ikan Sabuko, Tukir" },
-            { id: "tr", bn: "তুরস্ক", en: "Turkey", grpBn: "এশিয়া", grpEn: "Asia", lon: 35, lat: 39, w: 26, h: 13, spots: "Hagia Sophia, Cappadocia", food: "Doner, Baklava" },
-            { id: "tm", bn: "তুর্কমেনিস্তান", en: "Turkmenistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 59, lat: 39, w: 16, h: 11, spots: "Door to Hell, Ashgabat", food: "Shashlik, Pilaf" },
-            { id: "ae", bn: "সংযুক্ত আরব আমিরাত", en: "UAE", grpBn: "এশিয়া", grpEn: "Asia", lon: 54, lat: 24, w: 11, h: 9, spots: "Burj Khalifa, Sheikh Zayed Mosque", food: "Shawarma, Luqaimat" },
-            { id: "uz", bn: "উজবেকিস্তান", en: "Uzbekistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 64, lat: 41, w: 18, h: 12, spots: "Samarkand, Bukhara", food: "Plov, Samsa" },
-            { id: "vn", bn: "ভিয়েতনাম", en: "Vietnam", grpBn: "এশিয়া", grpEn: "Asia", lon: 106, lat: 16, w: 11, h: 22, spots: "Ha Long Bay, Hoi An", food: "Pho, Banh Mi" },
-            { id: "ye", bn: "ইয়েমেন", en: "Yemen", grpBn: "এশিয়া", grpEn: "Asia", lon: 48, lat: 15.5, w: 16, h: 11, spots: "Socotra Island, Sana'a", food: "Mandi, Saltah" },
+            // ASIA (48)
+            { id: "af", num: "004", bn: "আফগানিস্তান", en: "Afghanistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 66, lat: 33, spots: "Band-e-Amir, Bamiyan", food: "Kabuli Pulao, Mantu" },
+            { id: "am", num: "051", bn: "আর্মেনিয়া", en: "Armenia", grpBn: "এশিয়া", grpEn: "Asia", lon: 45, lat: 40, spots: "Mount Ararat view, Lake Sevan", food: "Khorovats, Lavash" },
+            { id: "az", num: "031", bn: "আজারবাইজান", en: "Azerbaijan", grpBn: "এশিয়া", grpEn: "Asia", lon: 47.5, lat: 40.5, spots: "Baku Flame Towers, Gobustan", food: "Plav, Piti" },
+            { id: "bh", num: "048", bn: "বাহরাইন", en: "Bahrain", grpBn: "এশিয়া", grpEn: "Asia", lon: 50.5, lat: 26, spots: "Qal'at al-Bahrain, Tree of Life", food: "Machboos, Halwa Showaiter" },
+            { id: "bd", num: "050", bn: "বাংলাদেশ", en: "Bangladesh", grpBn: "এশিয়া", grpEn: "Asia", lon: 90, lat: 24, spots: "সুন্দরবন, সাজেক ভ্যালি, কক্সবাজার", food: "কাচ্চি বিরিয়ানি, ইলিশ মাছ" },
+            { id: "bt", num: "064", bn: "ভুটান", en: "Bhutan", grpBn: "এশিয়া", grpEn: "Asia", lon: 90.5, lat: 27.5, spots: "Tiger's Nest, Punakha Dzong", food: "Ema Datshi" },
+            { id: "bn", num: "096", bn: "ব্রুনাই", en: "Brunei", grpBn: "এশিয়া", grpEn: "Asia", lon: 114.7, lat: 4.5, spots: "Sultan Omar Ali Mosque", food: "Ambuyat" },
+            { id: "kh", num: "116", bn: "কম্বোডিয়া", en: "Cambodia", grpBn: "এশিয়া", grpEn: "Asia", lon: 105, lat: 12.5, spots: "Angkor Wat, Phnom Penh", food: "Fish Amok, Lok Lak" },
+            { id: "cn", num: "156", bn: "চীন", en: "China", grpBn: "এশিয়া", grpEn: "Asia", lon: 104, lat: 35, spots: "Great Wall, Forbidden City", food: "Peking Duck, Dim Sum" },
+            { id: "cy", num: "196", bn: "সাইপ্রাস", en: "Cyprus", grpBn: "এশিয়া", grpEn: "Asia", lon: 33, lat: 35, spots: "Paphos, Ayia Napa", food: "Halloumi, Souvla" },
+            { id: "ge", num: "268", bn: "জর্জিয়া", en: "Georgia", grpBn: "এশিয়া", grpEn: "Asia", lon: 43.5, lat: 42, spots: "Tbilisi Old Town, Kazbegi", food: "Khachapuri, Khinkali" },
+            { id: "in", num: "356", bn: "ভারত", en: "India", grpBn: "এশিয়া", grpEn: "Asia", lon: 79, lat: 21, spots: "Taj Mahal, Kashmir, Varanasi", food: "Biryani, Dosa" },
+            { id: "id", num: "360", bn: "ইন্দোনেশিয়া", en: "Indonesia", grpBn: "এশিয়া", grpEn: "Asia", lon: 120, lat: -2, spots: "Bali, Komodo Island, Bromo", food: "Nasi Goreng, Rendang" },
+            { id: "ir", num: "364", bn: "ইরান", en: "Iran", grpBn: "এশিয়া", grpEn: "Asia", lon: 53, lat: 32, spots: "Persepolis, Isfahan Square", food: "Chelow Kebab, Fesenjan" },
+            { id: "iq", num: "368", bn: "ইরাক", en: "Iraq", grpBn: "এশিয়া", grpEn: "Asia", lon: 44, lat: 33, spots: "Babylon Ruins, Erbil Citadel", food: "Masgouf, Dolma" },
+            { id: "il", num: "376", bn: "ইসরায়েল", en: "Israel", grpBn: "এশিয়া", grpEn: "Asia", lon: 35, lat: 31, spots: "Dead Sea, Old City", food: "Hummus, Shakshuka" },
+            { id: "jp", num: "392", bn: "জাপান", en: "Japan", grpBn: "এশিয়া", grpEn: "Asia", lon: 138, lat: 37, spots: "Mount Fuji, Kyoto, Tokyo", food: "Sushi, Ramen, Wagyu" },
+            { id: "jo", num: "400", bn: "জর্ডান", en: "Jordan", grpBn: "এশিয়া", grpEn: "Asia", lon: 36, lat: 31, spots: "Petra, Wadi Rum", food: "Mansaf, Falafel" },
+            { id: "kz", num: "398", bn: "কাজাখস্তান", en: "Kazakhstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 67, lat: 48, spots: "Charyn Canyon, Almaty", food: "Beshbarmak, Kazy" },
+            { id: "kw", num: "414", bn: "কুয়েত", en: "Kuwait", grpBn: "এশিয়া", grpEn: "Asia", lon: 47.5, lat: 29.3, spots: "Kuwait Towers", food: "Machboos Laham" },
+            { id: "kg", num: "417", bn: "কিরগিজস্তান", en: "Kyrgyzstan", grpBn: "এশিয়া", grpEn: "Asia", lon: 74.5, lat: 41.2, spots: "Issyk-Kul Lake, Ala Archa", food: "Lagman, Beshbarmak" },
+            { id: "la", num: "418", bn: "লাওস", en: "Laos", grpBn: "এশিয়া", grpEn: "Asia", lon: 102.5, lat: 18, spots: "Luang Prabang, Kuang Si", food: "Larb, Sticky Rice" },
+            { id: "lb", num: "422", bn: "লেবানন", en: "Lebanon", grpBn: "এশিয়া", grpEn: "Asia", lon: 35.8, lat: 33.8, spots: "Baalbek, Jeita Grotto", food: "Kibbeh, Tabbouleh" },
+            { id: "my", num: "458", bn: "মালয়েশিয়া", en: "Malaysia", grpBn: "এশিয়া", grpEn: "Asia", lon: 102, lat: 3.5, spots: "Petronas Towers, Langkawi", food: "Nasi Lemak, Roti Canai" },
+            { id: "mv", num: "462", bn: "মালদ্বীপ", en: "Maldives", grpBn: "এশিয়া", grpEn: "Asia", lon: 73, lat: 3.2, spots: "Overwater Villas, Atolls", food: "Mas Huni, Garudhiya" },
+            { id: "mn", num: "496", bn: "মঙ্গোলিয়া", en: "Mongolia", grpBn: "এশিয়া", grpEn: "Asia", lon: 103, lat: 46, spots: "Gobi Desert, Khuvsgul", food: "Buuz, Khorkhog" },
+            { id: "mm", num: "104", bn: "মিয়ানমার", en: "Myanmar", grpBn: "এশিয়া", grpEn: "Asia", lon: 96, lat: 21, spots: "Bagan Temples, Inle Lake", food: "Mohinga, Tea Salad" },
+            { id: "np", num: "524", bn: "নেপাল", en: "Nepal", grpBn: "এশিয়া", grpEn: "Asia", lon: 84, lat: 28, spots: "Everest Base, Pokhara", food: "Momo, Dal Bhat" },
+            { id: "kp", num: "408", bn: "উত্তর কোরিয়া", en: "North Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 127, lat: 40, spots: "Paektu Mountain, Pyongyang", food: "Cold Noodles, Kimchi" },
+            { id: "om", num: "512", bn: "ওমান", en: "Oman", grpBn: "এশিয়া", grpEn: "Asia", lon: 57, lat: 21, spots: "Wahiba Sands, Wadi Shab", food: "Shuwa, Majboos" },
+            { id: "pk", num: "586", bn: "পাকিস্তান", en: "Pakistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 69, lat: 30, spots: "Hunza Valley, K2, Lahore", food: "Nihari, Biryani" },
+            { id: "ps", num: "275", bn: "ফিলিস্তিন", en: "Palestine", grpBn: "এশিয়া", grpEn: "Asia", lon: 35.2, lat: 31.9, spots: "Al-Aqsa Mosque, Bethlehem", food: "Musakhan, Maqluba" },
+            { id: "ph", num: "608", bn: "ফিলিপাইন", en: "Philippines", grpBn: "এশিয়া", grpEn: "Asia", lon: 122, lat: 13, spots: "Boracay, Palawan El Nido", food: "Adobo, Lechon" },
+            { id: "qa", num: "634", bn: "কাতার", en: "Qatar", grpBn: "এশিয়া", grpEn: "Asia", lon: 51.2, lat: 25.3, spots: "Souq Waqif, Museum of Art", food: "Machboos" },
+            { id: "sa", num: "682", bn: "সৌদি আরব", en: "Saudi Arabia", grpBn: "এশিয়া", grpEn: "Asia", lon: 45, lat: 24, spots: "Mecca, Medina, Al-Ula", food: "Kabsa, Mandi" },
+            { id: "sg", num: "702", bn: "সিঙ্গাপুর", en: "Singapore", grpBn: "এশিয়া", grpEn: "Asia", lon: 103.8, lat: 1.35, spots: "Marina Bay Sands, Sentosa", food: "Chilli Crab, Hainan Chicken" },
+            { id: "kr", num: "410", bn: "দক্ষিণ কোরিয়া", en: "South Korea", grpBn: "এশিয়া", grpEn: "Asia", lon: 128, lat: 36, spots: "Seoul, Jeju Island, Busan", food: "Korean BBQ, Bibimbap" },
+            { id: "lk", num: "144", bn: "শ্রীলঙ্কা", en: "Sri Lanka", grpBn: "এশিয়া", grpEn: "Asia", lon: 80.7, lat: 7.8, spots: "Sigiriya, Ella Train, Galle", food: "Kottu Roti, Fish Curry" },
+            { id: "sy", num: "760", bn: "সিরিয়া", en: "Syria", grpBn: "এশিয়া", grpEn: "Asia", lon: 38.5, lat: 35, spots: "Palmyra, Damascus Old City", food: "Shawarma, Kibbeh" },
+            { id: "tw", num: "158", bn: "তাইওয়ান", en: "Taiwan", grpBn: "এশিয়া", grpEn: "Asia", lon: 121, lat: 23.5, spots: "Taipei 101, Taroko Gorge", food: "Beef Noodle, Bubble Tea" },
+            { id: "tj", num: "762", bn: "তাজিকিস্তান", en: "Tajikistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 71, lat: 38.5, spots: "Pamir Highway, Iskanderkul", food: "Qurutob, Osh" },
+            { id: "th", num: "764", bn: "থাইল্যান্ড", en: "Thailand", grpBn: "এশিয়া", grpEn: "Asia", lon: 101, lat: 15, spots: "Bangkok Palaces, Phuket", food: "Pad Thai, Tom Yum" },
+            { id: "tl", num: "626", bn: "পূর্ব তিমুর", en: "Timor-Leste", grpBn: "এশিয়া", grpEn: "Asia", lon: 125.7, lat: -8.8, spots: "Atauro Island, Dili", food: "Ikan Sabuko, Tukir" },
+            { id: "tr", num: "792", bn: "তুরস্ক", en: "Turkey", grpBn: "এশিয়া", grpEn: "Asia", lon: 35, lat: 39, spots: "Hagia Sophia, Cappadocia", food: "Doner, Baklava" },
+            { id: "tm", num: "795", bn: "তুর্কমেনিস্তান", en: "Turkmenistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 59, lat: 39, spots: "Door to Hell, Ashgabat", food: "Shashlik, Pilaf" },
+            { id: "ae", num: "784", bn: "সংযুক্ত আরব আমিরাত", en: "UAE", grpBn: "এশিয়া", grpEn: "Asia", lon: 54, lat: 24, spots: "Burj Khalifa, Sheikh Zayed Mosque", food: "Shawarma, Luqaimat" },
+            { id: "uz", num: "860", bn: "উজবেকিস্তান", en: "Uzbekistan", grpBn: "এশিয়া", grpEn: "Asia", lon: 64, lat: 41, spots: "Samarkand, Bukhara", food: "Plov, Samsa" },
+            { id: "vn", num: "704", bn: "ভিয়েতনাম", en: "Vietnam", grpBn: "এশিয়া", grpEn: "Asia", lon: 106, lat: 16, spots: "Ha Long Bay, Hoi An", food: "Pho, Banh Mi" },
+            { id: "ye", num: "887", bn: "ইয়েমেন", en: "Yemen", grpBn: "এশিয়া", grpEn: "Asia", lon: 48, lat: 15.5, spots: "Socotra Island, Sana'a", food: "Mandi, Saltah" },
 
-            // EUROPE (44 Countries)
-            { id: "al", bn: "আলবেনিয়া", en: "Albania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 20, lat: 41, w: 6, h: 7, spots: "Ksamil Beaches, Berat Castle", food: "Tave Kosi, Byrek" },
-            { id: "ad", bn: "অ্যান্ডোরা", en: "Andorra", grpBn: "ইউরোপ", grpEn: "Europe", lon: 1.5, lat: 42.5, w: 4, h: 4, spots: "Pyrenees Ski Resort", food: "Escudella" },
-            { id: "at", bn: "অস্ট্রিয়া", en: "Austria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14.5, lat: 47.5, w: 9, h: 7, spots: "Hallstatt, Vienna Palaces", food: "Wiener Schnitzel, Sachertorte" },
-            { id: "by", bn: "বেলারুশ", en: "Belarus", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28, lat: 53.5, w: 12, h: 10, spots: "Mir Castle, Bialowieza", food: "Draniki" },
-            { id: "be", bn: "বেলজিয়াম", en: "Belgium", grpBn: "ইউরোপ", grpEn: "Europe", lon: 4.5, lat: 50.8, w: 6, h: 6, spots: "Grand Place, Bruges", food: "Waffles, Frites, Chocolate" },
-            { id: "ba", bn: "বসনিয়া ও হার্জেগোভিনা", en: "Bosnia and Herzegovina", grpBn: "ইউরোপ", grpEn: "Europe", lon: 17.8, lat: 44, w: 7, h: 7, spots: "Mostar Old Bridge, Sarajevo", food: "Cevapi, Burek" },
-            { id: "bg", bn: "বুলগেরিয়া", en: "Bulgaria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25.5, lat: 42.7, w: 9, h: 7, spots: "Rila Monastery, Sunny Beach", food: "Banitsa, Shopska" },
-            { id: "hr", bn: "ক্রোয়েশিয়া", en: "Croatia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15.5, lat: 45, w: 8, h: 7, spots: "Dubrovnik Walls, Plitvice Lakes", food: "Pasticada, Black Risotto" },
-            { id: "cz", bn: "চেক প্রজাতন্ত্র", en: "Czech Republic", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15.5, lat: 49.8, w: 8, h: 7, spots: "Charles Bridge, Prague Castle", food: "Svíčková, Trdelník" },
-            { id: "dk", bn: "ডেনমার্ক", en: "Denmark", grpBn: "ইউরোপ", grpEn: "Europe", lon: 9.5, lat: 56, w: 8, h: 8, spots: "Nyhavn Copenhagen, Tivoli", food: "Smorrebrod" },
-            { id: "ee", bn: "এস্তোনিয়া", en: "Estonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 58.5, w: 7, h: 6, spots: "Tallinn Old Town", food: "Kiluvõileib" },
-            { id: "fi", bn: "ফিনল্যান্ড", en: "Finland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 26, lat: 64, w: 12, h: 18, spots: "Lapland Aurora, Rovaniemi", food: "Karjalanpiirakka, Salmon Soup" },
-            { id: "fr", bn: "ফ্রান্স", en: "France", grpBn: "ইউরোপ", grpEn: "Europe", lon: 2, lat: 46.5, w: 16, h: 16, spots: "Eiffel Tower, Louvre", food: "Croissant, Baguette" },
-            { id: "de", bn: "জার্মানি", en: "Germany", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10.5, lat: 51, w: 14, h: 16, spots: "Brandenburg Gate, Neuschwanstein", food: "Bratwurst, Pretzel" },
-            { id: "gr", bn: "গ্রিস", en: "Greece", grpBn: "ইউরোপ", grpEn: "Europe", lon: 22, lat: 39, w: 10, h: 10, spots: "Acropolis Athens, Santorini", food: "Moussaka, Gyros" },
-            { id: "hu", bn: "হাঙ্গেরি", en: "Hungary", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 47, w: 8, h: 6, spots: "Buda Castle, Thermal Baths", food: "Goulash, Langos" },
-            { id: "is", bn: "আইসল্যান্ড", en: "Iceland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -18, lat: 65, w: 10, h: 8, spots: "Blue Lagoon, Geysir", food: "Plokkfiskur, Lamb Soup" },
-            { id: "ie", bn: "আয়ারল্যান্ড", en: "Ireland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8, lat: 53.5, w: 8, h: 9, spots: "Cliffs of Moher, Ring of Kerry", food: "Irish Stew, Soda Bread" },
-            { id: "it", bn: "ইতালি", en: "Italy", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.5, lat: 42.5, w: 12, h: 16, spots: "Colosseum, Venice, Pisa", food: "Pizza, Pasta, Gelato" },
-            { id: "xk", bn: "কসোভো", en: "Kosovo", grpBn: "ইউরোপ", grpEn: "Europe", lon: 20.9, lat: 42.6, w: 4, h: 4, spots: "Prizren Fortress, Rugova", food: "Flija, Burek" },
-            { id: "lv", bn: "লাতভিয়া", en: "Latvia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 24.5, lat: 57, w: 7, h: 6, spots: "Riga Old Town, Gauja", food: "Rye Bread, Sklandrausis" },
-            { id: "lt", bn: "লিথুয়ানিয়া", en: "Lithuania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 24, lat: 55.5, w: 7, h: 6, spots: "Trakai Island Castle", food: "Cepelinai" },
-            { id: "lu", bn: "লুক্সেমবার্গ", en: "Luxembourg", grpBn: "ইউরোপ", grpEn: "Europe", lon: 6.1, lat: 49.8, w: 4, h: 4, spots: "Bock Casemates, Vianden Castle", food: "Judd mat Gaardebounen" },
-            { id: "mt", bn: "মাল্টা", en: "Malta", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14.4, lat: 35.9, w: 4, h: 4, spots: "Valletta, Blue Lagoon", food: "Pastizzi, Rabbit Stew" },
-            { id: "md", bn: "মলদোভা", en: "Moldova", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28.5, lat: 47, w: 6, h: 7, spots: "Milestii Mici, Orheiul Vechi", food: "Mamaliga, Placinta" },
-            { id: "mc", bn: "মোনাকো", en: "Monaco", grpBn: "ইউরোপ", grpEn: "Europe", lon: 7.4, lat: 43.7, w: 3, h: 3, spots: "Monte Carlo Casino", food: "Barbagiuan" },
-            { id: "me", bn: "মন্টিনিগ্রো", en: "Montenegro", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.3, lat: 42.7, w: 5, h: 5, spots: "Bay of Kotor, Durmitor", food: "Black Risotto, Kacamak" },
-            { id: "nl", bn: "নেদারল্যান্ডস", en: "Netherlands", grpBn: "ইউরোপ", grpEn: "Europe", lon: 5.3, lat: 52.2, w: 7, h: 7, spots: "Amsterdam Canals, Tulips", food: "Stroopwafel, Gouda" },
-            { id: "mk", bn: "উত্তর মেসিডোনিয়া", en: "North Macedonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21.7, lat: 41.6, w: 6, h: 5, spots: "Lake Ohrid, Skopje Old Bazaar", food: "Tavce Gravce" },
-            { id: "no", bn: "নরওয়ে", en: "Norway", grpBn: "ইউরোপ", grpEn: "Europe", lon: 9, lat: 62, w: 12, h: 22, spots: "Geirangerfjord, Lofoten", food: "Brunost, Salmon" },
-            { id: "pl", bn: "পোল্যান্ড", en: "Poland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19, lat: 52, w: 14, h: 12, spots: "Krakow Square, Wieliczka", food: "Pierogi, Bigos" },
-            { id: "pt", bn: "পর্তুগাল", en: "Portugal", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8.2, lat: 39.5, w: 7, h: 12, spots: "Pena Palace Sintra, Algarve", food: "Pastel de Nata, Bacalhau" },
-            { id: "ro", bn: "রোমানিয়া", en: "Romania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 46, w: 12, h: 10, spots: "Bran Dracula Castle, Transfagarasan", food: "Sarmale, Mici" },
-            { id: "ru", bn: "রাশিয়া", en: "Russia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 95, lat: 62, w: 85, h: 28, spots: "Red Square, Saint Petersburg", food: "Borscht, Pelmeni" },
-            { id: "sm", bn: "সান মারিনো", en: "San Marino", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.4, lat: 43.9, w: 3, h: 3, spots: "Three Towers of San Marino", food: "Torta Tre Monti" },
-            { id: "rs", bn: "সার্বিয়া", en: "Serbia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21, lat: 44, w: 7, h: 8, spots: "Kalemegdan Fortress Belgrade", food: "Pljeskavica, Sarma" },
-            { id: "sk", bn: "স্লোভাকিয়া", en: "Slovakia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 48.7, w: 8, h: 6, spots: "High Tatras, Spis Castle", food: "Bryndzove Halusky" },
-            { id: "si", bn: "স্লোভেনিয়া", en: "Slovenia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15, lat: 46.1, w: 6, h: 5, spots: "Lake Bled, Postojna Cave", food: "Potica, Kremna Rezina" },
-            { id: "es", bn: "স্পেন", en: "Spain", grpBn: "ইউরোপ", grpEn: "Europe", lon: -3.5, lat: 40, w: 16, h: 14, spots: "Sagrada Familia, Alhambra", food: "Paella, Tapas" },
-            { id: "se", bn: "সুইডেন", en: "Sweden", grpBn: "ইউরোপ", grpEn: "Europe", lon: 16, lat: 62, w: 12, h: 22, spots: "Stockholm Gamla Stan, Icehotel", food: "Kottbullar, Kanelbulle" },
-            { id: "ch", bn: "সুইজারল্যান্ড", en: "Switzerland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 8.2, lat: 46.8, w: 8, h: 7, spots: "Swiss Alps, Matterhorn", food: "Cheese Fondue, Chocolate" },
-            { id: "ua", bn: "ইউক্রেন", en: "Ukraine", grpBn: "ইউরোপ", grpEn: "Europe", lon: 31, lat: 49, w: 18, h: 12, spots: "Kyiv Pechersk Lavra, Lviv", food: "Borscht, Varenyky" },
-            { id: "gb", bn: "যুক্তরাজ্য (UK)", en: "United Kingdom", grpBn: "ইউরোপ", grpEn: "Europe", lon: -2, lat: 54, w: 12, h: 16, spots: "Big Ben, London Eye", food: "Fish & Chips, Sunday Roast" },
-            { id: "va", bn: "ভ্যাটিকান সিটি", en: "Vatican City", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.45, lat: 41.9, w: 3, h: 3, spots: "St. Peter's Basilica, Sistine Chapel", food: "Roman Pasta" },
+            // EUROPE (44)
+            { id: "al", num: "008", bn: "আলবেনিয়া", en: "Albania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 20, lat: 41, spots: "Ksamil Beaches, Berat Castle", food: "Tave Kosi, Byrek" },
+            { id: "ad", num: "020", bn: "অ্যান্ডোরা", en: "Andorra", grpBn: "ইউরোপ", grpEn: "Europe", lon: 1.5, lat: 42.5, spots: "Pyrenees Ski Resort", food: "Escudella" },
+            { id: "at", num: "040", bn: "অস্ট্রিয়া", en: "Austria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14.5, lat: 47.5, spots: "Hallstatt, Vienna Palaces", food: "Wiener Schnitzel, Sachertorte" },
+            { id: "by", num: "112", bn: "বেলারুশ", en: "Belarus", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28, lat: 53.5, spots: "Mir Castle, Bialowieza", food: "Draniki" },
+            { id: "be", num: "056", bn: "বেলজিয়াম", en: "Belgium", grpBn: "ইউরোপ", grpEn: "Europe", lon: 4.5, lat: 50.8, spots: "Grand Place, Bruges", food: "Waffles, Frites, Chocolate" },
+            { id: "ba", num: "070", bn: "বসনিয়া ও হার্জেগোভিনা", en: "Bosnia and Herzegovina", grpBn: "ইউরোপ", grpEn: "Europe", lon: 17.8, lat: 44, spots: "Mostar Old Bridge, Sarajevo", food: "Cevapi, Burek" },
+            { id: "bg", num: "100", bn: "বুলগেরিয়া", en: "Bulgaria", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25.5, lat: 42.7, spots: "Rila Monastery, Sunny Beach", food: "Banitsa, Shopska" },
+            { id: "hr", num: "191", bn: "ক্রোয়েশিয়া", en: "Croatia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15.5, lat: 45, spots: "Dubrovnik Walls, Plitvice Lakes", food: "Pasticada, Black Risotto" },
+            { id: "cz", num: "203", bn: "চেক প্রজাতন্ত্র", en: "Czech Republic", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15.5, lat: 49.8, spots: "Charles Bridge, Prague Castle", food: "Svíčková, Trdelník" },
+            { id: "dk", num: "208", bn: "ডেনমার্ক", en: "Denmark", grpBn: "ইউরোপ", grpEn: "Europe", lon: 9.5, lat: 56, spots: "Nyhavn Copenhagen, Tivoli", food: "Smorrebrod" },
+            { id: "ee", num: "233", bn: "এস্তোনিয়া", en: "Estonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 58.5, spots: "Tallinn Old Town", food: "Kiluvõileib" },
+            { id: "fi", num: "246", bn: "ফিনল্যান্ড", en: "Finland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 26, lat: 64, spots: "Lapland Aurora, Rovaniemi", food: "Karjalanpiirakka, Salmon Soup" },
+            { id: "fr", num: "250", bn: "ফ্রান্স", en: "France", grpBn: "ইউরোপ", grpEn: "Europe", lon: 2, lat: 46.5, spots: "Eiffel Tower, Louvre", food: "Croissant, Baguette" },
+            { id: "de", num: "276", bn: "জার্মানি", en: "Germany", grpBn: "ইউরোপ", grpEn: "Europe", lon: 10.5, lat: 51, spots: "Brandenburg Gate, Neuschwanstein", food: "Bratwurst, Pretzel" },
+            { id: "gr", num: "300", bn: "গ্রিস", en: "Greece", grpBn: "ইউরোপ", grpEn: "Europe", lon: 22, lat: 39, spots: "Acropolis Athens, Santorini", food: "Moussaka, Gyros" },
+            { id: "hu", num: "348", bn: "হাঙ্গেরি", en: "Hungary", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 47, spots: "Buda Castle, Thermal Baths", food: "Goulash, Langos" },
+            { id: "is", num: "352", bn: "আইসল্যান্ড", en: "Iceland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -18, lat: 65, spots: "Blue Lagoon, Geysir", food: "Plokkfiskur, Lamb Soup" },
+            { id: "ie", num: "372", bn: "আয়ারল্যান্ড", en: "Ireland", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8, lat: 53.5, spots: "Cliffs of Moher, Ring of Kerry", food: "Irish Stew, Soda Bread" },
+            { id: "it", num: "380", bn: "ইতালি", en: "Italy", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.5, lat: 42.5, spots: "Colosseum, Venice, Pisa", food: "Pizza, Pasta, Gelato" },
+            { id: "xk", num: "-99", bn: "কসোভো", en: "Kosovo", grpBn: "ইউরোপ", grpEn: "Europe", lon: 20.9, lat: 42.6, spots: "Prizren Fortress, Rugova", food: "Flija, Burek" },
+            { id: "lv", num: "428", bn: "লাতভিয়া", en: "Latvia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 24.5, lat: 57, spots: "Riga Old Town, Gauja", food: "Rye Bread, Sklandrausis" },
+            { id: "lt", num: "440", bn: "লিথুয়ানিয়া", en: "Lithuania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 24, lat: 55.5, spots: "Trakai Island Castle", food: "Cepelinai" },
+            { id: "lu", num: "442", bn: "লুক্সেমবার্গ", en: "Luxembourg", grpBn: "ইউরোপ", grpEn: "Europe", lon: 6.1, lat: 49.8, spots: "Bock Casemates, Vianden Castle", food: "Judd mat Gaardebounen" },
+            { id: "mt", num: "470", bn: "মাল্টা", en: "Malta", grpBn: "ইউরোপ", grpEn: "Europe", lon: 14.4, lat: 35.9, spots: "Valletta, Blue Lagoon", food: "Pastizzi, Rabbit Stew" },
+            { id: "md", num: "498", bn: "মলদোভা", en: "Moldova", grpBn: "ইউরোপ", grpEn: "Europe", lon: 28.5, lat: 47, spots: "Milestii Mici, Orheiul Vechi", food: "Mamaliga, Placinta" },
+            { id: "mc", num: "492", bn: "মোনাকো", en: "Monaco", grpBn: "ইউরোপ", grpEn: "Europe", lon: 7.4, lat: 43.7, spots: "Monte Carlo Casino", food: "Barbagiuan" },
+            { id: "me", num: "499", bn: "মন্টিনিগ্রো", en: "Montenegro", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.3, lat: 42.7, spots: "Bay of Kotor, Durmitor", food: "Black Risotto, Kacamak" },
+            { id: "nl", num: "528", bn: "নেদারল্যান্ডস", en: "Netherlands", grpBn: "ইউরোপ", grpEn: "Europe", lon: 5.3, lat: 52.2, spots: "Amsterdam Canals, Tulips", food: "Stroopwafel, Gouda" },
+            { id: "mk", num: "807", bn: "উত্তর মেসিডোনিয়া", en: "North Macedonia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21.7, lat: 41.6, spots: "Lake Ohrid, Skopje Old Bazaar", food: "Tavce Gravce" },
+            { id: "no", num: "578", bn: "নরওয়ে", en: "Norway", grpBn: "ইউরোপ", grpEn: "Europe", lon: 9, lat: 62, spots: "Geirangerfjord, Lofoten", food: "Brunost, Salmon" },
+            { id: "pl", num: "616", bn: "পোল্যান্ড", en: "Poland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19, lat: 52, spots: "Krakow Square, Wieliczka", food: "Pierogi, Bigos" },
+            { id: "pt", num: "620", bn: "পর্তুগাল", en: "Portugal", grpBn: "ইউরোপ", grpEn: "Europe", lon: -8.2, lat: 39.5, spots: "Pena Palace Sintra, Algarve", food: "Pastel de Nata, Bacalhau" },
+            { id: "ro", num: "642", bn: "রোমানিয়া", en: "Romania", grpBn: "ইউরোপ", grpEn: "Europe", lon: 25, lat: 46, spots: "Bran Dracula Castle, Transfagarasan", food: "Sarmale, Mici" },
+            { id: "ru", num: "643", bn: "রাশিয়া", en: "Russia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 95, lat: 62, spots: "Red Square, Saint Petersburg", food: "Borscht, Pelmeni" },
+            { id: "sm", num: "674", bn: "সান মারিনো", en: "San Marino", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.4, lat: 43.9, spots: "Three Towers of San Marino", food: "Torta Tre Monti" },
+            { id: "rs", num: "688", bn: "সার্বিয়া", en: "Serbia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 21, lat: 44, spots: "Kalemegdan Fortress Belgrade", food: "Pljeskavica, Sarma" },
+            { id: "sk", num: "703", bn: "স্লোভাকিয়া", en: "Slovakia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 19.5, lat: 48.7, spots: "High Tatras, Spis Castle", food: "Bryndzove Halusky" },
+            { id: "si", num: "705", bn: "স্লোভেনিয়া", en: "Slovenia", grpBn: "ইউরোপ", grpEn: "Europe", lon: 15, lat: 46.1, spots: "Lake Bled, Postojna Cave", food: "Potica, Kremna Rezina" },
+            { id: "es", num: "724", bn: "স্পেন", en: "Spain", grpBn: "ইউরোপ", grpEn: "Europe", lon: -3.5, lat: 40, spots: "Sagrada Familia, Alhambra", food: "Paella, Tapas" },
+            { id: "se", num: "752", bn: "সুইডেন", en: "Sweden", grpBn: "ইউরোপ", grpEn: "Europe", lon: 16, lat: 62, spots: "Stockholm Gamla Stan, Icehotel", food: "Kottbullar, Kanelbulle" },
+            { id: "ch", num: "756", bn: "সুইজারল্যান্ড", en: "Switzerland", grpBn: "ইউরোপ", grpEn: "Europe", lon: 8.2, lat: 46.8, spots: "Swiss Alps, Matterhorn", food: "Cheese Fondue, Chocolate" },
+            { id: "ua", num: "804", bn: "ইউক্রেন", en: "Ukraine", grpBn: "ইউরোপ", grpEn: "Europe", lon: 31, lat: 49, spots: "Kyiv Pechersk Lavra, Lviv", food: "Borscht, Varenyky" },
+            { id: "gb", num: "826", bn: "যুক্তরাজ্য (UK)", en: "United Kingdom", grpBn: "ইউরোপ", grpEn: "Europe", lon: -2, lat: 54, spots: "Big Ben, London Eye", food: "Fish & Chips, Sunday Roast" },
+            { id: "va", num: "336", bn: "ভ্যাটিকান সিটি", en: "Vatican City", grpBn: "ইউরোপ", grpEn: "Europe", lon: 12.45, lat: 41.9, spots: "St. Peter's Basilica, Sistine Chapel", food: "Roman Pasta" },
 
-            // AFRICA (54 Countries)
-            { id: "dz", bn: "আলজেরিয়া", en: "Algeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 3, lat: 28, w: 22, h: 24, spots: "Sahara Desert, Tassili n'Ajjer", food: "Couscous, Tajine" },
-            { id: "ao", bn: "অ্যাঙ্গোলা", en: "Angola", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18, lat: -12.5, w: 14, h: 15, spots: "Kalandula Falls, Miradouro da Lua", food: "Muamba de Galinha" },
-            { id: "bj", bn: "বেনিন", en: "Benin", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 2.3, lat: 9.3, w: 6, h: 10, spots: "Pendjari National Park, Ouidah", food: "Kuli-Kuli, Akpan" },
-            { id: "bw", bn: "বতসোয়ানা", en: "Botswana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 24, lat: -22, w: 12, h: 12, spots: "Okavango Delta, Chobe Safari", food: "Seswaa, Morogo" },
-            { id: "bf", bn: "বুরকিনা ফাসো", en: "Burkina Faso", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1.5, lat: 12, w: 10, h: 8, spots: "Sindou Peaks, Ouagadougou", food: "Riz Gras, Babenda" },
-            { id: "bi", bn: "বুরুন্ডি", en: "Burundi", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.9, lat: -3.4, w: 5, h: 5, spots: "Lake Tanganyika, Karera Waterfalls", food: "Boko Boko Harees" },
-            { id: "cv", bn: "কেপ ভার্দে", en: "Cabo Verde", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -24, lat: 16, w: 5, h: 5, spots: "Sal Island Beach, Fogo Volcano", food: "Cachupa" },
-            { id: "cm", bn: "ক্যামেরুন", en: "Cameroon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 12.3, lat: 7.3, w: 10, h: 14, spots: "Mount Cameroon, Waza Park", food: "Ndolé, Koki" },
-            { id: "cf", bn: "মধ্য আফ্রিকান প্রজাতন্ত্র", en: "Central African Republic", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 21, lat: 6.6, w: 14, h: 10, spots: "Dzanga-Sangha Reserve, Boali Falls", food: "Kanda, Fufu" },
-            { id: "td", bn: "চাদ", en: "Chad", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18.7, lat: 15.4, w: 14, h: 18, spots: "Lake Chad, Ennedi Plateau", food: "Daraba, Kisra" },
-            { id: "km", bn: "কমোরোস", en: "Comoros", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 43.3, lat: -11.6, w: 5, h: 5, spots: "Karthala Volcano, Moheli Beaches", food: "Langouste a la Vanille" },
-            { id: "cd", bn: "ডি আর কঙ্গো", en: "DR Congo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 24, lat: -4, w: 22, h: 22, spots: "Virunga Gorillas, Mount Nyiragongo", food: "Moambe Chicken, Fufu" },
-            { id: "cg", bn: "কঙ্গো প্রজাতন্ত্র", en: "Congo Republic", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 15, lat: -0.7, w: 9, h: 14, spots: "Odzala-Kokoua Park, Brazzaville", food: "Saka Saka, Moambe" },
-            { id: "ci", bn: "আইভরি কোস্ট", en: "Ivory Coast", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -5.5, lat: 7.5, w: 10, h: 10, spots: "Basilica Yamoussoukro, Tai Forest", food: "Attiéké, Kedjenou" },
-            { id: "dj", bn: "জিবুতি", en: "Djibouti", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 42.6, lat: 11.8, w: 5, h: 5, spots: "Lake Assal, Day Forest", food: "Skoudehkaris, Fah-fah" },
-            { id: "eg", bn: "মিশর (Egypt)", en: "Egypt", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: 26.5, w: 18, h: 16, spots: "Pyramids of Giza, Luxor", food: "Koshary, Falafel" },
-            { id: "gq", bn: "নিরক্ষীয় গিনি", en: "Equatorial Guinea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 10.3, lat: 1.6, w: 5, h: 5, spots: "Malabo Cathedral, Arena Blanca", food: "Succotash" },
-            { id: "er", bn: "ইরিত্রিয়া", en: "Eritrea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 39, lat: 15.2, w: 8, h: 9, spots: "Asmara Art Deco, Dahlak Archipelago", food: "Zigni, Injera" },
-            { id: "sz", bn: "ইসোয়াতিনি", en: "Eswatini", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 31.5, lat: -26.5, w: 4, h: 4, spots: "Mlilwane Wildlife Sanctuary", food: "Umncweba, Sishwala" },
-            { id: "et", bn: "ইথিওপিয়া", en: "Ethiopia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 40, lat: 9, w: 18, h: 16, spots: "Lalibela Rock Churches, Simien", food: "Doro Wat, Injera" },
-            { id: "ga", bn: "গ্যাবোন", en: "Gabon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 11.6, lat: -0.8, w: 9, h: 9, spots: "Loango National Park, Pongara", food: "Poulet Nyembwe" },
-            { id: "gm", bn: "গাম্বিয়া", en: "Gambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -15.3, lat: 13.4, w: 6, h: 4, spots: "Kunta Kinteh Island, River Gambia", food: "Domoda, Benachin" },
-            { id: "gh", bn: "ঘানা", en: "Ghana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1, lat: 7.9, w: 8, h: 11, spots: "Cape Coast Castle, Kakum Canopy", food: "Jollof Rice, Fufu" },
-            { id: "gn", bn: "গিনি", en: "Guinea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -9.7, lat: 9.9, w: 10, h: 8, spots: "Fouta Djallon Highlands", food: "Poulet Yassa, Fouti" },
-            { id: "gw", bn: "গিনি-বিসাউ", en: "Guinea-Bissau", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -15.2, lat: 11.8, w: 6, h: 5, spots: "Bijagos Archipelago, Orango", food: "Jollof Rice, Caldo de Mancarra" },
-            { id: "ke", bn: "কেনিয়া", en: "Kenya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 37.9, lat: -0.02, w: 12, h: 14, spots: "Maasai Mara, Mount Kenya", food: "Ugali, Nyama Choma" },
-            { id: "ls", bn: "লেসোথো", en: "Lesotho", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 28.2, lat: -29.6, w: 5, h: 5, spots: "Maletsunyane Falls, Sani Pass", food: "Pap-pap, Chakalaka" },
-            { id: "lr", bn: "লাইবেরিয়া", en: "Liberia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -9.4, lat: 6.4, w: 8, h: 7, spots: "Sapo National Park, Robertsport", food: "Jollof Rice, Pepper Soup" },
-            { id: "ly", bn: "লিবিয়া", en: "Libya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17, lat: 26, w: 20, h: 18, spots: "Leptis Magna, Acacus Mountains", food: "Bazeen, Couscous" },
-            { id: "mg", bn: "মাদাগাস্কার", en: "Madagascar", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 47, lat: -18.7, w: 10, h: 22, spots: "Avenue of the Baobabs, Tsingy", food: "Romazava, Ravitoto" },
-            { id: "mw", bn: "মালাউই", en: "Malawi", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 34.3, lat: -13.2, w: 6, h: 12, spots: "Lake Malawi, Liwonde Safari", food: "Nsima, Chambo Fish" },
-            { id: "ml", bn: "মালি", en: "Mali", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -4, lat: 17.5, w: 18, h: 16, spots: "Great Mosque of Djenne, Timbuktu", food: "Tiguadege Na, Poulet Yassa" },
-            { id: "mr", bn: "মৌরিতানিয়া", en: "Mauritania", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -10.5, lat: 20.2, w: 16, h: 16, spots: "Richat Structure Eye of Sahara", food: "Thieboudienne, Couscous" },
-            { id: "mu", bn: "মরিশাস", en: "Mauritius", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 57.5, lat: -20.3, w: 5, h: 5, spots: "Chamarel Seven Coloured Earth, Le Morne", food: "Dholl Puri, Biryani" },
-            { id: "ma", bn: "মরক্কো", en: "Morocco", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -7, lat: 31.8, w: 14, h: 14, spots: "Marrakech Medina, Chefchaouen", food: "Tagine, Couscous" },
-            { id: "mz", bn: "মোজাম্বিক", en: "Mozambique", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 35.5, lat: -18.6, w: 12, h: 20, spots: "Bazaruto Archipelago, Gorongosa", food: "Peri-Peri Chicken, Matapa" },
-            { id: "na", bn: "নামিবিয়া", en: "Namibia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18.5, lat: -22, w: 14, h: 16, spots: "Sossusvlei Dunes, Etosha National Park", food: "Potjiekos, Biltong" },
-            { id: "ne", bn: "নাইজার", en: "Niger", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 8, lat: 17.6, w: 16, h: 14, spots: "Air Mountains, Tenere Desert", food: "Djerma Stew, Millet Pap" },
-            { id: "ng", bn: "নাইজেরিয়া", en: "Nigeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 8.6, lat: 9, w: 14, h: 14, spots: "Zuma Rock, Yankari National Park", food: "Jollof Rice, Suya, Egusi Soup" },
-            { id: "rw", bn: "রুয়ান্ডা", en: "Rwanda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.8, lat: -1.9, w: 5, h: 5, spots: "Volcanoes Mountain Gorillas, Lake Kivu", food: "Isombe, Ugali" },
-            { id: "st", bn: "সাঁউ তুমি ও প্রিন্সিপি", en: "Sao Tome and Principe", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 6.6, lat: 0.2, w: 4, h: 4, spots: "Pico Cao Grande, Obo Park", food: "Calulu" },
-            { id: "sn", bn: "সেনেগাল", en: "Senegal", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -14.4, lat: 14.5, w: 10, h: 9, spots: "Goree Island, Lake Retba Pink Lake", food: "Thieboudienne, Yassa" },
-            { id: "sc", bn: "সেশেলস", en: "Seychelles", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 55.5, lat: -4.6, w: 4, h: 4, spots: "Anse Source d'Argent Beach", food: "Grilled Fish with Creole Sauce" },
-            { id: "sl", bn: "সিয়েরা লিওন", en: "Sierra Leone", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -11.7, lat: 8.4, w: 7, h: 7, spots: "River No. 2 Beach, Bunce Island", food: "Cassava Leaf Stew, Groundnut Soup" },
-            { id: "so", bn: "সোমালিয়া", en: "Somalia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 46.2, lat: 5.1, w: 12, h: 18, spots: "Laas Geel Cave Paintings", food: "Bariis Iskukaris, Canjeero" },
-            { id: "za", bn: "দক্ষিণ আফ্রিকা", en: "South Africa", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 25, lat: -30.5, w: 18, h: 16, spots: "Table Mountain, Kruger Safari", food: "Bobotie, Biltong, Braai" },
-            { id: "ss", bn: "দক্ষিণ সুদান", en: "South Sudan", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 31.3, lat: 6.8, w: 12, h: 11, spots: "Boma Wildlife Park, Sudd Wetlands", food: "Kisra, Asida" },
-            { id: "sd", bn: "সুদান", en: "Sudan", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30.2, lat: 12.8, w: 18, h: 18, spots: "Meroe Pyramids, Nile Confluence", food: "Ful Medames, Kisra" },
-            { id: "tz", bn: "তাঞ্জানিয়া", en: "Tanzania", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 34.8, lat: -6.3, w: 14, h: 16, spots: "Serengeti, Mount Kilimanjaro, Zanzibar", food: "Ugali, Nyama Choma, Chipsi Mayai" },
-            { id: "tg", bn: "টোগো", en: "Togo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 0.8, lat: 8.6, w: 5, h: 9, spots: "Koutammakou, Lake Togo", food: "Fufu, Djenkoume" },
-            { id: "tn", bn: "তিউনিসিয়া", en: "Tunisia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 9.5, lat: 33.8, w: 8, h: 12, spots: "El Djem Amphitheatre, Carthage", food: "Couscous, Brik, Lablabi" },
-            { id: "ug", bn: "উগান্ডা", en: "Uganda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 32.2, lat: 1.3, w: 8, h: 9, spots: "Bwindi Gorillas, Murchison Falls", food: "Matooke, Rolex Chapati" },
-            { id: "zm", bn: "জাম্বিয়া", en: "Zambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 27.8, lat: -13.1, w: 14, h: 14, spots: "Victoria Falls Devil's Pool", food: "Nshima, Ifisashi" },
-            { id: "zw", bn: "জিম্বাবুয়ে", en: "Zimbabwe", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.1, lat: -19, w: 11, h: 11, spots: "Great Zimbabwe Ruins, Victoria Falls", food: "Sadza, Bota" },
+            // AFRICA (54)
+            { id: "dz", num: "012", bn: "আলজেরিয়া", en: "Algeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 3, lat: 28, spots: "Sahara Desert, Tassili n'Ajjer", food: "Couscous, Tajine" },
+            { id: "ao", num: "024", bn: "অ্যাঙ্গোলা", en: "Angola", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18, lat: -12.5, spots: "Kalandula Falls, Miradouro da Lua", food: "Muamba de Galinha" },
+            { id: "bj", num: "204", bn: "বেনিন", en: "Benin", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 2.3, lat: 9.3, spots: "Pendjari National Park, Ouidah", food: "Kuli-Kuli, Akpan" },
+            { id: "bw", num: "072", bn: "বতসোয়ানা", en: "Botswana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 24, lat: -22, spots: "Okavango Delta, Chobe Safari", food: "Seswaa, Morogo" },
+            { id: "bf", num: "854", bn: "বুরকিনা ফাসো", en: "Burkina Faso", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1.5, lat: 12, spots: "Sindou Peaks, Ouagadougou", food: "Riz Gras, Babenda" },
+            { id: "bi", num: "108", bn: "বুরুন্ডি", en: "Burundi", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.9, lat: -3.4, spots: "Lake Tanganyika, Karera Waterfalls", food: "Boko Boko Harees" },
+            { id: "cv", num: "132", bn: "কেপ ভার্দে", en: "Cabo Verde", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -24, lat: 16, spots: "Sal Island Beach, Fogo Volcano", food: "Cachupa" },
+            { id: "cm", num: "120", bn: "ক্যামেরুন", en: "Cameroon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 12.3, lat: 7.3, spots: "Mount Cameroon, Waza Park", food: "Ndolé, Koki" },
+            { id: "cf", num: "140", bn: "মধ্য আফ্রিকান প্রজাতন্ত্র", en: "Central African Republic", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 21, lat: 6.6, spots: "Dzanga-Sangha Reserve, Boali Falls", food: "Kanda, Fufu" },
+            { id: "td", num: "148", bn: "চাদ", en: "Chad", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18.7, lat: 15.4, spots: "Lake Chad, Ennedi Plateau", food: "Daraba, Kisra" },
+            { id: "km", num: "174", bn: "কমোরোস", en: "Comoros", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 43.3, lat: -11.6, spots: "Karthala Volcano, Moheli Beaches", food: "Langouste a la Vanille" },
+            { id: "cd", num: "180", bn: "ডি আর কঙ্গো", en: "DR Congo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 24, lat: -4, spots: "Virunga Gorillas, Mount Nyiragongo", food: "Moambe Chicken, Fufu" },
+            { id: "cg", num: "178", bn: "কঙ্গো প্রজাতন্ত্র", en: "Congo Republic", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 15, lat: -0.7, spots: "Odzala-Kokoua Park, Brazzaville", food: "Saka Saka, Moambe" },
+            { id: "ci", num: "384", bn: "আইভরি কোস্ট", en: "Ivory Coast", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -5.5, lat: 7.5, spots: "Basilica Yamoussoukro, Tai Forest", food: "Attiéké, Kedjenou" },
+            { id: "dj", num: "262", bn: "জিবুতি", en: "Djibouti", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 42.6, lat: 11.8, spots: "Lake Assal, Day Forest", food: "Skoudehkaris, Fah-fah" },
+            { id: "eg", num: "818", bn: "মিশর (Egypt)", en: "Egypt", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30, lat: 26.5, spots: "Pyramids of Giza, Luxor", food: "Koshary, Falafel" },
+            { id: "gq", num: "226", bn: "নিরক্ষীয় গিনি", en: "Equatorial Guinea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 10.3, lat: 1.6, spots: "Malabo Cathedral, Arena Blanca", food: "Succotash" },
+            { id: "er", num: "232", bn: "ইরিত্রিয়া", en: "Eritrea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 39, lat: 15.2, spots: "Asmara Art Deco, Dahlak Archipelago", food: "Zigni, Injera" },
+            { id: "sz", num: "748", bn: "ইসোয়াতিনি", en: "Eswatini", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 31.5, lat: -26.5, spots: "Mlilwane Wildlife Sanctuary", food: "Umncweba, Sishwala" },
+            { id: "et", num: "231", bn: "ইথিওপিয়া", en: "Ethiopia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 40, lat: 9, spots: "Lalibela Rock Churches, Simien", food: "Doro Wat, Injera" },
+            { id: "ga", num: "266", bn: "গ্যাবোন", en: "Gabon", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 11.6, lat: -0.8, spots: "Loango National Park, Pongara", food: "Poulet Nyembwe" },
+            { id: "gm", num: "270", bn: "গাম্বিয়া", en: "Gambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -15.3, lat: 13.4, spots: "Kunta Kinteh Island, River Gambia", food: "Domoda, Benachin" },
+            { id: "gh", num: "288", bn: "ঘানা", en: "Ghana", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -1, lat: 7.9, spots: "Cape Coast Castle, Kakum Canopy", food: "Jollof Rice, Fufu" },
+            { id: "gn", num: "324", bn: "গিনি", en: "Guinea", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -9.7, lat: 9.9, spots: "Fouta Djallon Highlands", food: "Poulet Yassa, Fouti" },
+            { id: "gw", num: "624", bn: "গিনি-বিসাউ", en: "Guinea-Bissau", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -15.2, lat: 11.8, spots: "Bijagos Archipelago, Orango", food: "Jollof Rice, Caldo de Mancarra" },
+            { id: "ke", num: "404", bn: "কেনিয়া", en: "Kenya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 37.9, lat: -0.02, spots: "Maasai Mara, Mount Kenya", food: "Ugali, Nyama Choma" },
+            { id: "ls", num: "426", bn: "লেসোথো", en: "Lesotho", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 28.2, lat: -29.6, spots: "Maletsunyane Falls, Sani Pass", food: "Pap-pap, Chakalaka" },
+            { id: "lr", num: "430", bn: "লাইবেরিয়া", en: "Liberia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -9.4, lat: 6.4, spots: "Sapo National Park, Robertsport", food: "Jollof Rice, Pepper Soup" },
+            { id: "ly", num: "434", bn: "লিবিয়া", en: "Libya", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 17, lat: 26, spots: "Leptis Magna, Acacus Mountains", food: "Bazeen, Couscous" },
+            { id: "mg", num: "450", bn: "মাদাগাস্কার", en: "Madagascar", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 47, lat: -18.7, spots: "Avenue of the Baobabs, Tsingy", food: "Romazava, Ravitoto" },
+            { id: "mw", num: "454", bn: "মালাউই", en: "Malawi", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 34.3, lat: -13.2, spots: "Lake Malawi, Liwonde Safari", food: "Nsima, Chambo Fish" },
+            { id: "ml", num: "466", bn: "মালি", en: "Mali", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -4, lat: 17.5, spots: "Great Mosque of Djenne, Timbuktu", food: "Tiguadege Na, Poulet Yassa" },
+            { id: "mr", num: "478", bn: "মৌরিতানিয়া", en: "Mauritania", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -10.5, lat: 20.2, spots: "Richat Structure Eye of Sahara", food: "Thieboudienne, Couscous" },
+            { id: "mu", num: "480", bn: "মরিশাস", en: "Mauritius", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 57.5, lat: -20.3, spots: "Chamarel Seven Coloured Earth, Le Morne", food: "Dholl Puri, Biryani" },
+            { id: "ma", num: "504", bn: "মরক্কো", en: "Morocco", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -7, lat: 31.8, spots: "Marrakech Medina, Chefchaouen", food: "Tagine, Couscous" },
+            { id: "mz", num: "508", bn: "মোজাম্বিক", en: "Mozambique", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 35.5, lat: -18.6, spots: "Bazaruto Archipelago, Gorongosa", food: "Peri-Peri Chicken, Matapa" },
+            { id: "na", num: "516", bn: "নামিবিয়া", en: "Namibia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 18.5, lat: -22, spots: "Sossusvlei Dunes, Etosha National Park", food: "Potjiekos, Biltong" },
+            { id: "ne", num: "562", bn: "নাইজার", en: "Niger", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 8, lat: 17.6, spots: "Air Mountains, Tenere Desert", food: "Djerma Stew, Millet Pap" },
+            { id: "ng", num: "566", bn: "নাইজেরিয়া", en: "Nigeria", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 8.6, lat: 9, spots: "Zuma Rock, Yankari National Park", food: "Jollof Rice, Suya, Egusi Soup" },
+            { id: "rw", num: "646", bn: "রুয়ান্ডা", en: "Rwanda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.8, lat: -1.9, spots: "Volcanoes Mountain Gorillas, Lake Kivu", food: "Isombe, Ugali" },
+            { id: "st", num: "678", bn: "সাঁউ তুমি ও প্রিন্সিপি", en: "Sao Tome and Principe", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 6.6, lat: 0.2, spots: "Pico Cao Grande, Obo Park", food: "Calulu" },
+            { id: "sn", num: "686", bn: "সেনেগাল", en: "Senegal", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -14.4, lat: 14.5, spots: "Goree Island, Lake Retba Pink Lake", food: "Thieboudienne, Yassa" },
+            { id: "sc", num: "690", bn: "সেশেলস", en: "Seychelles", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 55.5, lat: -4.6, spots: "Anse Source d'Argent Beach", food: "Grilled Fish with Creole Sauce" },
+            { id: "sl", num: "694", bn: "সিয়েরা লিওন", en: "Sierra Leone", grpBn: "আফ্রিকা", grpEn: "Africa", lon: -11.7, lat: 8.4, spots: "River No. 2 Beach, Bunce Island", food: "Cassava Leaf Stew, Groundnut Soup" },
+            { id: "so", num: "706", bn: "সোমালিয়া", en: "Somalia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 46.2, lat: 5.1, spots: "Laas Geel Cave Paintings", food: "Bariis Iskukaris, Canjeero" },
+            { id: "za", num: "710", bn: "দক্ষিণ আফ্রিকা", en: "South Africa", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 25, lat: -30.5, spots: "Table Mountain, Kruger Safari", food: "Bobotie, Biltong, Braai" },
+            { id: "ss", num: "728", bn: "দক্ষিণ সুদান", en: "South Sudan", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 31.3, lat: 6.8, spots: "Boma Wildlife Park, Sudd Wetlands", food: "Kisra, Asida" },
+            { id: "sd", num: "729", bn: "সুদান", en: "Sudan", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 30.2, lat: 12.8, spots: "Meroe Pyramids, Nile Confluence", food: "Ful Medames, Kisra" },
+            { id: "tz", num: "834", bn: "তাঞ্জানিয়া", en: "Tanzania", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 34.8, lat: -6.3, spots: "Serengeti, Mount Kilimanjaro, Zanzibar", food: "Ugali, Nyama Choma, Chipsi Mayai" },
+            { id: "tg", num: "768", bn: "টোগো", en: "Togo", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 0.8, lat: 8.6, spots: "Koutammakou, Lake Togo", food: "Fufu, Djenkoume" },
+            { id: "tn", num: "788", bn: "তিউনিসিয়া", en: "Tunisia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 9.5, lat: 33.8, spots: "El Djem Amphitheatre, Carthage", food: "Couscous, Brik, Lablabi" },
+            { id: "ug", num: "800", bn: "উগান্ডা", en: "Uganda", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 32.2, lat: 1.3, spots: "Bwindi Gorillas, Murchison Falls", food: "Matooke, Rolex Chapati" },
+            { id: "zm", num: "894", bn: "জাম্বিয়া", en: "Zambia", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 27.8, lat: -13.1, spots: "Victoria Falls Devil's Pool", food: "Nshima, Ifisashi" },
+            { id: "zw", num: "716", bn: "জিম্বাবুয়ে", en: "Zimbabwe", grpBn: "আফ্রিকা", grpEn: "Africa", lon: 29.1, lat: -19, spots: "Great Zimbabwe Ruins, Victoria Falls", food: "Sadza, Bota" },
 
-            // AMERICAS (35 Countries & Territories)
-            { id: "ag", bn: "অ্যান্টিগুয়া ও বার্বুডা", en: "Antigua and Barbuda", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.8, lat: 17, w: 4, h: 4, spots: "Nelson's Dockyard, Shirley Heights", food: "Fungee and Pepperpot" },
-            { id: "ar", bn: "আর্জেন্টিনা", en: "Argentina", grpBn: "আমেরিকা", grpEn: "Americas", lon: -65, lat: -34, w: 16, h: 32, spots: "Perito Moreno Glacier, Patagonia", food: "Asado Steak, Empanadas" },
-            { id: "bs", bn: "বাহামা", en: "Bahamas", grpBn: "আমেরিকা", grpEn: "Americas", lon: -77.3, lat: 25, w: 7, h: 6, spots: "Exuma Swimming Pigs, Atlantis", food: "Conch Salad" },
-            { id: "bb", bn: "বার্বাডোজ", en: "Barbados", grpBn: "আমেরিকা", grpEn: "Americas", lon: -59.5, lat: 13.1, w: 4, h: 4, spots: "Harrison's Cave, Carlisle Bay", food: "Flying Fish and Cou-Cou" },
-            { id: "bz", bn: "বেলিজ", en: "Belize", grpBn: "আমেরিকা", grpEn: "Americas", lon: -88.4, lat: 17.1, w: 5, h: 7, spots: "Great Blue Hole, Mayan Ruins", food: "Rice and Beans, Stewed Chicken" },
-            { id: "bo", bn: "বলিভিয়া", en: "Bolivia", grpBn: "আমেরিকা", grpEn: "Americas", lon: -63.5, lat: -16.2, w: 14, h: 14, spots: "Salar de Uyuni Salt Flats, La Paz", food: "Salteñas, Pique Macho" },
-            { id: "br", bn: "ব্রাজিল", en: "Brazil", grpBn: "আমেরিকা", grpEn: "Americas", lon: -53, lat: -10, w: 34, h: 32, spots: "Christ the Redeemer, Amazon", food: "Feijoada, Pão de Queijo" },
-            { id: "ca", bn: "কানাডা", en: "Canada", grpBn: "আমেরিকা", grpEn: "Americas", lon: -105, lat: 60, w: 68, h: 28, spots: "Niagara Falls, Banff Park", food: "Poutine, Maple Syrup" },
-            { id: "cl", bn: "চিলি", en: "Chile", grpBn: "আমেরিকা", grpEn: "Americas", lon: -71, lat: -35.6, w: 7, h: 34, spots: "Torres del Paine, Atacama Desert", food: "Empanada Chilena, Pastel de Choclo" },
-            { id: "co", bn: "কলম্বিয়া", en: "Colombia", grpBn: "আমেরিকা", grpEn: "Americas", lon: -74.2, lat: 4.5, w: 12, h: 14, spots: "Cartagena Walled City, Guatape Rock", food: "Bandeja Paisa, Arepas" },
-            { id: "cr", bn: "কোস্টারিকা", en: "Costa Rica", grpBn: "আমেরিকা", grpEn: "Americas", lon: -83.7, lat: 9.7, w: 6, h: 6, spots: "Arenal Volcano, Monteverde Cloud Forest", food: "Gallo Pinto, Casado" },
-            { id: "cu", bn: "কিউবা", en: "Cuba", grpBn: "আমেরিকা", grpEn: "Americas", lon: -79.5, lat: 21.5, w: 16, h: 6, spots: "Old Havana Vintage Cars, Varadero Beach", food: "Ropa Vieja, Cuban Sandwich" },
-            { id: "dm", bn: "ডোমিনিকা", en: "Dominica", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.3, lat: 15.4, w: 4, h: 4, spots: "Boiling Lake, Morne Trois Pitons", food: "Callaloo Soup" },
-            { id: "do", bn: "ডোমিনিকান প্রজাতন্ত্র", en: "Dominican Republic", grpBn: "আমেরিকা", grpEn: "Americas", lon: -70.1, lat: 18.7, w: 8, h: 6, spots: "Punta Cana Beaches, Santo Domingo", food: "La Bandera Dominicana, Mofongo" },
-            { id: "ec", bn: "ইকুয়েডর", en: "Ecuador", grpBn: "আমেরিকা", grpEn: "Americas", lon: -78.1, lat: -1.8, w: 8, h: 9, spots: "Galapagos Islands, Cotopaxi Volcano", food: "Encebollado, Ceviche" },
-            { id: "sv", bn: "এল সালভাদর", en: "El Salvador", grpBn: "আমেরিকা", grpEn: "Americas", lon: -88.8, lat: 13.7, w: 6, h: 5, spots: "Santa Ana Volcano, El Tunco Surf", food: "Pupusas" },
-            { id: "gd", bn: "গ্রেনাডা", en: "Grenada", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.6, lat: 12.1, w: 4, h: 4, spots: "Grand Anse Beach, Underwater Sculptures", food: "Oil Down" },
-            { id: "gt", bn: "গুয়াতেমালা", en: "Guatemala", grpBn: "আমেরিকা", grpEn: "Americas", lon: -90.2, lat: 15.7, w: 7, h: 7, spots: "Tikal Mayan Ruins, Lake Atitlan", food: "Pepián, Kak'ik" },
-            { id: "gy", bn: "গায়ানা", en: "Guyana", grpBn: "আমেরিকা", grpEn: "Americas", lon: -58.9, lat: 4.8, w: 7, h: 10, spots: "Kaieteur Falls", food: "Pepperpot, Cook-up Rice" },
-            { id: "ht", bn: "হাইতি", en: "Haiti", grpBn: "আমেরিকা", grpEn: "Americas", lon: -72.2, lat: 18.9, w: 6, h: 6, spots: "Citadelle Laferriere, Bassin Bleu", food: "Griot with Pikliz" },
-            { id: "hn", bn: "হন্ডুরাস", en: "Honduras", grpBn: "আমেরিকা", grpEn: "Americas", lon: -86.2, lat: 15.2, w: 8, h: 6, spots: "Roatan Coral Reefs, Copan Ruins", food: "Baleadas, Pastelitos" },
-            { id: "jm", bn: "জ্যামাইকা", en: "Jamaica", grpBn: "আমেরিকা", grpEn: "Americas", lon: -77.2, lat: 18.1, w: 6, h: 4, spots: "Dunn's River Falls, Blue Mountains", food: "Jerk Chicken, Ackee and Saltfish" },
-            { id: "mx", bn: "মেক্সিকো", en: "Mexico", grpBn: "আমেরিকা", grpEn: "Americas", lon: -102, lat: 23.6, w: 24, h: 18, spots: "Chichen Itza, Cancun Beaches", food: "Tacos al Pastor, Guacamole" },
-            { id: "ni", bn: "নিকারাগুয়া", en: "Nicaragua", grpBn: "আমেরিকা", grpEn: "Americas", lon: -85.2, lat: 12.8, w: 8, h: 8, spots: "Ometepe Island, Masaya Volcano", food: "Gallo Pinto, Nacatamal" },
-            { id: "pa", bn: "পানামা", en: "Panama", grpBn: "আমেরিকা", grpEn: "Americas", lon: -80.7, lat: 8.5, w: 8, h: 5, spots: "Panama Canal, San Blas Islands", food: "Sancocho, Ceviche" },
-            { id: "py", bn: "প্যারাগুয়ে", en: "Paraguay", grpBn: "আমেরিকা", grpEn: "Americas", lon: -58.4, lat: -23.4, w: 10, h: 11, spots: "Itaipu Dam, Jesuit Missions", food: "Sopa Paraguaya, Chipa" },
-            { id: "pe", bn: "পেরু", en: "Peru", grpBn: "আমেরিকা", grpEn: "Americas", lon: -75, lat: -9.1, w: 12, h: 16, spots: "Machu Picchu, Rainbow Mountain", food: "Ceviche, Lomo Saltado" },
-            { id: "kn", bn: "সেন্ট কিটস ও নেভিস", en: "Saint Kitts and Nevis", grpBn: "আমেরিকা", grpEn: "Americas", lon: -62.7, lat: 17.3, w: 4, h: 4, spots: "Brimstone Hill Fortress", food: "Stewed Saltfish" },
-            { id: "lc", bn: "সেন্ট লুসিয়া", en: "Saint Lucia", grpBn: "আমেরিকা", grpEn: "Americas", lon: -60.9, lat: 13.9, w: 4, h: 4, spots: "The Pitons Volcanic Spire", food: "Green Fig and Saltfish" },
-            { id: "vc", bn: "সেন্ট ভিনসেন্ট ও গ্রেনাডাইনস", en: "Saint Vincent and the Grenadines", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.2, lat: 13.2, w: 4, h: 4, spots: "Tobago Cays Marine Park", food: "Roasted Breadfruit and Fried Jackfish" },
-            { id: "sr", bn: "সুরিনাম", en: "Suriname", grpBn: "আমেরিকা", grpEn: "Americas", lon: -56, lat: 3.9, w: 7, h: 8, spots: "Central Suriname Nature Reserve", food: "Pom, Roti" },
-            { id: "tt", bn: "ত্রিনিদাদ ও টোবাগো", en: "Trinidad and Tobago", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.2, lat: 10.6, w: 5, h: 5, spots: "Maracas Beach, Pitch Lake", food: "Doubles, Roti" },
-            { id: "us", bn: "যুক্তরাষ্ট্র (USA)", en: "United States", grpBn: "আমেরিকা", grpEn: "Americas", lon: -98, lat: 39, w: 56, h: 24, spots: "Statue of Liberty, Grand Canyon", food: "Burger, BBQ Ribs, Apple Pie" },
-            { id: "uy", bn: "উরুগুয়ে", en: "Uruguay", grpBn: "আমেরিকা", grpEn: "Americas", lon: -55.7, lat: -32.5, w: 8, h: 8, spots: "Punta del Este, Colonia del Sacramento", food: "Chivito, Asado" },
-            { id: "ve", bn: "ভেনেজুয়েলা", en: "Venezuela", grpBn: "আমেরিকা", grpEn: "Americas", lon: -66.5, lat: 6.4, w: 14, h: 12, spots: "Angel Falls World Highest Waterfall", food: "Arepas, Pabellón Criollo" },
+            // AMERICAS (35)
+            { id: "ag", num: "028", bn: "অ্যান্টিগুয়া ও বার্বুডা", en: "Antigua and Barbuda", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.8, lat: 17, spots: "Nelson's Dockyard, Shirley Heights", food: "Fungee and Pepperpot" },
+            { id: "ar", num: "032", bn: "আর্জেন্টিনা", en: "Argentina", grpBn: "আমেরিকা", grpEn: "Americas", lon: -65, lat: -34, spots: "Perito Moreno Glacier, Patagonia", food: "Asado Steak, Empanadas" },
+            { id: "bs", num: "044", bn: "বাহামা", en: "Bahamas", grpBn: "আমেরিকা", grpEn: "Americas", lon: -77.3, lat: 25, spots: "Exuma Swimming Pigs, Atlantis", food: "Conch Salad" },
+            { id: "bb", num: "052", bn: "বার্বাডোজ", en: "Barbados", grpBn: "আমেরিকা", grpEn: "Americas", lon: -59.5, lat: 13.1, spots: "Harrison's Cave, Carlisle Bay", food: "Flying Fish and Cou-Cou" },
+            { id: "bz", num: "084", bn: "বেলিজ", en: "Belize", grpBn: "আমেরিকা", grpEn: "Americas", lon: -88.4, lat: 17.1, spots: "Great Blue Hole, Mayan Ruins", food: "Rice and Beans, Stewed Chicken" },
+            { id: "bo", num: "068", bn: "বলিভিয়া", en: "Bolivia", grpBn: "আমেরিকা", grpEn: "Americas", lon: -63.5, lat: -16.2, spots: "Salar de Uyuni Salt Flats, La Paz", food: "Salteñas, Pique Macho" },
+            { id: "br", num: "076", bn: "ব্রাজিল", en: "Brazil", grpBn: "আমেরিকা", grpEn: "Americas", lon: -53, lat: -10, spots: "Christ the Redeemer, Amazon", food: "Feijoada, Pão de Queijo" },
+            { id: "ca", num: "124", bn: "কানাডা", en: "Canada", grpBn: "আমেরিকা", grpEn: "Americas", lon: -105, lat: 60, spots: "Niagara Falls, Banff Park", food: "Poutine, Maple Syrup" },
+            { id: "cl", num: "152", bn: "চিলি", en: "Chile", grpBn: "আমেরিকা", grpEn: "Americas", lon: -71, lat: -35.6, spots: "Torres del Paine, Atacama Desert", food: "Empanada Chilena, Pastel de Choclo" },
+            { id: "co", num: "170", bn: "কলম্বিয়া", en: "Colombia", grpBn: "আমেরিকা", grpEn: "Americas", lon: -74.2, lat: 4.5, spots: "Cartagena Walled City, Guatape Rock", food: "Bandeja Paisa, Arepas" },
+            { id: "cr", num: "188", bn: "কোস্টারিকা", en: "Costa Rica", grpBn: "আমেরিকা", grpEn: "Americas", lon: -83.7, lat: 9.7, spots: "Arenal Volcano, Monteverde Cloud Forest", food: "Gallo Pinto, Casado" },
+            { id: "cu", num: "192", bn: "কিউবা", en: "Cuba", grpBn: "আমেরিকা", grpEn: "Americas", lon: -79.5, lat: 21.5, spots: "Old Havana Vintage Cars, Varadero Beach", food: "Ropa Vieja, Cuban Sandwich" },
+            { id: "dm", num: "212", bn: "ডোমিনিকা", en: "Dominica", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.3, lat: 15.4, spots: "Boiling Lake, Morne Trois Pitons", food: "Callaloo Soup" },
+            { id: "do", num: "214", bn: "ডোমিনিকান প্রজাতন্ত্র", en: "Dominican Republic", grpBn: "আমেরিকা", grpEn: "Americas", lon: -70.1, lat: 18.7, spots: "Punta Cana Beaches, Santo Domingo", food: "La Bandera Dominicana, Mofongo" },
+            { id: "ec", num: "218", bn: "ইকুয়েডর", en: "Ecuador", grpBn: "আমেরিকা", grpEn: "Americas", lon: -78.1, lat: -1.8, spots: "Galapagos Islands, Cotopaxi Volcano", food: "Encebollado, Ceviche" },
+            { id: "sv", num: "222", bn: "এল সালভাদর", en: "El Salvador", grpBn: "আমেরিকা", grpEn: "Americas", lon: -88.8, lat: 13.7, spots: "Santa Ana Volcano, El Tunco Surf", food: "Pupusas" },
+            { id: "gd", num: "308", bn: "গ্রেনাডা", en: "Grenada", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.6, lat: 12.1, spots: "Grand Anse Beach, Underwater Sculptures", food: "Oil Down" },
+            { id: "gt", num: "320", bn: "গুয়াতেমালা", en: "Guatemala", grpBn: "আমেরিকা", grpEn: "Americas", lon: -90.2, lat: 15.7, spots: "Tikal Mayan Ruins, Lake Atitlan", food: "Pepián, Kak'ik" },
+            { id: "gy", num: "328", bn: "গায়ানা", en: "Guyana", grpBn: "আমেরিকা", grpEn: "Americas", lon: -58.9, lat: 4.8, spots: "Kaieteur Falls", food: "Pepperpot, Cook-up Rice" },
+            { id: "ht", num: "332", bn: "হাইতি", en: "Haiti", grpBn: "আমেরিকা", grpEn: "Americas", lon: -72.2, lat: 18.9, spots: "Citadelle Laferriere, Bassin Bleu", food: "Griot with Pikliz" },
+            { id: "hn", num: "340", bn: "হন্ডুরাস", en: "Honduras", grpBn: "আমেরিকা", grpEn: "Americas", lon: -86.2, lat: 15.2, spots: "Roatan Coral Reefs, Copan Ruins", food: "Baleadas, Pastelitos" },
+            { id: "jm", num: "388", bn: "জ্যামাইকা", en: "Jamaica", grpBn: "আমেরিকা", grpEn: "Americas", lon: -77.2, lat: 18.1, spots: "Dunn's River Falls, Blue Mountains", food: "Jerk Chicken, Ackee and Saltfish" },
+            { id: "mx", num: "484", bn: "মেক্সিকো", en: "Mexico", grpBn: "আমেরিকা", grpEn: "Americas", lon: -102, lat: 23.6, spots: "Chichen Itza, Cancun Beaches", food: "Tacos al Pastor, Guacamole" },
+            { id: "ni", num: "558", bn: "নিকারাগুয়া", en: "Nicaragua", grpBn: "আমেরিকা", grpEn: "Americas", lon: -85.2, lat: 12.8, spots: "Ometepe Island, Masaya Volcano", food: "Gallo Pinto, Nacatamal" },
+            { id: "pa", num: "591", bn: "পানামা", en: "Panama", grpBn: "আমেরিকা", grpEn: "Americas", lon: -80.7, lat: 8.5, spots: "Panama Canal, San Blas Islands", food: "Sancocho, Ceviche" },
+            { id: "py", num: "600", bn: "প্যারাগুয়ে", en: "Paraguay", grpBn: "আমেরিকা", grpEn: "Americas", lon: -58.4, lat: -23.4, spots: "Itaipu Dam, Jesuit Missions", food: "Sopa Paraguaya, Chipa" },
+            { id: "pe", num: "604", bn: "পেরু", en: "Peru", grpBn: "আমেরিকা", grpEn: "Americas", lon: -75, lat: -9.1, spots: "Machu Picchu, Rainbow Mountain", food: "Ceviche, Lomo Saltado" },
+            { id: "kn", num: "659", bn: "সেন্ট কিটস ও নেভিস", en: "Saint Kitts and Nevis", grpBn: "আমেরিকা", grpEn: "Americas", lon: -62.7, lat: 17.3, spots: "Brimstone Hill Fortress", food: "Stewed Saltfish" },
+            { id: "lc", num: "662", bn: "সেন্ট লুসিয়া", en: "Saint Lucia", grpBn: "আমেরিকা", grpEn: "Americas", lon: -60.9, lat: 13.9, spots: "The Pitons Volcanic Spire", food: "Green Fig and Saltfish" },
+            { id: "vc", num: "670", bn: "সেন্ট ভিনসেন্ট ও গ্রেনাডাইনস", en: "Saint Vincent and the Grenadines", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.2, lat: 13.2, spots: "Tobago Cays Marine Park", food: "Roasted Breadfruit and Fried Jackfish" },
+            { id: "sr", num: "740", bn: "সুরিনাম", en: "Suriname", grpBn: "আমেরিকা", grpEn: "Americas", lon: -56, lat: 3.9, spots: "Central Suriname Nature Reserve", food: "Pom, Roti" },
+            { id: "tt", num: "780", bn: "ত্রিনিদাদ ও টোবাগো", en: "Trinidad and Tobago", grpBn: "আমেরিকা", grpEn: "Americas", lon: -61.2, lat: 10.6, spots: "Maracas Beach, Pitch Lake", food: "Doubles, Roti" },
+            { id: "us", num: "840", bn: "যুক্তরাষ্ট্র (USA)", en: "United States", grpBn: "আমেরিকা", grpEn: "Americas", lon: -98, lat: 39, spots: "Statue of Liberty, Grand Canyon", food: "Burger, BBQ Ribs, Apple Pie" },
+            { id: "uy", num: "858", bn: "উরুগুয়ে", en: "Uruguay", grpBn: "আমেরিকা", grpEn: "Americas", lon: -55.7, lat: -32.5, spots: "Punta del Este, Colonia del Sacramento", food: "Chivito, Asado" },
+            { id: "ve", num: "862", bn: "ভেনেজুয়েলা", en: "Venezuela", grpBn: "আমেরিকা", grpEn: "Americas", lon: -66.5, lat: 6.4, spots: "Angel Falls World Highest Waterfall", food: "Arepas, Pabellón Criollo" },
 
-            // OCEANIA (14 Countries)
-            { id: "au", bn: "অস্ট্রেলিয়া", en: "Australia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134, lat: -25, w: 42, h: 28, spots: "Sydney Opera House, Great Barrier Reef", food: "Meat Pie, Pavlova, Vegemite" },
-            { id: "fj", bn: "ফিজি", en: "Fiji", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 178, lat: -17.7, w: 7, h: 6, spots: "Mamanuca Islands, Coral Coast", food: "Kokoda, Lovo Feast" },
-            { id: "ki", bn: "কিরিবাতি", en: "Kiribati", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -157, lat: 1.8, w: 6, h: 5, spots: "Christmas Island Coral Atolls", food: "Palusami, Te Katama" },
-            { id: "mh", bn: "মার্শাল দ্বীপপুঞ্জ", en: "Marshall Islands", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 171.1, lat: 7.1, w: 5, h: 5, spots: "Majuro Atoll, Arno Atoll", food: "Barramundi Cod, Pandanus Salad" },
-            { id: "fm", bn: "মাইক্রোনেশিয়া", en: "Micronesia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 158.1, lat: 6.9, w: 6, h: 5, spots: "Nan Madol Ancient Ruins", food: "Breadfruit, Taro" },
-            { id: "nr", bn: "নাউরু", en: "Nauru", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 166.9, lat: -0.5, w: 4, h: 4, spots: "Anibare Bay, Command Ridge", food: "Coconut Fish, Crustaceans" },
-            { id: "nz", bn: "নিউজিল্যান্ড", en: "New Zealand", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 173, lat: -41, w: 12, h: 18, spots: "Hobbiton, Milford Sound", food: "Hangi, Lamb Roast, Pavlova" },
-            { id: "pw", bn: "পালাউ", en: "Palau", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134.5, lat: 7.5, w: 5, h: 5, spots: "Rock Islands Jellyfish Lake", food: "Tinola, Fruit Bat Soup" },
-            { id: "pg", bn: "পাপুয়া নিউগিনি", en: "Papua New Guinea", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 143.9, lat: -6.3, w: 16, h: 10, spots: "Kokoda Track, Mount Wilhelm", food: "Mumu, Sago" },
-            { id: "ws", bn: "সামোয়া", en: "Samoa", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -172.1, lat: -13.7, w: 5, h: 5, spots: "To Sua Ocean Trench, Lalomanu Beach", food: "Oka I'a, Palusami" },
-            { id: "sb", bn: "সলোমন দ্বীপপুঞ্জ", en: "Solomon Islands", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 160.1, lat: -9.6, w: 8, h: 6, spots: "Marovo Lagoon, Kennedy Island", food: "Poi, Cassava Pudding" },
-            { id: "to", bn: "টোঙ্গা", en: "Tonga", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -175.2, lat: -21.1, w: 5, h: 5, spots: "Mapu'a 'a Vaea Blowholes", food: "Lu Pulu, 'Otai" },
-            { id: "tv", bn: "টুভালু", en: "Tuvalu", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 177.6, lat: -7.1, w: 4, h: 4, spots: "Funafuti Conservation Lagoon", food: "Pulaka, Coconut Crab" },
-            { id: "vu", bn: "ভানুয়াতু", en: "Vanuatu", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 166.9, lat: -15.3, w: 6, h: 7, spots: "Mount Yasur Active Volcano, Champagne Beach", food: "Laplap, Tuluk" }
+            // OCEANIA (14)
+            { id: "au", num: "036", bn: "অস্ট্রেলিয়া", en: "Australia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134, lat: -25, spots: "Sydney Opera House, Great Barrier Reef", food: "Meat Pie, Pavlova, Vegemite" },
+            { id: "fj", num: "242", bn: "ফিজি", en: "Fiji", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 178, lat: -17.7, spots: "Mamanuca Islands, Coral Coast", food: "Kokoda, Lovo Feast" },
+            { id: "ki", num: "296", bn: "কিরিবাতি", en: "Kiribati", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -157, lat: 1.8, spots: "Christmas Island Coral Atolls", food: "Palusami, Te Katama" },
+            { id: "mh", num: "584", bn: "মার্শাল দ্বীপপুঞ্জ", en: "Marshall Islands", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 171.1, lat: 7.1, spots: "Majuro Atoll, Arno Atoll", food: "Barramundi Cod, Pandanus Salad" },
+            { id: "fm", num: "583", bn: "মাইক্রোনেশিয়া", en: "Micronesia", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 158.1, lat: 6.9, spots: "Nan Madol Ancient Ruins", food: "Breadfruit, Taro" },
+            { id: "nr", num: "520", bn: "নাউরু", en: "Nauru", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 166.9, lat: -0.5, spots: "Anibare Bay, Command Ridge", food: "Coconut Fish, Crustaceans" },
+            { id: "nz", num: "554", bn: "নিউজিল্যান্ড", en: "New Zealand", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 173, lat: -41, spots: "Hobbiton, Milford Sound", food: "Hangi, Lamb Roast, Pavlova" },
+            { id: "pw", num: "585", bn: "পালাউ", en: "Palau", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 134.5, lat: 7.5, spots: "Rock Islands Jellyfish Lake", food: "Tinola, Fruit Bat Soup" },
+            { id: "pg", num: "598", bn: "পাপুয়া নিউগিনি", en: "Papua New Guinea", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 143.9, lat: -6.3, spots: "Kokoda Track, Mount Wilhelm", food: "Mumu, Sago" },
+            { id: "ws", num: "882", bn: "সামোয়া", en: "Samoa", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -172.1, lat: -13.7, spots: "To Sua Ocean Trench, Lalomanu Beach", food: "Oka I'a, Palusami" },
+            { id: "sb", num: "090", bn: "সলোমন দ্বীপপুঞ্জ", en: "Solomon Islands", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 160.1, lat: -9.6, spots: "Marovo Lagoon, Kennedy Island", food: "Poi, Cassava Pudding" },
+            { id: "to", num: "776", bn: "টোঙ্গা", en: "Tonga", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: -175.2, lat: -21.1, spots: "Mapu'a 'a Vaea Blowholes", food: "Lu Pulu, 'Otai" },
+            { id: "tv", num: "798", bn: "টুভালু", en: "Tuvalu", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 177.6, lat: -7.1, spots: "Funafuti Conservation Lagoon", food: "Pulaka, Coconut Crab" },
+            { id: "vu", num: "548", bn: "ভানুয়াতু", en: "Vanuatu", grpBn: "ওশেনিয়া", grpEn: "Oceania", lon: 166.9, lat: -15.3, spots: "Mount Yasur Active Volcano, Champagne Beach", food: "Laplap, Tuluk" }
         ];
 
+        // Store TopoJSON loaded features
+        let worldGeoFeatures = [];
+        let worldGeoMapByNum = new Map();
+
+        // Populate catalog with center points from D3 projection
         const WORLD_REGIONS_DATA = RAW_WORLD_190_PLUS.map(item => {
-            const center = proj(item.lon, item.lat);
+            const projected = d3Projection([item.lon, item.lat]) || [500, 275];
             return {
                 id: "w_" + item.id,
+                num: item.num,
                 nameBn: item.bn,
                 nameEn: item.en,
                 groupBn: item.grpBn,
                 groupEn: item.grpEn,
                 spots: item.spots,
                 food: item.food,
-                path: makeBoxPath(item.lon, item.lat, item.w, item.h),
-                cx: center.x,
-                cy: center.y
+                lon: item.lon,
+                lat: item.lat,
+                path: "", // Populated dynamically by D3
+                cx: Math.round(projected[0]),
+                cy: Math.round(projected[1])
             };
         });
+
+        // Asynchronously load real World Atlas TopoJSON
+        async function initWorldAtlasTopoJSON() {
+            try {
+                const res = await fetch("https://unpkg.com/world-atlas@2.0.2/countries-110m.json");
+                if (!res.ok) throw new Error("TopoJSON fetch status: " + res.status);
+                const topoData = await res.json();
+                worldGeoFeatures = topojson.feature(topoData, topoData.objects.countries).features;
+
+                worldGeoFeatures.forEach(feature => {
+                    const strNum = String(feature.id).padStart(3, '0');
+                    worldGeoMapByNum.set(strNum, feature);
+                    worldGeoMapByNum.set(String(feature.id), feature);
+                });
+
+                // Match and bind genuine geographic SVG vector path for each country
+                WORLD_REGIONS_DATA.forEach(r => {
+                    const feat = worldGeoMapByNum.get(r.num);
+                    if (feat) {
+                        r.path = d3PathGenerator(feat);
+                        const center = d3PathGenerator.centroid(feat);
+                        if (center && !isNaN(center[0])) {
+                            r.cx = Math.round(center[0]);
+                            r.cy = Math.round(center[1]);
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn("World Atlas TopoJSON load error, building geometric vector fallback paths:", err);
+            } finally {
+                // Generate smooth circular-polygon fallback path for any country not matched
+                WORLD_REGIONS_DATA.forEach(r => {
+                    if (!r.path) {
+                        const [cx, cy] = d3Projection([r.lon, r.lat]) || [500, 275];
+                        r.cx = Math.round(cx);
+                        r.cy = Math.round(cy);
+                        const rad = 6.5;
+                        r.path = `M ${cx-rad} ${cy} A ${rad} ${rad} 0 1 0 ${cx+rad} ${cy} A ${rad} ${rad} 0 1 0 ${cx-rad} ${cy} Z`;
+                    }
+                });
+                if (currentMapScope === 'world') {
+                    renderMapSVG();
+                }
+            }
+        }
     </script>
 
     <script>
@@ -1563,7 +1614,27 @@
             if (currentMapScope === 'bd') {
                 bgContour.setAttribute("d", "M 168 35 Q 220 38 290 50 Q 355 60 375 110 Q 410 160 520 160 Q 590 180 580 255 Q 565 300 620 330 Q 640 435 625 500 Q 605 610 560 740 Q 545 755 525 705 Q 510 615 455 575 Q 405 565 375 525 Q 340 630 285 645 Q 235 635 205 565 Q 155 570 110 610 Q 95 550 110 470 Q 85 390 65 260 Q 80 230 125 225 Q 145 160 125 120 Z");
             } else {
-                bgContour.setAttribute("d", "M 40 100 Q 280 60 500 80 Q 750 60 960 90 Q 980 280 940 480 Q 500 520 60 480 Q 20 280 40 100 Z");
+                // Natural Earth outline backdrop for the whole globe
+                bgContour.setAttribute("d", "M 15 275 C 15 130 230 35 500 35 C 770 35 985 130 985 275 C 985 420 770 515 500 515 C 230 515 15 420 15 275 Z");
+            }
+
+            // Render world land features from TopoJSON background if loaded
+            if (currentMapScope === 'world' && worldGeoFeatures && worldGeoFeatures.length > 0) {
+                const landGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                landGroup.setAttribute("class", "world-atlas-bg");
+                worldGeoFeatures.forEach(feat => {
+                    const featPath = d3PathGenerator(feat);
+                    if (featPath) {
+                        const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        pathEl.setAttribute("d", featPath);
+                        pathEl.setAttribute("fill", isVintageTheme ? "#231c15" : "#0a1120");
+                        pathEl.setAttribute("stroke", isVintageTheme ? "#3a2e22" : "#172338");
+                        pathEl.setAttribute("stroke-width", "0.65");
+                        pathEl.setAttribute("pointer-events", "none");
+                        landGroup.appendChild(pathEl);
+                    }
+                });
+                regionsGroup.appendChild(landGroup);
             }
 
             data.forEach(region => {
@@ -1571,19 +1642,30 @@
                 const isSelected = Boolean(status);
                 const displayName = currentLanguage === 'bn' ? region.nameBn : region.nameEn;
 
-                // Vector Boundary Path
+                // Vector Boundary Path with direct click and touch handlers
                 const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                pathEl.setAttribute("d", region.path);
+                pathEl.setAttribute("d", region.path || "");
                 pathEl.setAttribute("id", `region-path-${region.id}`);
                 pathEl.setAttribute("class", `district-path ${status ? `status-${status}` : ''}`);
-                pathEl.addEventListener('click', () => handleRegionClick(region.id));
+                
+                pathEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleRegionClick(region.id);
+                });
                 pathEl.addEventListener('mouseenter', () => showDistrictTooltip(region));
+                pathEl.addEventListener('touchstart', (e) => {
+                    showDistrictTooltip(region);
+                }, { passive: true });
+
                 regionsGroup.appendChild(pathEl);
 
                 // Pin & Label
                 const pinGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
                 pinGroup.setAttribute("class", `district-pin-group ${isSelected ? 'status-active' : ''}`);
-                pinGroup.addEventListener('click', () => handleRegionClick(region.id));
+                pinGroup.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleRegionClick(region.id);
+                });
                 pinGroup.addEventListener('mouseenter', () => showDistrictTooltip(region));
 
                 let pinStroke = activeTheme.primary;
@@ -1593,8 +1675,8 @@
                 const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 dot.setAttribute("cx", region.cx);
                 dot.setAttribute("cy", region.cy);
-                dot.setAttribute("r", isSelected ? "3.0" : "1.7");
-                dot.setAttribute("fill", isSelected ? "#ffffff" : "rgba(255, 255, 255, 0.45)");
+                dot.setAttribute("r", isSelected ? (currentMapScope === 'world' ? "3.6" : "3.0") : (currentMapScope === 'world' ? "2.2" : "1.7"));
+                dot.setAttribute("fill", isSelected ? "#ffffff" : "rgba(255, 255, 255, 0.55)");
                 dot.setAttribute("stroke", isSelected ? pinStroke : "#1e293b");
                 dot.setAttribute("stroke-width", isSelected ? "1.6" : "0.9");
                 pinGroup.appendChild(dot);
@@ -2306,38 +2388,54 @@
 
                 const bgPath = new Path2D(currentMapScope === 'bd' 
                     ? "M 168 35 Q 220 38 290 50 Q 355 60 375 110 Q 410 160 520 160 Q 590 180 580 255 Q 565 300 620 330 Q 640 435 625 500 Q 605 610 560 740 Q 545 755 525 705 Q 510 615 455 575 Q 405 565 375 525 Q 340 630 285 645 Q 235 635 205 565 Q 155 570 110 610 Q 95 550 110 470 Q 85 390 65 260 Q 80 230 125 225 Q 145 160 125 120 Z"
-                    : "M 40 100 Q 280 60 500 80 Q 750 60 960 90 Q 980 280 940 480 Q 500 520 60 480 Q 20 280 40 100 Z");
+                    : "M 15 275 C 15 130 230 35 500 35 C 770 35 985 130 985 275 C 985 420 770 515 500 515 C 230 515 15 420 15 275 Z");
                 ctx.fillStyle = isVintageTheme ? '#18130e' : '#080e1b';
                 ctx.strokeStyle = isVintageTheme ? '#33271c' : '#131e33';
                 ctx.lineWidth = 2;
                 ctx.fill(bgPath);
                 ctx.stroke(bgPath);
 
+                // Render TopoJSON land contours in World poster
+                if (currentMapScope === 'world' && worldGeoFeatures && worldGeoFeatures.length > 0) {
+                    worldGeoFeatures.forEach(feat => {
+                        const fp = d3PathGenerator(feat);
+                        if (fp) {
+                            const p2d = new Path2D(fp);
+                            ctx.fillStyle = isVintageTheme ? '#231c15' : '#0a1120';
+                            ctx.strokeStyle = isVintageTheme ? '#3a2e22' : '#172338';
+                            ctx.lineWidth = 0.65;
+                            ctx.fill(p2d);
+                            ctx.stroke(p2d);
+                        }
+                    });
+                }
+
                 data.forEach(region => {
                     const status = statusMap.get(region.id);
-                    const p = new Path2D(region.path);
+                    if (region.path) {
+                        const p = new Path2D(region.path);
+                        if (status) {
+                            let fillCol = activeTheme.primary;
+                            let strokeCol = activeTheme.border;
+                            let glowCol = activeTheme.glow;
+                            if (status === 'wishlist') { fillCol = '#f59e0b'; strokeCol = '#fde68a'; glowCol = 'rgba(245, 158, 11, 0.75)'; }
+                            if (status === 'favorite') { fillCol = '#f43f5e'; strokeCol = '#fecdd3'; glowCol = 'rgba(244, 63, 94, 0.75)'; }
 
-                    if (status) {
-                        let fillCol = activeTheme.primary;
-                        let strokeCol = activeTheme.border;
-                        let glowCol = activeTheme.glow;
-                        if (status === 'wishlist') { fillCol = '#f59e0b'; strokeCol = '#fde68a'; glowCol = 'rgba(245, 158, 11, 0.75)'; }
-                        if (status === 'favorite') { fillCol = '#f43f5e'; strokeCol = '#fecdd3'; glowCol = 'rgba(244, 63, 94, 0.75)'; }
-
-                        ctx.fillStyle = fillCol;
-                        ctx.strokeStyle = strokeCol;
-                        ctx.lineWidth = 1.8;
-                        ctx.shadowColor = glowCol;
-                        ctx.shadowBlur = 12;
-                        ctx.fill(p);
-                        ctx.stroke(p);
-                        ctx.shadowBlur = 0;
-                    } else {
-                        ctx.fillStyle = isVintageTheme ? '#2a221b' : '#0d1526';
-                        ctx.strokeStyle = isVintageTheme ? '#43362a' : '#1e293b';
-                        ctx.lineWidth = 1.2;
-                        ctx.fill(p);
-                        ctx.stroke(p);
+                            ctx.fillStyle = fillCol;
+                            ctx.strokeStyle = strokeCol;
+                            ctx.lineWidth = 1.8;
+                            ctx.shadowColor = glowCol;
+                            ctx.shadowBlur = 12;
+                            ctx.fill(p);
+                            ctx.stroke(p);
+                            ctx.shadowBlur = 0;
+                        } else if (currentMapScope === 'bd') {
+                            ctx.fillStyle = isVintageTheme ? '#2a221b' : '#0d1526';
+                            ctx.strokeStyle = isVintageTheme ? '#43362a' : '#1e293b';
+                            ctx.lineWidth = 1.2;
+                            ctx.fill(p);
+                            ctx.stroke(p);
+                        }
                     }
                 });
 
@@ -2556,6 +2654,9 @@
             updateTravelerRank();
             updateRoadTripButtonUI();
             updateTravelDistance();
+
+            // Load D3 TopoJSON world atlas
+            initWorldAtlasTopoJSON();
         });
     </script>
 </body>
