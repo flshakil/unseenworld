@@ -1,0 +1,906 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unseen World - ভ্রমণ মানচিত্র ও পোস্টার জেনারেটর (BD 64 + Real World 177 Countries)</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS, Phosphor Icons, Confetti, D3 & TopoJSON for Real World Map -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        bengali: ['"Hind Siliguri"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', '"Hind Siliguri"', 'sans-serif'],
+                        vintage: ['"Cinzel"', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+            background-color: #050913;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        :root {
+            --neon-visited: #38bdf8;
+            --neon-visited-border: #bae6fd;
+            --neon-visited-glow: rgba(56, 189, 248, 0.75);
+
+            --neon-wishlist: #f59e0b;
+            --neon-wishlist-border: #fde68a;
+            --neon-wishlist-glow: rgba(245, 158, 11, 0.75);
+
+            --neon-favorite: #f43f5e;
+            --neon-favorite-border: #fecdd3;
+            --neon-favorite-glow: rgba(244, 63, 94, 0.75);
+
+            --unvisited-fill: #0c1424;
+            --unvisited-border: #1e2c45;
+            --unvisited-text: rgba(226, 232, 240, 0.55);
+            --poster-bg: #0c1322;
+        }
+
+        body.theme-vintage {
+            background-color: #1a1612;
+            color: #f7eedd;
+            --unvisited-fill: #2d261e;
+            --unvisited-border: #4a3e31;
+            --unvisited-text: rgba(247, 238, 221, 0.65);
+            --poster-bg: #221c16;
+        }
+
+        .geo-path {
+            fill: var(--unvisited-fill);
+            stroke: var(--unvisited-border);
+            stroke-width: 0.85;
+            cursor: pointer;
+            transition: fill 0.18s ease, stroke 0.18s ease, filter 0.18s ease;
+            vector-effect: non-scaling-stroke;
+        }
+        .geo-path:hover {
+            fill: #192742 !important;
+            stroke: #94a3b8 !important;
+            stroke-width: 1.6 !important;
+        }
+        body.theme-vintage .geo-path:hover {
+            fill: #3e3327 !important;
+            stroke: #d4af37 !important;
+        }
+
+        .geo-path.status-visited {
+            fill: var(--neon-visited) !important;
+            stroke: var(--neon-visited-border) !important;
+            stroke-width: 1.4 !important;
+            filter: drop-shadow(0 0 8px var(--neon-visited-glow));
+        }
+        .geo-path.status-wishlist {
+            fill: var(--neon-wishlist) !important;
+            stroke: var(--neon-wishlist-border) !important;
+            stroke-width: 1.4 !important;
+            filter: drop-shadow(0 0 8px var(--neon-wishlist-glow));
+        }
+        .geo-path.status-favorite {
+            fill: var(--neon-favorite) !important;
+            stroke: var(--neon-favorite-border) !important;
+            stroke-width: 1.4 !important;
+            filter: drop-shadow(0 0 8px var(--neon-favorite-glow));
+        }
+
+        .map-label-text {
+            font-size: 9px;
+            font-weight: 600;
+            fill: var(--unvisited-text);
+            paint-order: stroke fill;
+            stroke: #060b17;
+            stroke-width: 2.5px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            user-select: none;
+            pointer-events: none;
+        }
+        .map-pin-group.status-active .map-label-text {
+            fill: #ffffff !important;
+            font-weight: 800;
+            font-size: 10px;
+            stroke: #030712;
+            stroke-width: 3px;
+        }
+
+        @keyframes dash-travel {
+            to { stroke-dashoffset: -100; }
+        }
+        .animated-route-path {
+            stroke-dasharray: 6, 6;
+            animation: dash-travel 2.5s linear infinite;
+        }
+
+        .poster-glow {
+            box-shadow: 0 25px 65px -15px rgba(0, 0, 0, 0.95), 0 0 45px -10px var(--neon-visited-glow);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800/80 bg-[#070d1a]/95 backdrop-blur-md sticky top-0 z-40 px-3 sm:px-6 py-2.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center flex-wrap gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/30">
+                        <i class="ph-bold ph-globe-hemisphere-east text-lg"></i>
+                    </div>
+                    <span class="text-sm font-extrabold text-white tracking-wide">Unseen World</span>
+                </div>
+
+                <!-- Scope Switcher: Bangladesh 64 Districts vs Real World 177 Countries -->
+                <div class="flex bg-[#0b1222] p-1 rounded-xl border border-slate-800 text-xs font-bold">
+                    <button onclick="switchMapScope('bd')" id="tab-btn-bd" class="px-3 py-1 rounded-lg transition bg-sky-500 text-white shadow-sm flex items-center gap-1.5">
+                        <i class="ph-bold ph-map-pin"></i>
+                        <span>বাংলাদেশ (৬৪ জেলা)</span>
+                    </button>
+                    <button onclick="switchMapScope('world')" id="tab-btn-world" class="px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5">
+                        <i class="ph-bold ph-globe-hemisphere-west"></i>
+                        <span>বিশ্ব মানচিত্র (১৭৭ দেশ)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Header Quick Actions -->
+            <div class="flex items-center flex-wrap gap-2">
+                <button onclick="toggleRoadTripRoute()" id="roadtrip-toggle-btn" class="px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 bg-slate-900 border-slate-800 text-slate-400">
+                    <i class="ph-bold ph-path text-sm"></i>
+                    <span id="roadtrip-btn-text">রুট অফ</span>
+                </button>
+
+                <button onclick="toggleVintageMode()" id="vintage-toggle-btn" class="px-3 py-1.5 rounded-xl bg-amber-950/50 hover:bg-amber-900/60 text-xs font-extrabold text-amber-300 border border-amber-700/60 flex items-center gap-1.5 transition">
+                    <i class="ph-bold ph-scroll text-sm"></i>
+                    <span id="vintage-indicator">ভিন্টেজ থিম</span>
+                </button>
+
+                <button onclick="toggleLanguage()" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-xs font-extrabold text-slate-200 border border-slate-700/80 flex items-center gap-1.5 transition">
+                    <i class="ph-bold ph-translate text-sm"></i>
+                    <span id="lang-indicator">বাং / ENG</span>
+                </button>
+
+                <button onclick="clearAllSelections()" class="px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-xs font-bold text-rose-300 border border-rose-800/60 flex items-center gap-1.5 transition">
+                    <i class="ph-bold ph-trash"></i>
+                    <span>সব মুছুন</span>
+                </button>
+
+                <button onclick="exportAndDownloadHDPoster()" id="download-btn" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-sky-500/30 flex items-center gap-1.5 transition">
+                    <i class="ph-bold ph-download-simple text-base"></i>
+                    <span>পোস্টার ডাউনলোড (HD)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-3 sm:p-5 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Panel: Controls, Search & Continent/Division Accordions -->
+        <div class="lg:col-span-5 space-y-4 order-2 lg:order-1">
+            
+            <!-- Profile & Tagline -->
+            <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-3">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">ভ্রমণকারীর প্রোফাইল ও ক্যাপশন</label>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-2xl border-2 border-sky-400/80 bg-[#121c33] flex items-center justify-center overflow-hidden">
+                            <i id="avatar-placeholder-icon" class="ph-bold ph-user text-xl text-slate-500"></i>
+                            <img id="avatar-preview-img" class="w-full h-full object-cover hidden" alt="Avatar">
+                        </div>
+                        <label for="profile-photo-input" class="absolute -bottom-1 -right-1 bg-sky-500 text-white w-5 h-5 rounded-md flex items-center justify-center cursor-pointer">
+                            <i class="ph-bold ph-camera text-[10px]"></i>
+                        </label>
+                        <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="handleProfilePhotoUpload(event)">
+                    </div>
+                    <div class="flex-1 space-y-1.5">
+                        <input type="text" id="name-input" value="Shakil" placeholder="Name..." oninput="handleNameChange(this.value)" class="w-full bg-[#121c33] border border-slate-700 text-white px-3 py-1.5 rounded-xl text-sm font-bold focus:border-sky-500 focus:outline-none">
+                        <input type="text" id="tagline-input" value="পাহাড়ে হারিয়ে যাওয়ার গল্প" placeholder="Custom quote..." oninput="handleTaglineChange(this.value)" class="w-full bg-[#121c33] border border-slate-700/80 text-sky-200 px-3 py-1.5 rounded-xl text-xs font-medium focus:border-sky-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interaction Modes -->
+            <div class="bg-[#0b1222] p-3.5 rounded-2xl border border-slate-800/80 shadow-lg space-y-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">নির্বাচনের ধরণ (ট্যাগ মোড)</label>
+                <div class="grid grid-cols-3 gap-1.5 text-xs font-bold">
+                    <button onclick="setInteractionStatus('visited')" id="mode-btn-visited" class="py-2 px-1.5 rounded-xl border flex flex-col items-center gap-1 transition bg-sky-500/20 border-sky-400 text-sky-300">
+                        <i class="ph-bold ph-check-circle text-base"></i>
+                        <span>ঘুরেছি</span>
+                    </button>
+                    <button onclick="setInteractionStatus('wishlist')" id="mode-btn-wishlist" class="py-2 px-1.5 rounded-xl border flex flex-col items-center gap-1 transition bg-slate-900/60 border-slate-800 text-slate-400">
+                        <i class="ph-bold ph-bookmark-simple text-base"></i>
+                        <span>যেতে চাই</span>
+                    </button>
+                    <button onclick="setInteractionStatus('favorite')" id="mode-btn-favorite" class="py-2 px-1.5 rounded-xl border flex flex-col items-center gap-1 transition bg-slate-900/60 border-slate-800 text-slate-400">
+                        <i class="ph-bold ph-heart text-base"></i>
+                        <span>ফেভারিট</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Instant Search Bar (All 177 Countries or 64 Districts) -->
+            <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">যেকোনো দেশ বা জেলা খুঁজুন</label>
+                    <span class="text-xs text-sky-400 font-mono font-bold" id="search-counter-label">০ / ৬৪</span>
+                </div>
+                <div class="relative">
+                    <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="live-search-input" placeholder="Search country or district (e.g., Bangladesh, France, Brazil, Japan)..." oninput="handleLiveSearch(this.value)" class="w-full bg-[#121c33] border border-slate-700 text-white pl-8 pr-3 py-2 rounded-xl text-xs focus:outline-none focus:border-sky-500 transition">
+                </div>
+                <div id="search-results-container" class="space-y-1.5 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar text-xs"></div>
+            </div>
+
+            <!-- Accordion Drawer (All Continents & All Divisions) -->
+            <div class="bg-[#0b1222] p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block" id="accordion-drawer-title">বিভাগ ও মহাদেশভিত্তিক তালিকা</label>
+                        <span class="text-[11px] text-slate-500 font-medium">ক্লিক করে সিলেক্ট করুন (ড্রপডাউন বন্ধ হবে না)</span>
+                    </div>
+                    <span class="text-xs text-sky-400 font-bold font-mono" id="group-summary-stat">০ সমাপ্ত</span>
+                </div>
+                <div id="dynamic-accordion-container" class="space-y-2 max-h-[380px] overflow-y-auto pr-1 custom-scrollbar"></div>
+            </div>
+
+        </div>
+
+        <!-- Right Panel: Poster Preview Canvas -->
+        <div class="lg:col-span-7 flex flex-col items-center justify-center order-1 lg:order-2 w-full">
+            <div id="travel-poster-element" class="w-full max-w-[700px] bg-[#0c1322] border border-slate-800/90 rounded-3xl p-5 sm:p-7 poster-glow relative overflow-hidden flex flex-col justify-between select-none">
+                
+                <!-- Poster Header -->
+                <div class="flex items-start justify-between relative z-10 mb-2 gap-2">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-12 h-12 rounded-2xl border-2 border-sky-400 bg-[#101b33] overflow-hidden flex items-center justify-center flex-shrink-0">
+                            <i id="poster-avatar-icon" class="ph-bold ph-user text-2xl text-slate-400"></i>
+                            <img id="poster-avatar-img" class="w-full h-full object-cover hidden" alt="Photo">
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <p class="text-xs font-bold text-slate-400 truncate" id="poster-subtitle-text">বাংলাদেশ ভ্রমণ ম্যাপ</p>
+                                <span id="poster-badge-chip" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40">🏆 Explorer</span>
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight truncate">
+                                <span id="poster-display-name">Shakil</span><span id="poster-title-suffix" class="text-slate-100">-এর বাংলাদেশ</span>
+                            </h2>
+                            <p id="poster-tagline-display" class="text-xs text-sky-300/90 italic truncate">“পাহাড়ে হারিয়ে যাওয়ার গল্প”</p>
+                        </div>
+                    </div>
+
+                    <div class="text-right flex-shrink-0">
+                        <div class="text-3xl sm:text-4xl font-black font-sans leading-none flex items-baseline justify-end gap-0.5">
+                            <span id="poster-fraction-numerator" class="text-sky-400">০</span>
+                            <span id="poster-fraction-denominator" class="text-slate-500 text-xl font-bold">/৬৪</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive SVG Map Container -->
+                <div class="relative w-full">
+                    <!-- Zoom Buttons -->
+                    <div class="absolute top-2 right-2 z-20 flex flex-col gap-1.5 bg-[#091122]/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-800">
+                        <button onclick="zoomMap(1.25)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs font-bold" title="Zoom In"><i class="ph-bold ph-plus"></i></button>
+                        <button onclick="zoomMap(0.8)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-xs font-bold" title="Zoom Out"><i class="ph-bold ph-minus"></i></button>
+                        <button onclick="resetMapZoom()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold" title="Reset"><i class="ph-bold ph-arrows-out-cardinal"></i></button>
+                    </div>
+
+                    <!-- Hover Country/District Spot Tooltip -->
+                    <div id="district-spot-tooltip" class="absolute bottom-3 left-3 z-30 bg-[#081020]/95 border border-sky-500/40 px-3 py-2 rounded-xl shadow-xl opacity-0 pointer-events-none transition-all duration-200 text-xs">
+                        <span id="tooltip-district-name" class="font-extrabold text-sky-300"></span>
+                    </div>
+
+                    <div class="relative w-full h-[480px] sm:h-[560px] flex items-center justify-center my-1 z-10 overflow-hidden rounded-2xl bg-[#070c18]/70 border border-slate-800/50">
+                        <svg id="travel-map-svg" viewBox="0 0 650 820" class="w-full h-full filter drop-shadow-2xl transition-transform duration-200">
+                            <defs>
+                                <pattern id="infographic-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#16223b" stroke-width="0.5" stroke-opacity="0.35"/>
+                                </pattern>
+                            </defs>
+                            <rect width="1000" height="900" fill="url(#infographic-grid)" opacity="0.6"/>
+                            <g id="map-zoom-wrapper" class="origin-center transition-transform duration-200">
+                                <g id="svg-regions-group"></g>
+                                <path id="svg-roadtrip-route" d="" fill="none" stroke="#f59e0b" stroke-width="2.2" class="animated-route-path hidden"/>
+                                <g id="svg-pins-labels-group"></g>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Bottom Progress & Stats -->
+                <div class="relative z-10 pt-2 border-t border-slate-800/80 space-y-2.5">
+                    <div class="w-full h-2 bg-slate-800/90 rounded-full overflow-hidden">
+                        <div id="poster-metric-progress-bar" class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-sky-500 to-indigo-400" style="width: 0%;"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                        <div>
+                            <span id="poster-percentage-num" class="text-white font-extrabold text-sm">০%</span>
+                            <span id="poster-percentage-label" class="text-slate-400 ml-1">ঘোরা হয়েছে</span>
+                        </div>
+                        <div class="text-slate-400 text-xs">
+                            <span id="poster-subregion-summary" class="text-slate-200 font-bold">০টি জেলা</span> · 
+                            <span id="poster-parentregion-summary">০টি অঞ্চল</span>
+                        </div>
+                    </div>
+                    <div class="pt-1.5 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/50">
+                        <span class="font-mono text-[10px]">Interactive Travel Tracker</span>
+                        <span class="font-extrabold text-white">Unseen World • unseenworld.com</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Offscreen Canvas for Direct HD Export -->
+    <canvas id="native-export-canvas" class="hidden"></canvas>
+
+    <script>
+        // Real 64 Districts of Bangladesh Vector Paths
+        const BD_DISTRICTS_DATA = [
+            { id: "panchagarh", nameBn: "পঞ্চগড়", nameEn: "Panchagarh", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 142.6 23.1 L 139.8 27.0 L 135.3 39.9 L 142.6 38.8 L 151.0 41.6 L 156.6 54.5 L 147.0 57.3 L 137.0 64.6 L 134.7 74.6 L 154.9 73.0 L 165.5 80.8 L 170.0 88.6 L 171.1 95.4 L 180.6 95.4 L 184.6 83.0 L 185.7 73.0 L 181.2 61.2 L 171.7 67.4 L 174.5 56.2 L 166.1 45.5 L 158.8 40.5 L 150.4 33.2 Z", cx: 160, cy: 65 },
+            { id: "thakurgaon", nameBn: "ঠাকুরগাঁও", nameEn: "Thakurgaon", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 130.8 74.6 L 118.5 80.2 L 116.2 88.1 L 118.5 94.8 L 111.2 102.1 L 108.4 108.2 L 110.1 119.4 L 114.6 124.5 L 127.4 120.6 L 134.7 130.1 L 144.2 137.4 L 140.3 129.0 L 139.8 117.8 L 150.4 113.3 L 156.6 103.2 L 159.4 94.2 L 168.3 87.0 L 158.2 76.3 L 140.9 74.6 Z", cx: 137, cy: 96 },
+            { id: "dinajpur", nameBn: "দিনাজপুর", nameEn: "Dinajpur", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 159.4 96.5 L 152.1 114.4 L 141.4 118.3 L 142.0 129.0 L 148.2 146.3 L 155.4 153.6 L 171.7 161.4 L 181.8 155.3 L 191.3 162.6 L 191.3 173.8 L 201.9 182.2 L 210.3 185.5 L 219.8 189.4 L 240.6 191.1 L 236.1 181.0 L 227.7 171.0 L 219.3 161.4 L 219.3 150.8 L 208.1 144.1 L 200.8 135.7 L 195.8 126.7 L 188.5 115.0 L 179.5 106.0 L 171.7 97.0 Z", cx: 169, cy: 131 },
+            { id: "nilphamari", nameBn: "নীলফামারী", nameEn: "Nilphamari", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 182.9 61.8 L 186.8 74.1 L 182.9 94.8 L 181.2 105.4 L 190.2 120.0 L 197.4 129.0 L 203.6 123.9 L 213.1 120.0 L 220.4 112.7 L 222.6 101.0 L 218.7 80.2 L 210.3 69.6 L 200.2 64.6 L 190.7 70.7 Z", cx: 201, cy: 96 },
+            { id: "lalmonirhat", nameBn: "লালমনিরহাট", nameEn: "Lalmonirhat", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 203.6 44.4 L 199.7 53.9 L 209.2 58.4 L 215.9 67.4 L 212.0 75.8 L 220.4 80.2 L 219.8 94.8 L 235.5 109.4 L 251.2 121.7 L 258.5 123.4 L 267.4 119.4 L 269.1 112.2 L 260.2 101.0 L 246.7 97.6 L 233.3 83.6 L 223.8 70.2 L 218.2 51.7 Z", cx: 253, cy: 108 },
+            { id: "rangpur", nameBn: "রংপুর", nameEn: "Rangpur", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 221.0 103.2 L 219.3 119.4 L 203.6 121.7 L 202.5 135.7 L 210.9 145.8 L 220.4 150.2 L 221.0 162.0 L 231.0 171.0 L 238.3 181.6 L 246.2 181.6 L 250.1 165.4 L 256.8 160.3 L 253.4 148.6 L 263.0 148.0 L 265.2 134.0 L 259.0 124.5 L 245.6 117.2 L 229.4 104.9 Z", cx: 237, cy: 138 },
+            { id: "kurigram", nameBn: "কুড়িগ্রাম", nameEn: "Kurigram", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 279.2 71.3 L 275.3 80.8 L 280.9 90.9 L 274.2 101.0 L 262.4 99.3 L 266.9 108.2 L 268.6 120.0 L 260.2 123.9 L 266.3 133.4 L 270.2 143.5 L 281.4 153.0 L 285.9 168.2 L 294.3 171.5 L 299.9 167.6 L 305.5 142.4 L 299.9 125.0 L 305.5 105.4 L 298.2 95.4 L 291.5 80.2 Z", cx: 283, cy: 129 },
+            { id: "gaibandha", nameBn: "গাইবান্ধা", nameEn: "Gaibandha", groupBn: "রংপুর", groupEn: "Rangpur", path: "M 268.0 142.4 L 255.1 148.6 L 258.5 160.3 L 247.3 174.9 L 239.4 183.3 L 242.2 192.2 L 229.9 196.7 L 236.6 206.8 L 251.2 212.4 L 270.8 214.1 L 279.8 213.5 L 282.0 197.3 L 291.5 184.4 L 287.6 176.0 L 284.2 155.3 Z", cx: 268, cy: 182 },
+            { id: "joypurhat", nameBn: "জয়পুরহাট", nameEn: "Joypurhat", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 207.0 186.6 L 200.8 201.2 L 203.0 211.8 L 210.9 221.4 L 208.6 235.9 L 217.0 234.2 L 220.4 221.9 L 228.2 224.2 L 235.0 211.8 L 233.8 202.3 L 228.2 197.3 L 219.3 190.6 Z", cx: 222, cy: 208 },
+            { id: "bogura", nameBn: "বগুড়া", nameEn: "Bogura", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 207.0 237.6 L 205.8 249.4 L 218.2 244.3 L 226.0 250.5 L 225.4 264.5 L 233.8 268.4 L 240.0 263.4 L 246.7 271.8 L 273.6 272.3 L 269.7 257.8 L 282.6 245.4 L 280.9 233.1 L 279.8 215.2 L 265.8 215.2 L 241.1 207.9 L 229.4 223.0 L 219.8 226.4 Z", cx: 250, cy: 239 },
+            { id: "naogaon", nameBn: "নওগাঁ", nameEn: "Naogaon", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 147.0 196.2 L 147.0 218.6 L 153.2 228.1 L 144.2 239.3 L 153.2 249.9 L 166.6 254.4 L 168.3 263.9 L 186.2 256.1 L 201.9 268.4 L 218.7 274.0 L 222.6 254.4 L 204.2 250.5 L 209.8 214.1 L 199.7 200.6 L 187.4 199.0 L 166.1 195.0 Z", cx: 181, cy: 229 },
+            { id: "chapai", nameBn: "চাঁপাইনবাবগঞ্জ", nameEn: "Chapai", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 144.8 224.2 L 134.7 235.4 L 122.4 224.7 L 114.0 229.8 L 112.9 243.2 L 100.0 258.9 L 109.0 272.9 L 119.6 283.5 L 133.0 286.3 L 130.2 271.8 L 143.7 265.6 L 153.2 252.7 L 143.1 237.0 Z", cx: 127, cy: 253 },
+            { id: "rajshahi", nameBn: "রাজশাহী", nameEn: "Rajshahi", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 153.8 253.8 L 144.2 266.7 L 131.9 271.8 L 134.7 286.3 L 136.4 294.2 L 158.8 302.6 L 175.6 301.4 L 180.1 307.0 L 181.8 319.9 L 193.5 325.5 L 198.6 309.8 L 192.4 296.4 L 196.3 281.8 L 203.6 270.1 L 186.2 258.3 L 168.3 266.2 Z", cx: 174, cy: 283 },
+            { id: "natore", nameBn: "নাটোর", nameEn: "Natore", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 240.6 265.0 L 219.8 263.9 L 218.7 275.7 L 198.0 281.8 L 193.0 302.0 L 194.6 319.9 L 208.1 325.0 L 228.2 314.9 L 242.8 298.6 L 238.9 284.6 Z", cx: 218, cy: 298 },
+            { id: "sirajganj", nameBn: "সিরাজগঞ্জ", nameEn: "Sirajganj", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 284.2 246.0 L 270.2 260.6 L 274.7 273.4 L 246.2 273.4 L 240.6 289.1 L 255.7 300.9 L 267.4 322.7 L 288.7 337.8 L 298.8 331.7 L 295.4 305.9 L 291.5 279.6 L 296.0 257.8 Z", cx: 272, cy: 294 },
+            { id: "pabna", nameBn: "পাবনা", nameEn: "Pabna", groupBn: "রাজশাহী", groupEn: "Rajshahi", path: "M 209.8 321.0 L 215.9 340.1 L 227.1 345.1 L 243.4 354.6 L 265.2 361.4 L 288.7 360.2 L 284.8 341.8 L 283.1 332.8 L 265.8 316.6 L 249.5 298.1 L 232.7 314.9 Z", cx: 250, cy: 331 },
+            { id: "sherpur", nameBn: "শেরপুর", nameEn: "Sherpur", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", path: "M 314.5 183.3 L 307.8 196.7 L 310.0 214.6 L 313.9 227.0 L 344.7 232.6 L 345.3 212.4 L 348.1 196.2 L 324.6 187.8 Z", cx: 329, cy: 209 },
+            { id: "jamalpur", nameBn: "জামালপুর", nameEn: "Jamalpur", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", path: "M 294.3 168.2 L 292.6 190.0 L 280.3 208.5 L 285.4 230.3 L 289.8 243.2 L 297.7 258.3 L 297.7 270.6 L 306.1 249.9 L 317.3 251.6 L 335.2 244.9 L 340.2 233.7 L 312.8 228.1 L 308.3 198.4 L 299.4 169.3 Z", cx: 300, cy: 235 },
+            { id: "mymensingh", nameBn: "ময়মনসিংহ", nameEn: "Mymensingh", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", path: "M 349.8 196.2 L 346.4 232.6 L 329.0 245.4 L 336.3 263.9 L 347.5 289.7 L 350.3 305.4 L 368.2 298.6 L 382.8 309.3 L 390.1 289.1 L 407.4 277.4 L 396.8 259.4 L 389.0 244.9 L 378.3 227.0 L 386.7 199.0 Z", cx: 364, cy: 262 },
+            { id: "netrokona", nameBn: "নেত্রকোণা", nameEn: "Netrokona", groupBn: "ময়মনসিংহ", groupEn: "Mymensingh", path: "M 387.8 199.0 L 377.8 224.2 L 389.0 243.2 L 399.0 260.6 L 412.5 269.0 L 443.8 265.6 L 456.2 256.6 L 445.0 248.2 L 439.9 232.6 L 424.2 229.2 L 425.9 199.0 Z", cx: 404, cy: 225 },
+            { id: "sunamganj", nameBn: "সুনামগঞ্জ", nameEn: "Sunamganj", groupBn: "সিলেট", groupEn: "Sylhet", path: "M 509.4 202.3 L 460.6 195.0 L 428.2 198.4 L 425.4 227.5 L 440.5 231.4 L 450.0 246.0 L 457.8 270.1 L 475.2 258.3 L 501.5 257.8 L 508.2 224.2 Z", cx: 474, cy: 228 },
+            { id: "sylhet", nameBn: "সিলেট", nameEn: "Sylhet", groupBn: "সিলেট", groupEn: "Sylhet", path: "M 595.0 227.5 L 587.2 215.8 L 548.6 197.3 L 510.5 201.8 L 507.1 227.5 L 501.5 263.4 L 515.0 265.6 L 543.5 260.6 L 562.0 246.0 L 567.6 229.8 L 595.0 233.7 Z", cx: 537, cy: 225 },
+            { id: "moulvibazar", nameBn: "মৌলভীবাজার", nameEn: "Moulvibazar", groupBn: "সিলেট", groupEn: "Sylhet", path: "M 569.8 239.8 L 544.6 261.7 L 504.3 265.0 L 498.2 285.8 L 502.1 317.7 L 530.1 322.7 L 536.2 296.4 L 559.2 288.0 L 572.6 251.6 Z", cx: 518, cy: 286 },
+            { id: "habiganj", nameBn: "হবিগঞ্জ", nameEn: "Habiganj", groupBn: "সিলেট", groupEn: "Sylhet", path: "M 501.5 259.4 L 464.6 262.8 L 448.9 281.3 L 456.7 302.0 L 461.2 312.6 L 464.0 340.1 L 473.5 334.5 L 500.4 327.2 L 497.6 278.5 Z", cx: 477, cy: 283 },
+            { id: "tangail", nameBn: "টাঙ্গাইল", nameEn: "Tangail", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 327.9 246.0 L 306.6 251.6 L 294.9 272.3 L 294.3 294.2 L 300.5 323.3 L 294.3 342.3 L 335.2 335.6 L 343.6 320.5 L 352.0 308.2 L 341.9 284.6 L 333.0 252.2 Z", cx: 322, cy: 308 },
+            { id: "gazipur", nameBn: "গাজীপুর", nameEn: "Gazipur", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 368.8 299.8 L 352.6 306.5 L 336.3 336.7 L 358.2 346.2 L 372.7 357.4 L 386.7 348.5 L 395.1 327.2 L 389.5 308.7 Z", cx: 368, cy: 328 },
+            { id: "kishoreganj", nameBn: "কিশোরগঞ্জ", nameEn: "Kishoreganj", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 448.9 263.9 L 410.8 270.6 L 383.9 281.8 L 391.8 308.2 L 417.0 323.3 L 428.7 335.6 L 434.3 313.8 L 455.0 301.4 Z", cx: 426, cy: 292 },
+            { id: "manikganj", nameBn: "মানিকগঞ্জ", nameEn: "Manikganj", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 287.0 340.6 L 289.8 359.1 L 308.9 379.3 L 320.1 383.2 L 346.4 374.2 L 345.8 360.2 L 326.2 345.1 L 294.9 337.3 Z", cx: 313, cy: 359 },
+            { id: "dhaka", nameBn: "ঢাকা", nameEn: "Dhaka", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 322.3 338.4 L 336.3 359.7 L 347.5 359.7 L 321.2 383.8 L 338.0 396.6 L 350.9 378.7 L 369.4 385.4 L 375.0 375.4 L 369.9 353.5 L 347.5 338.4 Z", cx: 359, cy: 369 },
+            { id: "narsingdi", nameBn: "নরসিংদী", nameEn: "Narsingdi", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 403.5 310.4 L 390.6 328.9 L 382.2 351.3 L 402.4 365.8 L 419.2 355.8 L 427.0 337.3 L 409.1 318.2 Z", cx: 407, cy: 340 },
+            { id: "narayanganj", nameBn: "নারায়ণগঞ্জ", nameEn: "Narayanganj", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 381.7 353.5 L 372.2 365.8 L 368.2 392.7 L 382.8 395.5 L 390.1 378.7 L 400.7 366.4 Z", cx: 384, cy: 371 },
+            { id: "munshiganj", nameBn: "মুন্সীগঞ্জ", nameEn: "Munshiganj", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 338.6 398.3 L 363.8 411.8 L 378.3 414.0 L 397.4 398.9 L 367.1 388.8 L 351.4 380.4 Z", cx: 354, cy: 395 },
+            { id: "rajbari", nameBn: "রাজবাড়ী", nameEn: "Rajbari", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 242.8 371.4 L 263.5 389.9 L 291.0 389.4 L 303.3 373.7 L 289.8 360.8 L 250.6 351.8 Z", cx: 270, cy: 376 },
+            { id: "faridpur", nameBn: "ফরিদপুর", nameEn: "Faridpur", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 334.1 393.8 L 304.4 375.4 L 264.6 393.3 L 277.5 414.6 L 285.4 434.2 L 327.4 423.5 L 338.6 400.6 Z", cx: 308, cy: 400 },
+            { id: "gopalganj", nameBn: "গোপালগঞ্জ", nameEn: "Gopalganj", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 299.9 420.2 L 284.8 437.0 L 298.2 467.8 L 320.6 476.2 L 333.0 458.2 L 321.8 426.9 Z", cx: 312, cy: 461 },
+            { id: "madaripur", nameBn: "মাদারীপুর", nameEn: "Madaripur", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 339.1 401.7 L 322.9 431.9 L 313.4 446.5 L 345.8 463.8 L 358.2 445.4 L 349.8 407.3 Z", cx: 334, cy: 435 },
+            { id: "shariatpur", nameBn: "শরীয়তপুর", nameEn: "Shariatpur", groupBn: "ঢাকা", groupEn: "Dhaka", path: "M 351.4 407.3 L 345.3 429.7 L 357.6 453.2 L 373.8 456.0 L 385.6 434.7 L 375.0 412.9 Z", cx: 362, cy: 429 },
+            { id: "kushtia", nameBn: "কুষ্টিয়া", nameEn: "Kushtia", groupBn: "খুলনা", groupEn: "Khulna", path: "M 179.5 318.8 L 180.6 336.2 L 195.2 350.7 L 210.9 374.8 L 242.8 369.8 L 247.3 354.6 L 209.2 326.6 Z", cx: 201, cy: 339 },
+            { id: "meherpur", nameBn: "মেহেরপুর", nameEn: "Meherpur", groupBn: "খুলনা", groupEn: "Khulna", path: "M 186.2 344.0 L 162.7 356.9 L 160.5 383.2 L 182.9 375.9 L 194.6 356.3 Z", cx: 174, cy: 367 },
+            { id: "chuadanga", nameBn: "চুয়াডাঙ্গা", nameEn: "Chuadanga", groupBn: "খুলনা", groupEn: "Khulna", path: "M 198.0 360.8 L 170.0 384.3 L 180.1 402.2 L 182.9 415.1 L 201.4 408.4 L 209.2 372.6 Z", cx: 195, cy: 384 },
+            { id: "jhenaidah", nameBn: "ঝিনাইদহ", nameEn: "Jhenaidah", groupBn: "খুলনা", groupEn: "Khulna", path: "M 249.0 381.0 L 210.3 376.5 L 201.9 411.2 L 178.4 430.2 L 223.2 426.9 L 241.7 395.5 Z", cx: 225, cy: 394 },
+            { id: "magura", nameBn: "মাগুরা", nameEn: "Magura", groupBn: "খুলনা", groupEn: "Khulna", path: "M 252.3 379.8 L 236.6 415.1 L 255.7 429.1 L 275.3 421.3 L 263.0 391.0 Z", cx: 255, cy: 413 },
+            { id: "jashore", nameBn: "যশোর", nameEn: "Jashore", groupBn: "খুলনা", groupEn: "Khulna", path: "M 270.2 463.8 L 254.0 433.0 L 205.8 420.7 L 193.5 466.6 L 231.0 482.9 L 262.4 466.1 Z", cx: 228, cy: 449 },
+            { id: "narail", nameBn: "নড়াইল", nameEn: "Narail", groupBn: "খুলনা", groupEn: "Khulna", path: "M 256.8 430.8 L 269.1 462.7 L 296.6 465.0 L 283.7 433.6 L 268.0 425.2 Z", cx: 270, cy: 443 },
+            { id: "satkhira", nameBn: "সাতক্ষীরা", nameEn: "Satkhira", groupBn: "খুলনা", groupEn: "Khulna", path: "M 208.1 468.3 L 199.7 491.3 L 207.5 541.7 L 226.0 570.8 L 242.2 559.6 L 236.1 522.1 L 235.5 481.8 Z", cx: 219, cy: 503 },
+            { id: "khulna", nameBn: "খুলনা", nameEn: "Khulna", groupBn: "খুলনা", groupEn: "Khulna", path: "M 257.9 461.0 L 238.3 500.8 L 239.4 545.6 L 267.4 581.4 L 277.5 536.6 L 269.1 504.7 L 291.0 466.1 Z", cx: 254, cy: 516 },
+            { id: "bagerhat", nameBn: "বাগেরহাট", nameEn: "Bagerhat", groupBn: "খুলনা", groupEn: "Khulna", path: "M 294.3 464.4 L 268.6 508.6 L 286.5 560.2 L 302.7 573.0 L 307.8 536.6 L 312.8 479.5 Z", cx: 290, cy: 512 },
+            { id: "pirojpur", nameBn: "পিরোজপুর", nameEn: "Pirojpur", groupBn: "বরিশাল", groupEn: "Barishal", path: "M 321.8 477.3 L 311.7 508.1 L 304.4 550.1 L 314.5 560.2 L 325.1 510.9 L 338.6 493.0 Z", cx: 322, cy: 496 },
+            { id: "jhalakathi", nameBn: "ঝালকাঠি", nameEn: "Jhalakathi", groupBn: "বরিশাল", groupEn: "Barishal", path: "M 341.4 488.5 L 326.2 512.0 L 330.2 539.4 L 358.7 512.0 L 348.1 492.4 Z", cx: 343, cy: 507 },
+            { id: "barishal", nameBn: "বরিশাল", nameEn: "Barishal", groupBn: "বরিশাল", groupEn: "Barishal", path: "M 338.0 453.8 L 322.3 476.2 L 361.5 503.6 L 366.6 524.9 L 377.2 473.4 L 362.1 454.9 Z", cx: 354, cy: 479 },
+            { id: "bhola", nameBn: "ভোলা", nameEn: "Bhola", groupBn: "বরিশাল", groupEn: "Barishal", path: "M 385.0 485.1 L 385.0 511.4 L 395.7 546.2 L 386.7 578.1 L 408.6 567.4 L 414.2 530.5 L 391.8 487.9 Z", cx: 400, cy: 561 },
+            { id: "patuakhali", nameBn: "পটুয়াখালী", nameEn: "Patuakhali", groupBn: "বরিশাল", groupEn: "Barishal", path: "M 379.4 514.8 L 341.4 532.7 L 336.9 549.5 L 353.1 582.6 L 384.5 550.1 L 391.8 536.6 Z", cx: 370, cy: 541 },
+            { id: "barguna", nameBn: "বরগুনা", nameEn: "Barguna", groupBn: "বরিশাল", groupEn: "Barishal", path: "M 344.7 524.9 L 322.9 546.7 L 308.9 573.0 L 325.7 597.7 L 357.0 568.0 L 335.8 551.2 Z", cx: 334, cy: 560 },
+            { id: "brahmanbaria", nameBn: "ব্রাহ্মণবাড়িয়া", nameEn: "Brahmanbaria", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 460.6 313.8 L 429.8 320.5 L 419.2 357.4 L 400.2 371.4 L 451.7 382.1 L 464.0 335.0 Z", cx: 440, cy: 350 },
+            { id: "cumilla", nameBn: "কুমিল্লা", nameEn: "Cumilla", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 390.6 380.4 L 398.5 407.8 L 434.3 433.6 L 438.8 451.5 L 470.2 452.1 L 457.8 402.8 L 433.8 365.8 Z", cx: 428, cy: 391 },
+            { id: "chandpur", nameBn: "চাঁদপুর", nameEn: "Chandpur", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 383.9 402.2 L 380.6 416.2 L 391.8 456.6 L 418.1 439.2 L 432.6 432.5 L 415.8 406.7 Z", cx: 409, cy: 426 },
+            { id: "lakshmipur", nameBn: "লক্ষ্মীপুর", nameEn: "Lakshmipur", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 414.2 441.4 L 392.3 463.8 L 413.0 499.7 L 431.0 511.4 L 428.2 475.0 L 425.4 444.2 Z", cx: 413, cy: 469 },
+            { id: "noakhali", nameBn: "নোয়াখালী", nameEn: "Noakhali", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 426.5 445.9 L 424.8 481.2 L 438.8 521.0 L 461.2 508.1 L 471.8 489.6 L 457.8 454.3 Z", cx: 444, cy: 480 },
+            { id: "feni", nameBn: "ফেনী", nameEn: "Feni", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 479.7 430.2 L 460.1 454.9 L 467.9 485.7 L 489.2 469.4 L 485.3 438.6 Z", cx: 480, cy: 463 },
+            { id: "khagrachhari", nameBn: "খাগড়াছড়ি", nameEn: "Khagrachhari", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 538.5 373.1 L 515.5 424.1 L 510.5 474.5 L 536.2 498.0 L 553.0 466.1 L 555.3 409.0 Z", cx: 536, cy: 433 },
+            { id: "rangamati", nameBn: "রাঙ্গামাটি", nameEn: "Rangamati", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 558.1 372.6 L 547.4 416.8 L 534.6 506.4 L 563.7 541.1 L 609.0 598.8 L 601.2 518.7 L 580.5 439.2 L 572.1 375.9 Z", cx: 567, cy: 489 },
+            { id: "chattogram", nameBn: "চট্টগ্রাম", nameEn: "Chattogram", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 495.4 465.0 L 480.2 484.6 L 512.7 529.9 L 527.3 582.0 L 559.2 592.6 L 555.8 546.7 L 533.4 500.8 L 508.8 463.3 Z", cx: 514, cy: 504 },
+            { id: "bandarban", nameBn: "বান্দরবান", nameEn: "Bandarban", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 574.3 540.0 L 557.0 553.4 L 551.4 604.4 L 558.6 664.3 L 578.2 647.0 L 607.4 672.2 L 607.4 608.9 L 593.4 554.0 Z", cx: 584, cy: 621 },
+            { id: "coxsbazar", nameBn: "কক্সবাজার", nameEn: "Cox's Bazar", groupBn: "চট্টগ্রাম", groupEn: "Chattogram", path: "M 546.3 592.1 L 525.6 620.1 L 531.2 645.3 L 546.9 680.6 L 578.8 732.6 L 559.2 675.5 L 558.1 609.4 Z", cx: 541, cy: 608 }
+        ];
+
+        // Dynamic World Countries Array (populated with all 177 real countries from world-atlas TopoJSON)
+        let WORLD_REGIONS_DATA = [];
+
+        let currentMapScope = 'bd';
+        let currentLanguage = 'bn';
+        let isVintageTheme = false;
+        let isBdRoadTripEnabled = false;
+        let isWorldRoadTripEnabled = false;
+        let currentInteractionMode = 'visited';
+        let currentZoomLevel = 1.0;
+        let currentUserName = "Shakil";
+        let currentUserTagline = "পাহাড়ে হারিয়ে যাওয়ার গল্প";
+        let userProfileImgObject = null;
+
+        const openAccordionGroups = new Set(['ঢাকা', 'Dhaka', 'Asia', 'এশিয়া', 'Europe', 'ইউরোপ']);
+        const bdStatusMap = new Map();
+        const worldStatusMap = new Map();
+
+        function formatNumber(num) {
+            if (currentLanguage === 'en') return num.toString();
+            const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return num.toString().split('').map(d => bnDigits[d] !== undefined ? bnDigits[d] : d).join('');
+        }
+
+        // Classify any world country into its geographical continent using centroid coordinates
+        function getContinentFromCentroid(lon, lat, name) {
+            if (name === "Antarctica") return { bn: "অ্যান্টার্কটিকা", en: "Antarctica" };
+            if (lon < -25) {
+                return lat > 12 ? { bn: "উত্তর আমেরিকা", en: "North America" } : { bn: "দক্ষিণ আমেরিকা", en: "South America" };
+            }
+            if (lon >= 110 && lat < -10) return { bn: "ওশেনিয়া", en: "Oceania" };
+            if (lat > 35 && lon >= -25 && lon < 60) return { bn: "ইউরোপ", en: "Europe" };
+            if (lat <= 35 && lon >= -25 && lon < 52) return { bn: "আফ্রিকা", en: "Africa" };
+            return { bn: "এশিয়া", en: "Asia" };
+        }
+
+        // Load Real-World 177 Countries Geometry
+        async function loadRealWorldCountries() {
+            try {
+                const res = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json");
+                const topo = await res.json();
+                const features = topojson.feature(topo, topo.objects.countries).features;
+
+                // Natural Earth Projection fitted into 880x500 viewBox
+                const projection = d3.geoNaturalEarth1().fitSize([880, 480], { type: "FeatureCollection", features });
+                const pathGen = d3.geoPath().projection(projection);
+
+                WORLD_REGIONS_DATA = features.map((f, idx) => {
+                    const nameEn = f.properties.name || `Country ${idx + 1}`;
+                    const geoCentroid = d3.geoCentroid(f);
+                    const pixelCentroid = pathGen.centroid(f);
+                    const cont = getContinentFromCentroid(geoCentroid[0], geoCentroid[1], nameEn);
+                    const svgPath = pathGen(f);
+
+                    return {
+                        id: `w_${f.id || idx}`,
+                        nameBn: nameEn,
+                        nameEn: nameEn,
+                        groupBn: cont.bn,
+                        groupEn: cont.en,
+                        path: svgPath,
+                        cx: isNaN(pixelCentroid[0]) ? 440 : pixelCentroid[0],
+                        cy: isNaN(pixelCentroid[1]) ? 240 : pixelCentroid[1]
+                    };
+                }).filter(item => item.path && item.nameEn !== "Antarctica");
+
+                // Pre-select a few iconic countries
+                ["Bangladesh", "India", "Saudi Arabia", "United Arab Emirates", "Malaysia", "Thailand", "United Kingdom", "United States of America", "Japan"].forEach(cName => {
+                    const found = WORLD_REGIONS_DATA.find(c => c.nameEn.toLowerCase() === cName.toLowerCase());
+                    if (found) worldStatusMap.set(found.id, 'visited');
+                });
+
+                if (currentMapScope === 'world') {
+                    renderMapSVG();
+                    renderDynamicAccordion();
+                }
+            } catch (err) {
+                console.error("Failed loading real world atlas:", err);
+            }
+        }
+
+        function getCurrentDataset() {
+            return currentMapScope === 'bd' ? BD_DISTRICTS_DATA : WORLD_REGIONS_DATA;
+        }
+
+        function getCurrentStatusMap() {
+            return currentMapScope === 'bd' ? bdStatusMap : worldStatusMap;
+        }
+
+        function switchMapScope(scope) {
+            currentMapScope = scope;
+            const btnBd = document.getElementById('tab-btn-bd');
+            const btnWorld = document.getElementById('tab-btn-world');
+            const svgEl = document.getElementById('travel-map-svg');
+
+            if (scope === 'bd') {
+                btnBd.className = "px-3 py-1 rounded-lg transition bg-sky-500 text-white shadow-sm flex items-center gap-1.5";
+                btnWorld.className = "px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5";
+                svgEl.setAttribute("viewBox", "0 0 650 820");
+                document.getElementById('poster-subtitle-text').textContent = "বাংলাদেশ ভ্রমণ ম্যাপ";
+                document.getElementById('poster-title-suffix').textContent = "-এর বাংলাদেশ";
+            } else {
+                btnWorld.className = "px-3 py-1 rounded-lg transition bg-sky-500 text-white shadow-sm flex items-center gap-1.5";
+                btnBd.className = "px-3 py-1 rounded-lg transition text-slate-400 hover:text-white flex items-center gap-1.5";
+                svgEl.setAttribute("viewBox", "0 0 880 500");
+                document.getElementById('poster-subtitle-text').textContent = "বিশ্ব ভ্রমণ ম্যাপ";
+                document.getElementById('poster-title-suffix').textContent = "-এর বিশ্ব ভ্রমণ";
+            }
+
+            resetMapZoom();
+            renderMapSVG();
+            renderDynamicAccordion();
+        }
+
+        function renderMapSVG() {
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const regionsGroup = document.getElementById('svg-regions-group');
+            const pinsLabelsGroup = document.getElementById('svg-pins-labels-group');
+
+            regionsGroup.innerHTML = '';
+            pinsLabelsGroup.innerHTML = '';
+
+            data.forEach(region => {
+                const status = statusMap.get(region.id);
+                const isSelected = Boolean(status);
+                const displayName = currentLanguage === 'bn' ? region.nameBn : region.nameEn;
+
+                const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                pathEl.setAttribute("d", region.path);
+                pathEl.setAttribute("class", `geo-path ${status ? `status-${status}` : ''}`);
+                pathEl.onclick = () => handleRegionClick(region.id);
+                pathEl.onmouseenter = () => showTooltip(displayName, region.groupBn);
+                pathEl.onmouseleave = () => hideTooltip();
+                regionsGroup.appendChild(pathEl);
+
+                // Show labels for all BD districts, or for selected countries on the World Map
+                if (currentMapScope === 'bd' || isSelected) {
+                    const pinGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    pinGroup.setAttribute("class", `map-pin-group ${isSelected ? 'status-active' : ''}`);
+
+                    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    dot.setAttribute("cx", region.cx);
+                    dot.setAttribute("cy", region.cy);
+                    dot.setAttribute("r", isSelected ? "3.0" : "1.6");
+                    dot.setAttribute("fill", isSelected ? "#ffffff" : "rgba(255,255,255,0.4)");
+                    pinGroup.appendChild(dot);
+
+                    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    label.setAttribute("x", region.cx);
+                    label.setAttribute("y", region.cy - 6);
+                    label.setAttribute("text-anchor", "middle");
+                    label.setAttribute("class", "map-label-text");
+                    label.textContent = displayName;
+                    pinGroup.appendChild(label);
+
+                    pinsLabelsGroup.appendChild(pinGroup);
+                }
+            });
+
+            renderRoadTripPath();
+            updatePosterMetrics();
+        }
+
+        function showTooltip(name, group) {
+            const t = document.getElementById('district-spot-tooltip');
+            document.getElementById('tooltip-district-name').textContent = `${name} (${group})`;
+            t.classList.remove('opacity-0');
+            t.classList.add('opacity-100');
+        }
+
+        function hideTooltip() {
+            const t = document.getElementById('district-spot-tooltip');
+            t.classList.add('opacity-0');
+            t.classList.remove('opacity-100');
+        }
+
+        function handleRegionClick(id) {
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            if (statusMap.get(id) === currentInteractionMode) {
+                statusMap.delete(id);
+            } else {
+                statusMap.set(id, currentInteractionMode);
+                if (statusMap.size === data.length) {
+                    confetti({ particleCount: 120, spread: 90, origin: { y: 0.5 } });
+                }
+            }
+            renderMapSVG();
+            renderDynamicAccordion();
+        }
+
+        function updatePosterMetrics() {
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const visitedCount = Array.from(statusMap.values()).filter(v => v === 'visited').length;
+            const totalRegions = data.length || 1;
+            const pct = Math.round((visitedCount / totalRegions) * 100);
+
+            const exploredGroups = new Set();
+            data.forEach(r => { if (statusMap.has(r.id)) exploredGroups.add(r.groupBn); });
+            const allGroups = new Set(data.map(r => r.groupBn));
+
+            document.getElementById('poster-fraction-numerator').textContent = formatNumber(visitedCount);
+            document.getElementById('poster-fraction-denominator').textContent = `/${formatNumber(totalRegions)}`;
+            document.getElementById('poster-metric-progress-bar').style.width = `${pct}%`;
+            document.getElementById('poster-percentage-num').textContent = `${formatNumber(pct)}%`;
+
+            const unitName = currentMapScope === 'bd' ? 'টি জেলা' : 'টি দেশ';
+            const grpName = currentMapScope === 'bd' ? 'টি বিভাগ' : 'টি মহাদেশ';
+
+            document.getElementById('poster-subregion-summary').textContent = `${formatNumber(visitedCount)}${unitName}`;
+            document.getElementById('poster-parentregion-summary').textContent = `${formatNumber(allGroups.size)}টির মধ্যে ${formatNumber(exploredGroups.size)}${grpName}`;
+            document.getElementById('search-counter-label').textContent = `${formatNumber(statusMap.size)} / ${formatNumber(totalRegions)}`;
+            document.getElementById('group-summary-stat').textContent = `${formatNumber(exploredGroups.size)}/${formatNumber(allGroups.size)} অঞ্চল`;
+        }
+
+        function renderDynamicAccordion() {
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const container = document.getElementById('dynamic-accordion-container');
+            container.innerHTML = '';
+
+            const groupsMap = new Map();
+            data.forEach(item => {
+                const grpKey = currentLanguage === 'bn' ? item.groupBn : item.groupEn;
+                if (!groupsMap.has(grpKey)) groupsMap.set(grpKey, []);
+                groupsMap.get(grpKey).push(item);
+            });
+
+            groupsMap.forEach((items, groupName) => {
+                const selectedInGroup = items.filter(d => statusMap.has(d.id)).length;
+                const isAllSelected = selectedInGroup === items.length && items.length > 0;
+                const isOpen = openAccordionGroups.has(groupName);
+
+                const card = document.createElement('div');
+                card.className = "border border-slate-800/90 rounded-2xl bg-[#0e1628]/80 overflow-hidden";
+
+                const header = document.createElement('div');
+                header.className = "flex items-center justify-between p-3 cursor-pointer hover:bg-slate-800/40 select-none";
+                header.innerHTML = `
+                    <div class="flex items-center gap-2 flex-1" onclick="toggleAccordionDrawer('${groupName}')">
+                        <i class="ph-bold ph-caret-right text-slate-400 text-xs transition-transform ${isOpen ? 'rotate-90' : ''}"></i>
+                        <span class="font-bold text-sm text-slate-200">${groupName}</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-sky-400">${formatNumber(selectedInGroup)}/${formatNumber(items.length)}</span>
+                    </div>
+                    <button onclick="bulkToggleGroup('${groupName}', event)" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border ${isAllSelected ? 'bg-rose-950/40 border-rose-800 text-rose-300' : 'bg-sky-950/40 border-sky-800 text-sky-300'}">
+                        ${isAllSelected ? 'সব মুছুন' : 'সব সিলেক্ট'}
+                    </button>
+                `;
+
+                const drawer = document.createElement('div');
+                drawer.className = `${isOpen ? '' : 'hidden'} p-3 pt-1 border-t border-slate-800/60 grid grid-cols-2 gap-1.5 text-xs max-h-[240px] overflow-y-auto custom-scrollbar`;
+
+                items.forEach(region => {
+                    const status = statusMap.get(region.id);
+                    const chip = document.createElement('button');
+                    let chipStyle = "bg-slate-900/60 border-slate-800 text-slate-400";
+                    if (status === 'visited') chipStyle = "bg-sky-950/60 border-sky-500/60 text-sky-200 font-bold";
+                    if (status === 'wishlist') chipStyle = "bg-amber-950/60 border-amber-500/60 text-amber-200 font-bold";
+                    if (status === 'favorite') chipStyle = "bg-rose-950/60 border-rose-500/60 text-rose-200 font-bold";
+
+                    chip.className = `p-2 rounded-xl border flex items-center justify-between transition ${chipStyle}`;
+                    chip.onclick = (e) => { e.stopPropagation(); handleRegionClick(region.id); };
+                    chip.innerHTML = `<span class="truncate pr-1">${currentLanguage === 'bn' ? region.nameBn : region.nameEn}</span><i class="ph-bold ${status ? 'ph-check-circle text-sky-400' : 'ph-circle text-slate-600'}"></i>`;
+                    drawer.appendChild(chip);
+                });
+
+                card.appendChild(header);
+                card.appendChild(drawer);
+                container.appendChild(card);
+            });
+        }
+
+        function toggleAccordionDrawer(groupName) {
+            if (openAccordionGroups.has(groupName)) openAccordionGroups.delete(groupName);
+            else openAccordionGroups.add(groupName);
+            renderDynamicAccordion();
+        }
+
+        function bulkToggleGroup(groupName, e) {
+            e.stopPropagation();
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const groupItems = data.filter(r => (currentLanguage === 'bn' ? r.groupBn : r.groupEn) === groupName);
+            const allSelected = groupItems.every(r => statusMap.has(r.id));
+            groupItems.forEach(r => {
+                if (allSelected) statusMap.delete(r.id);
+                else statusMap.set(r.id, currentInteractionMode);
+            });
+            openAccordionGroups.add(groupName);
+            renderMapSVG();
+            renderDynamicAccordion();
+        }
+
+        function handleLiveSearch(val) {
+            const kw = val.toLowerCase().trim();
+            const container = document.getElementById('search-results-container');
+            container.innerHTML = '';
+            if (!kw) return;
+
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const filtered = data.filter(r => r.nameBn.toLowerCase().includes(kw) || r.nameEn.toLowerCase().includes(kw));
+
+            filtered.slice(0, 20).forEach(region => {
+                const isSelected = statusMap.has(region.id);
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-2 rounded-xl border cursor-pointer ${isSelected ? 'bg-sky-950/40 border-sky-500/40 text-sky-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-300'}`;
+                item.onclick = () => handleRegionClick(region.id);
+                item.innerHTML = `<span>${region.nameBn} (${region.groupBn})</span><i class="ph-bold ${isSelected ? 'ph-check-circle text-sky-400' : 'ph-plus-circle text-slate-500'}"></i>`;
+                container.appendChild(item);
+            });
+        }
+
+        function setInteractionStatus(mode) {
+            currentInteractionMode = mode;
+            ['visited', 'wishlist', 'favorite'].forEach(m => {
+                const btn = document.getElementById(`mode-btn-${m}`);
+                btn.className = m === mode
+                    ? "py-2 px-1.5 rounded-xl border flex flex-col items-center gap-1 transition bg-sky-500/20 border-sky-400 text-sky-300"
+                    : "py-2 px-1.5 rounded-xl border flex flex-col items-center gap-1 transition bg-slate-900/60 border-slate-800 text-slate-400";
+            });
+        }
+
+        function toggleRoadTripRoute() {
+            if (currentMapScope === 'bd') isBdRoadTripEnabled = !isBdRoadTripEnabled;
+            else isWorldRoadTripEnabled = !isWorldRoadTripEnabled;
+            renderRoadTripPath();
+        }
+
+        function renderRoadTripPath() {
+            const pathEl = document.getElementById('svg-roadtrip-route');
+            const isEnabled = currentMapScope === 'bd' ? isBdRoadTripEnabled : isWorldRoadTripEnabled;
+            document.getElementById('roadtrip-btn-text').textContent = isEnabled ? "রুট অন" : "রুট অফ";
+            if (!isEnabled) { pathEl.classList.add('hidden'); return; }
+
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            let nodes = data.filter(r => statusMap.get(r.id) === 'wishlist');
+            if (nodes.length < 2) nodes = data.filter(r => statusMap.has(r.id)).slice(0, 10);
+            if (nodes.length < 2) { pathEl.classList.add('hidden'); return; }
+
+            let d = `M ${nodes[0].cx} ${nodes[0].cy}`;
+            for (let i = 1; i < nodes.length; i++) {
+                d += ` L ${nodes[i].cx} ${nodes[i].cy}`;
+            }
+            pathEl.setAttribute('d', d);
+            pathEl.classList.remove('hidden');
+        }
+
+        function toggleVintageMode() {
+            isVintageTheme = !isVintageTheme;
+            document.body.classList.toggle('theme-vintage', isVintageTheme);
+            renderMapSVG();
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'bn' ? 'en' : 'bn';
+            renderMapSVG();
+            renderDynamicAccordion();
+        }
+
+        function zoomMap(factor) {
+            currentZoomLevel = Math.min(Math.max(currentZoomLevel * factor, 0.75), 3.0);
+            document.getElementById('map-zoom-wrapper').style.transform = `scale(${currentZoomLevel})`;
+        }
+
+        function resetMapZoom() {
+            currentZoomLevel = 1.0;
+            document.getElementById('map-zoom-wrapper').style.transform = `scale(1.0)`;
+        }
+
+        function handleNameChange(name) {
+            currentUserName = name.trim() || "Shakil";
+            document.getElementById('poster-display-name').textContent = currentUserName;
+        }
+
+        function handleTaglineChange(val) {
+            currentUserTagline = val.trim() || "পাহাড়ে হারিয়ে যাওয়ার গল্প";
+            document.getElementById('poster-tagline-display').textContent = `“${currentUserTagline}”`;
+        }
+
+        function handleProfilePhotoUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                userProfileImgObject = new Image();
+                userProfileImgObject.onload = () => {
+                    document.getElementById('avatar-preview-img').src = e.target.result;
+                    document.getElementById('avatar-preview-img').classList.remove('hidden');
+                    document.getElementById('avatar-placeholder-icon').classList.add('hidden');
+                    document.getElementById('poster-avatar-img').src = e.target.result;
+                    document.getElementById('poster-avatar-img').classList.remove('hidden');
+                    document.getElementById('poster-avatar-icon').classList.add('hidden');
+                };
+                userProfileImgObject.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearAllSelections() {
+            getCurrentStatusMap().clear();
+            renderMapSVG();
+            renderDynamicAccordion();
+        }
+
+        function exportAndDownloadHDPoster() {
+            const canvas = document.getElementById('native-export-canvas');
+            const ctx = canvas.getContext('2d');
+            const data = getCurrentDataset();
+            const statusMap = getCurrentStatusMap();
+            const visitedCount = Array.from(statusMap.values()).filter(v => v === 'visited').length;
+
+            canvas.width = 1200;
+            canvas.height = 1450;
+
+            ctx.fillStyle = isVintageTheme ? '#221c16' : '#0c1322';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 46px "Plus Jakarta Sans", "Hind Siliguri", sans-serif';
+            ctx.fillText(`${currentUserName}${currentMapScope === 'bd' ? '-এর বাংলাদেশ' : '-এর বিশ্ব ভ্রমণ'}`, 70, 110);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'italic 22px "Hind Siliguri", sans-serif';
+            ctx.fillText(`“${currentUserTagline}”`, 70, 148);
+
+            ctx.textAlign = 'right';
+            ctx.font = '900 64px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(`${formatNumber(visitedCount)}/${formatNumber(data.length)}`, canvas.width - 70, 125);
+            ctx.textAlign = 'left';
+
+            ctx.save();
+            if (currentMapScope === 'bd') {
+                ctx.translate(110, 190);
+                ctx.scale(1.45, 1.45);
+            } else {
+                ctx.translate(45, 320);
+                ctx.scale(1.25, 1.25);
+            }
+
+            data.forEach(region => {
+                const status = statusMap.get(region.id);
+                const p = new Path2D(region.path);
+                ctx.fillStyle = status === 'visited' ? '#38bdf8' : status === 'wishlist' ? '#f59e0b' : status === 'favorite' ? '#f43f5e' : '#111c33';
+                ctx.strokeStyle = status ? '#ffffff' : '#1e293b';
+                ctx.lineWidth = status ? 1.4 : 0.8;
+                ctx.fill(p);
+                ctx.stroke(p);
+            });
+            ctx.restore();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Unseen World  •  unseenworld.com', canvas.width / 2, canvas.height - 45);
+
+            const link = document.createElement('a');
+            link.download = `unseenworld-${currentMapScope}-poster.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            ["dhaka", "gazipur", "narayanganj", "sylhet", "moulvibazar", "chattogram", "coxsbazar", "rajshahi", "bogura", "rangpur"].forEach(id => bdStatusMap.set(id, 'visited'));
+            renderMapSVG();
+            renderDynamicAccordion();
+            loadRealWorldCountries();
+        });
+    </script>
+</body>
+</html>
